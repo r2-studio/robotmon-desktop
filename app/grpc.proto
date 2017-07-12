@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package rpc;
+
+message Empty {}
+
+message Response {
+  string message = 1;
+}
+
+message RequestRunScript {
+  string script = 1;
+}
+
+message RequestScreenshot {
+  int32 resizeWidth = 1;
+  int32 resizeHeight = 2;
+}
+
+message RequestTap {
+  int32 x = 1;
+  int32 y = 2;
+  int32 during = 3;
+}
+
+message ResponseScreenshot {
+  bytes image = 1;
+}
+
+message ResponseScreenSize {
+  int32 width = 1;
+  int32 height = 2;
+}
+
+service GrpcService {
+  rpc RunScript(RequestRunScript) returns (Response) {}
+  rpc Logs(Empty) returns (stream Response) {}
+  rpc GetScreenshot(RequestScreenshot) returns (ResponseScreenshot) {}
+  rpc GetScreenSize(Empty) returns (ResponseScreenSize) {}
+  rpc Tap(RequestTap) returns (Response) {}
+  rpc TapDown(RequestTap) returns (Response) {}
+  rpc TapUp(RequestTap) returns (Response) {}
+  rpc MoveTo(RequestTap) returns (Response) {}
+}
+

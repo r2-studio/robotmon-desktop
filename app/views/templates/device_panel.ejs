@@ -1,0 +1,39 @@
+<div id="<%-id%>" class="panel panel-default device-panel">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <%-ip%>
+      <button type="button" class="btn btn-xs btn-success btn-connect">連線</button>
+      <button type="button" class="btn btn-xs btn-danger btn-disconnect" style="display: none;">中斷</button>
+      <button type="button" class="btn btn-xs btn-default btn-controller-start">啟動</button>
+      <button type="button" class="btn btn-xs btn-default btn-controller-stop">停止</button>
+      <button type="button" class="btn btn-xs btn-default btn-controller-status">狀態</button>
+      <input type="checkbox" class="checkbox-rotation">旋轉</input>
+      <input type="checkbox" class="checkbox-sync-screen" checked>同步螢幕</input>
+    </h3>
+  </div>
+  <div class="panel-body">
+    <div class="col-lg-12">
+      <div class="input-group">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Scripts
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#" class="btn-quick-run">script1.js</a></li>
+            <li><a href="#" class="btn-quick-run">script2.js</a></li>
+            <li><a href="#" class="btn-quick-run">script3.js</a></li>
+            <li><a href="#" class="btn-quick-run">script4.js</a></li>
+          </ul>
+        </div>
+        <input type="text" class="form-control text-script-name" value="huuuge.js">
+        <span class="input-group-btn">
+          <button class="btn btn-default btn-run-script" type="button">Run Script!</button>
+        </span>
+      </div>
+    </div>
+    <div class="screenshot-container">
+      <div class="debug-screen-position"></div>
+      <img class="screenshot"/>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,3 @@
+*.aar
+.vscode
+node_modules
