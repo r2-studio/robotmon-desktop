@@ -101,6 +101,12 @@ class DeviceManager {
     this.$root.append(this.getTemplateHtml());
 
     this.$deviceManager = this.$root.find('#deviceManager');
+    this.$textIp = this.$root.find('.text-ip');
+    this.$connectIpBtn = this.$root.find('.connect-ip');
+    this.$connectIpBtn.unbind('click').bind('click', () => {
+      const ip = this.$textIp.val();
+      const tmp = new DeviceController(this.$devices, ip);
+    });
   }
 
   getTemplateHtml() {
