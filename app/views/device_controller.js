@@ -194,7 +194,7 @@ class DeviceController extends DeviceConnection {
   }
 
   runScriptByFilename(filename) {
-    const js = fs.readFileSync(`${__dirname}/../scripts/${filename}`);
+    const js = fs.readFileSync(`${__dirname}/../../scripts/${filename}`);
     this.runScript(js.toString())
     .then(() => {
       console.log('run tasks success', filename);
