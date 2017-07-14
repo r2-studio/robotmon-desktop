@@ -96,10 +96,16 @@ TaskController.prototype.stop = function () {
   this.isRunning = false;
 }
 
-var gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
-
 function printTaskStatus() {
   console.log(JSON.stringify(gTaskController));
 }
 
-gTaskController.start();
+var gTaskController;
+
+if (!gTaskController) {
+  console.log('New TaskController...');
+  gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
+  gTaskController.start();
+} else {
+  console.log('TaskController is running...');
+}

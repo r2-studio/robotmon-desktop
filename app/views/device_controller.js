@@ -167,7 +167,7 @@ class DeviceController extends DeviceConnection {
   }
 
   stopTaskController() {
-    this.runScriptByString('gTaskController.stop();');
+    this.runScriptByString('gTaskController.removeAllTasks();');
   }
 
   taskControllerStatus() {
