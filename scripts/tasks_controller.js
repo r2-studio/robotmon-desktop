@@ -88,8 +88,10 @@ TaskController.prototype.removeAllTasks = function() {
 }
 
 TaskController.prototype.start = function () {
-  this.isRunning = true;
-  this.loop();
+  if (!this.isRunning) {
+    this.isRunning = true;
+    this.loop();
+  }
 }
 
 TaskController.prototype.stop = function () {
@@ -105,7 +107,7 @@ var gTaskController;
 if (!gTaskController) {
   console.log('New TaskController...');
   gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
-  gTaskController.start();
 } else {
   console.log('TaskController is running...');
 }
+gTaskController.start();
