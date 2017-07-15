@@ -2,6 +2,9 @@
   <div class="panel-heading">
     <h3 class="panel-title">
       <%-ip%>
+      <button type="button" class="btn btn-xs btn-default btn-start-service">啟動服務</button>
+      PID: <span class="text-pid">?</span>
+      <br />
       <button type="button" class="btn btn-xs btn-success btn-connect">連線</button>
       <button type="button" class="btn btn-xs btn-danger btn-disconnect" style="display: none;">中斷</button>
       <button type="button" class="btn btn-xs btn-default btn-controller-start">啟動任務系統</button>
@@ -32,7 +35,7 @@
       </div>
     </div>
     <div class="screenshot-container">
-      <div class="debug-screen-position"></div>
+      <div class="debug-screen-position">x: - y: -</div>
       <img class="screenshot"/>
     </div>
   </div>

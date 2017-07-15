@@ -23,6 +23,7 @@ class DevicePanel extends DeviceConnection {
     this.lastImageTime = 0;
 
     this.bindView();
+    this.connect();
   }
 
   connect() {
@@ -66,7 +67,9 @@ class DevicePanel extends DeviceConnection {
     this.$btnTaskControllerStatus = this.$panel.find('.btn-controller-status');
     this.$btnRunScript = this.$panel.find('.btn-run-script');
     this.$btnQuickRunScripts = this.$panel.find('.btn-quick-run');
+    this.$btnStartService = this.$panel.find('.btn-start-service');
     this.$textScriptName = this.$panel.find('.text-script-name');
+    this.$textPid = this.$panel.find('.text-pid');
     this.$isRotation = this.$panel.find('.checkbox-rotation');
     this.$screenPositionMsg = this.$panel.find('.debug-screen-position');
     this.$isSyncScreen = this.$panel.find('.checkbox-sync-screen');
@@ -86,6 +89,14 @@ class DevicePanel extends DeviceConnection {
     this.$screenshot.unbind('mousedown').bind('mousedown', this.onTapDown.bind(this));
     this.$screenshot.unbind('mousemove').bind('mousemove', this.onMoveTo.bind(this));
     this.$screenshot.unbind('mouseup').bind('mouseup', this.onTapUp.bind(this));
+  }
+
+  hide() {
+    this.$panel.hide();
+  }
+
+  show() {
+    this.$panel.show();
   }
 
   updateConnectBtn(isConnect) {
