@@ -15,14 +15,14 @@ var UiParameters = {
 
 };
 
-function Task(func, config, order) {
+function Task(name, func, config, order) {
   this.createTime = Date.now();
   this.taskOrder = order;
   this.runTimes = 0;
 
   this.func = func;
   this.config = config || {};
-  this.taskName = this.config.taskName || ('task_' + this.taskOrder);
+  this.taskName = name;
   this.priority = this.config.priority || DEFAULT_TASK_CONFIG.priority;
   this.delay = this.config.delay || DEFAULT_TASK_CONFIG.delay;
   this.maxRunTimes = this.config.times || DEFAULT_TASK_CONFIG.times;
@@ -39,7 +39,7 @@ function TaskController(config) {
   this.loopDelay = config.loopDelay || DEFAULT_CONTROLLER_CONFIG.loopDelay;
 
   this.isRunning = false;
-  this.tasks = [];
+  this.tasks = {};
   this.taskOrder = 0;
   this.taskRunOrder = 0;
 }
@@ -47,19 +47,24 @@ function TaskController(config) {
 TaskController.prototype.loop = function() {
   console.log('loop start');
   while(this.isRunning) {
-    if (this.tasks.length != 0) {
-      this.tasks.sort(function(a, b) {
+    var tmpTasks = [];
+    for (var key in this.tasks) {
+      tmpTasks.push(this.tasks[key]);
+    }
+    if (tmpTasks.length != 0) {
+      tmpTasks.sort(function(a, b) {
         var ap = a.priority + (this.taskRunOrder - a.taskOrder) * this.runOverPriority;
         var bp = b.priority + (this.taskRunOrder - b.taskOrder) * this.runOverPriority;
         // console.log(a.taskName, ap, this.taskRunOrder - a.taskOrder, 'b',bp, this.taskRunOrder - b.taskOrder);
         return ap < bp;
       }.bind(this)); // desc
-      var task = this.tasks.shift();
+      var task = tmpTasks[0];
       sleep(task.delay);
       var isRemove = task.run();
-      if (!isRemove) {
+      if (isRemove) {
+        delete this.tasks[task.taskName];
+      } else {
         task.taskOrder = this.taskRunOrder;
-        this.tasks.push(task);
       }
       this.taskRunOrder++;
     }
@@ -68,23 +73,41 @@ TaskController.prototype.loop = function() {
   console.log('loop stop');
 };
 
-TaskController.prototype.addTask = function (func, config) {
-  this.tasks.push(new Task(func, config, this.taskOrder++));
+TaskController.prototype.addTask = function (taskName, func, config) {
+  var task = new Task(taskName, func, config, this.taskOrder++);
+  this.tasks[taskName] = task;
+  return task;
+}
+
+TaskController.prototype.removeTask = function (taskName) {
+  delete this.tasks[taskName];
+}
+
+TaskController.prototype.removeAllTasks = function() {
+  this.tasks = {};
 }
 
 TaskController.prototype.start = function () {
-  this.isRunning = true;
-  this.loop();
+  if (!this.isRunning) {
+    this.isRunning = true;
+    this.loop();
+  }
 }
 
 TaskController.prototype.stop = function () {
   this.isRunning = false;
 }
 
-var gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
-
 function printTaskStatus() {
   console.log(JSON.stringify(gTaskController));
 }
 
+var gTaskController;
+
+if (!gTaskController) {
+  console.log('New TaskController...');
+  gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
+} else {
+  console.log('TaskController is running...');
+}
 gTaskController.start();

@@ -22,8 +22,8 @@ function spin() {
 }
 
 
-// gTaskController.addTask(earn100KTask, {delay:900, times: 900});
-gTaskController.addTask(spin, {priority: 10, delay:100, times: -1});
-// gTaskController.addTask(screenshot, {priority: 0, delay:0, times: -1});
+// gTaskController.addTask('earn100KTask', earn100KTask, {delay:900, times: 900});
+gTaskController.addTask('spin', spin, {priority: 10, delay:100, times: -1});
+// gTaskController.addTask('screenshot', screenshot, {priority: 0, delay:0, times: -1});
 
 // delay 100, run 300 times, 1 min, spin 50
