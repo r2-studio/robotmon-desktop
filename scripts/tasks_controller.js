@@ -70,6 +70,7 @@ TaskController.prototype.loop = function() {
     }
     sleep(this.loopDelay);
   }
+  this.isRunning = false;
   console.log('loop stop');
 };
 
@@ -104,7 +105,7 @@ function printTaskStatus() {
 
 var gTaskController;
 
-if (!gTaskController) {
+if (!gTaskController instanceof TaskController) {
   console.log('New TaskController...');
   gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
 } else {

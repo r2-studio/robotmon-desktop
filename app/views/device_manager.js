@@ -3,7 +3,7 @@ const fs = require('fs');
 const ejs = require('ejs');
 const dgram = require('dgram');
 
-const DeviceController = require('./device_controller.js');
+const DevicePanel = require('./device_panel.js');
 
 const DEVICE_LIST_ITEM_TEMPLATE_HTML = 'templates/device_list_item.ejs';
 const DEVICE_LIST_TEMPLATE_HTML = 'templates/device_list.ejs';
@@ -53,7 +53,7 @@ class DeviceListItem {
     this.$listItem = this.$root.find(`#${this.id}`);
     this.$connectBtn = this.$listItem.find('.connect');
     this.$connectBtn.unbind('click').bind('click', () => {
-      this.deviceController = new DeviceController(this.$devices, this.ip);
+      this.deviceController = new DevicePanel(this.$devices, this.ip);
     });
   }
 
@@ -105,7 +105,7 @@ class DeviceManager {
     this.$connectIpBtn = this.$root.find('.connect-ip');
     this.$connectIpBtn.unbind('click').bind('click', () => {
       const ip = this.$textIp.val();
-      const tmp = new DeviceController(this.$devices, ip);
+      const tmp = new DevicePanel(this.$devices, ip);
     });
   }
 

@@ -5,7 +5,7 @@ const ejs = require('ejs');
 
 const DEVICE_TEMPLATE_HTML = 'templates/device_panel.ejs';
 
-class DeviceController extends DeviceConnection {
+class DevicePanel extends DeviceConnection {
   constructor($root, ip) {
     super(ip);
     this.$root = $root;
@@ -205,4 +205,4 @@ class DeviceController extends DeviceConnection {
   }
 }
 
-module.exports = DeviceController;
+module.exports = DevicePanel;
