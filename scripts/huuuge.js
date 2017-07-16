@@ -31,6 +31,10 @@ function toRotationLXY(x, y) {
   return [SCREEN_HEIGHT - y, x];
 }
 
+function getDateString() {
+  var d = new Date();
+  return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()+'-'+d.getHours()+'-'+d.getMinutes()+'-'+d.getSeconds();
+}
 
 // Huuuge game
 function earn100KTask() {
@@ -51,6 +55,27 @@ function cropAndGetMoneyNumbers() {
   releaseImage(rImg);
 }
 
+var colorR = 0;
+var isStore = false;
+
+function checkWin() {
+  var img = getScreenshot();
+  var color = getImageColor(img, 750, 350);
+  var dateString = getDateString();
+  if (colorR == 0) {
+    colorR = color.r;
+  } else if (color.r != colorR) {
+    console.log('Win', dateString);
+    var d = new Date();
+    saveImage(img, getStoragePath() + '/' + 'huuuge-win-' + dateString + '.jpg');
+    isStore = true;
+  } else if (isStore) {
+    saveImage(img, getStoragePath() + '/' + 'huuuge-store-' + dateString + '.jpg');
+    isStore = false;
+  }
+  releaseImage(img);
+}
+
 function spin() {
   var x = 1830;
   var y = 930;
@@ -59,8 +84,9 @@ function spin() {
 
 
 // gTaskController.addTask('earn100KTask', earn100KTask, {delay:900, times: 900});
-gTaskController.addTask('spin', spin, {priority: 10, delay:100, times: -1});
+// gTaskController.addTask('spin', spin, {priority: 10, delay:100, times: -1});
 // gTaskController.addTask('screenshot', screenshot, {priority: 0, delay:0, times: -1});
+gTaskController.addTask('checkWin', checkWin, {priority: 5, delay:0, times: -1});
 
 // delay 100, run 300 times, 1 min, spin 50
 
