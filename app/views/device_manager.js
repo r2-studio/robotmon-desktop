@@ -3,9 +3,11 @@ const fs = require('fs');
 const ejs = require('ejs');
 const dgram = require('dgram');
 
+const adb = require('../models/adb.js');
 const DevicePanel = require('./device_panel.js');
 
 const DEVICE_LIST_ITEM_TEMPLATE_HTML = 'templates/device_list_item.ejs';
+const DEVICE_USB_LIST_ITEM_TEMPLATE_HTML = 'templates/device_usb_list_item.ejs';
 const DEVICE_LIST_TEMPLATE_HTML = 'templates/device_list.ejs';
 
 const ONLINE = {
@@ -72,11 +74,40 @@ class DeviceListItem {
 
 }
 
+class UsbDeviceListItem {
+  constructor($root, id) {
+    this.$root = $root;
+    this.id = id;
+
+    this.bindView();
+  }
+
+  bindView() {
+    this.$root.append(this.getTemplateHtml());
+
+    this.$listItem = this.$root.find(`#${this.id}`);
+    this.$startBtn = this.$listItem.find('btn-start');
+    this.$startBtn.unbind('click').bind('click', () => {
+
+    });
+    this.$stopBtn = this.$listItem.find('btn-stop');
+    this.$stopBtn.unbind('click').bind('click', () => {
+
+    });
+  }
+
+  getTemplateHtml() {
+    const tpl = fs.readFileSync(`${__dirname}/${DEVICE_USB_LIST_ITEM_TEMPLATE_HTML}`);
+    return ejs.render(tpl.toString(), this);
+  }
+}
+
 class DeviceManager {
   constructor($root, $devices) {
     this.$root = $root;
     this.$devices = $devices;
     this.deviceList = {};
+    this.usbDevices = {};
     this.receiver = dgram.createSocket('udp4');
     this.bind();
 
@@ -113,13 +144,27 @@ class DeviceManager {
     this.$root.append(this.getTemplateHtml());
 
     this.$deviceManager = this.$root.find('#deviceManager');
+    this.$usbDeviceManager = this.$root.find('#usbDeviceManager');
     this.$textIp = this.$root.find('.text-ip');
     this.$connectIpBtn = this.$root.find('.connect-ip');
     this.$connectIpBtn.unbind('click').bind('click', () => {
       const ip = this.$textIp.val();
       this.addListItem(ip);
     });
+    this.$scanStatusText = this.$root.find('.text-scan-status');
+    this.$scanUsbBtn = this.$root.find('.scan-usb');
+    this.$scanUsbBtn.unbind('click').bind('click', () => {
+      this.$usbDeviceManager.html('');
+      this.usbDevices = {};
+      this.$scanStatusText.html('Scanning');
+      const devices = adb.getUsbDevices();
+      _.forEach(devices, (id) => {
+        this.usbDevices[id] = new UsbDeviceListItem(this.$usbDeviceManager, id);
+      });
+      this.$scanStatusText.html('');
+    });
   }
+
 
   getTemplateHtml() {
     const tpl = fs.readFileSync(`${__dirname}/${DEVICE_LIST_TEMPLATE_HTML}`);
