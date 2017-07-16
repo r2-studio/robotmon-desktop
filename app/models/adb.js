@@ -29,7 +29,7 @@ class ADB {
   }
 
   static startRobotmonService(device) {
-    let pid = ADB.getRobotmonPid();
+    let pid = ADB.getRobotmonPid(device);
     if (pid !== 0) {
       return pid;
     }

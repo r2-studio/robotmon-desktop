@@ -78,21 +78,31 @@ class UsbDeviceListItem {
   constructor($root, id) {
     this.$root = $root;
     this.id = id;
+    this.pid = 0;
 
     this.bindView();
+    this.update();
+  }
+
+  update() {
+    this.pid = adb.getRobotmonPid(this.id);
+    this.pidText.html(this.pid);
   }
 
   bindView() {
     this.$root.append(this.getTemplateHtml());
 
     this.$listItem = this.$root.find(`#${this.id}`);
-    this.$startBtn = this.$listItem.find('btn-start');
+    this.pidText = this.$listItem.find('.text-pid');
+    this.$startBtn = this.$listItem.find('.btn-start');
     this.$startBtn.unbind('click').bind('click', () => {
-
+      this.pid = adb.startRobotmonService(this.id);
+      this.pidText.html(this.pid);
     });
-    this.$stopBtn = this.$listItem.find('btn-stop');
+    this.$stopBtn = this.$listItem.find('.btn-stop');
     this.$stopBtn.unbind('click').bind('click', () => {
-
+      this.pid = adb.stopRobotmonService(this.id);
+      this.pidText.html(0);
     });
   }
 
