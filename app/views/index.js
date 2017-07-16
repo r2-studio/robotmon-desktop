@@ -1,6 +1,7 @@
 /* global $ */
 
 // const DeviceController = require('./device_controller.js');
+const adb = require('../models/adb.js');
 const DeviceManager = require('./device_manager.js');
 
 // const punt = require('punt');

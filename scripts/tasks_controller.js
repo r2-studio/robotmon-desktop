@@ -105,10 +105,8 @@ function printTaskStatus() {
 
 var gTaskController;
 
-if (!gTaskController instanceof TaskController) {
-  console.log('New TaskController...');
-  gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
-} else {
-  console.log('TaskController is running...');
+if (gTaskController instanceof TaskController) {
+  gTaskController.stop();
 }
+gTaskController = new TaskController(DEFAULT_CONTROLLER_CONFIG);
 gTaskController.start();

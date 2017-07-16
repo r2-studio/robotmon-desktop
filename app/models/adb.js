@@ -1,4 +1,4 @@
-// const _ = require('lodash');
+const _ = require('lodash');
 const os = require('os');
 const childProcess = require('child_process');
 
@@ -9,12 +9,16 @@ class ADB {
     return `${__dirname}/../bin/adb.${os.platform()}`;
   }
 
-  static adbShellSync(cmd) {
-    return childProcess.execSync(`${ADB.getAdbPath()} shell '${cmd}'`).toString();
+  static adbShellSync(device, cmd) {
+    return childProcess.execSync(`${ADB.getAdbPath()} -s ${device} shell '${cmd}'`).toString();
   }
 
-  static getRobotmonPid() {
-    const results = ADB.adbShellSync('ps app_process32').split('\r\n');
+  static adbDevicesSync() {
+    return childProcess.execSync(`${ADB.getAdbPath()} devices`).toString();
+  }
+
+  static getRobotmonPid(device) {
+    const results = ADB.adbShellSync(device, 'ps app_process32').split('\n');
     for (let i = 0; i < results.length; i += 1) {
       const r = results[i].match(/[ ]+([0-9]+)[ ]/);
       if (r !== null && r.length > 0) {
@@ -24,15 +28,15 @@ class ADB {
     return 0;
   }
 
-  static startRobotmonService() {
-    let pid = ADB.getRobotmonPid();
+  static startRobotmonService(device) {
+    let pid = ADB.getRobotmonPid(device);
     if (pid !== 0) {
       return pid;
     }
     for (let i = 0; i < 10; i += 1) {
-      ADB.adbShellSync(START_SERVICE_CMD);
-      ADB.adbShellSync('sleep 1');
-      pid = ADB.getRobotmonPid();
+      ADB.adbShellSync(device, START_SERVICE_CMD);
+      ADB.adbShellSync(device, 'sleep 1');
+      pid = ADB.getRobotmonPid(device);
       if (pid !== 0) {
         break;
       }
@@ -40,14 +44,27 @@ class ADB {
     return pid;
   }
 
-  static stopRobotmonService() {
-    const pid = ADB.getRobotmonPid();
+  static stopRobotmonService(device) {
+    const pid = ADB.getRobotmonPid(device);
     if (pid !== 0) {
-      ADB.adbShellSync(`kill ${pid}`);
+      ADB.adbShellSync(device, `kill ${pid}`);
       return pid;
     }
     return 0;
   }
+
+  static getUsbDevices() {
+    const devices = [];
+    const results = ADB.adbDevicesSync().split('\n');
+    _.forEach(results, (line) => {
+      const tabs = line.split('\t');
+      if (tabs.length === 2) {
+        devices.push(tabs[0]);
+      }
+    });
+    return devices;
+  }
+
 }
 
 module.exports = ADB;
