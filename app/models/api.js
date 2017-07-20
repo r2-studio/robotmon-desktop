@@ -27,9 +27,15 @@ class DeviceConnection {
     });
   }
 
-  getScreenshot(resizeWidth = 0, resizeHeight = 0) {
+  getScreenshot(cx = 0, cy = 0, cw = 0, ch = 0, rw = 0, rh = 0, q = 0) {
     const request = {
-      resizeWidth, resizeHeight,
+      cropX: cx,
+      cropY: cy,
+      cropWidth: cw,
+      cropHeight: ch,
+      resizeWidth: rw,
+      resizeHeight: rh,
+      quality: q,
     };
     return new Promise((resolve, reject) => {
       this.client.getScreenshot(request, (err, obj) => {
