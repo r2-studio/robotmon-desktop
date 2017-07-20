@@ -13,8 +13,13 @@ message RequestRunScript {
 }
 
 message RequestScreenshot {
-  int32 resizeWidth = 1;
-  int32 resizeHeight = 2;
+  int32 cropX = 1;
+  int32 cropY = 2;
+  int32 cropWidth = 3;
+  int32 cropHeight = 4;
+  int32 resizeWidth = 5;
+  int32 resizeHeight = 6;
+  int32 quality = 7;
 }
 
 message RequestTap {
