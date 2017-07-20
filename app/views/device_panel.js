@@ -32,8 +32,8 @@ class DevicePanel extends DeviceConnection {
     .then((obj) => {
       this.width = obj.width;
       this.height = obj.height;
-      this.displayWidth = this.$screenshot.width();
-      this.displayHeight = (this.height * this.displayWidth) / this.width;
+      this.displayWidth = Math.floor(this.$screenshot.width());
+      this.displayHeight = Math.floor((this.height * this.displayWidth) / this.width);
       this.$screenshot.width(this.displayWidth);
       this.$screenshot.height(this.displayHeight);
       this.syncScreen();
@@ -115,7 +115,7 @@ class DevicePanel extends DeviceConnection {
       setTimeout(() => { this.syncScreen(); }, 1000);
       return;
     }
-    this.getScreenshot(0, 0)
+    this.getScreenshot(0, 0, 0, 0, this.displayWidth * 2, this.displayHeight * 2, 80)
     .then((obj) => {
       if (this.isConnect) {
         const now = Date.now();

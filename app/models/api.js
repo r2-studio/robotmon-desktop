@@ -27,7 +27,7 @@ class DeviceConnection {
     });
   }
 
-  getScreenshot(cx = 0, cy = 0, cw = 0, ch = 0, rw = 0, rh = 0, q = 0) {
+  getScreenshot(cx = 0, cy = 0, cw = 0, ch = 0, rw = 0, rh = 0, q = 70) {
     const request = {
       cropX: cx,
       cropY: cy,
