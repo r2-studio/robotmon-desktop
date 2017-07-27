@@ -35,8 +35,20 @@
       </div>
     </div>
     <div class="screenshot-container">
-      <div class="debug-screen-position">x: - y: -</div>
+      <div>
+        <input type="checkbox" class="checkbox-get-color">Get Color (Click)</input>
+        <span class="debug-screen-position">x: - y: -</span>
+      </div>
+      <div class="color-records"></div>
       <img class="screenshot"/>
+      <div>
+        <textarea class="scripts" style="width: 100%; height: 100px;">
+var size = getScreenSize();
+console.log(JSON.stringify(size));
+        </textarea>
+        <button type="button" class="btn btn-xs btn-success btn-run-api">Run</button>
+      </div>
+      <div class="consolelog"></div>
     </div>
   </div>
 </div>

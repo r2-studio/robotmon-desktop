@@ -17,10 +17,12 @@ class DevicePanel extends DeviceConnection {
     this.displayHeight = 0;
     this.isRotation = false;
     this.isSyncScreen = true;
+    this.isGetColor = false;
     this.isConnect = false;
     this.isTap = false;
     this.tapMoveTime = 0;
     this.lastImageTime = 0;
+    this.onLogMsg = null;
 
     this.bindView();
     this.connect();
@@ -45,6 +47,9 @@ class DevicePanel extends DeviceConnection {
     this.updateConnectBtn(true);
     this.streamLogs((data) => {
       console.log(data);
+      if (this.onLogMsg !== null) {
+        this.onLogMsg(data);
+      }
     }, () => {
       console.log('end');
     });
@@ -73,6 +78,9 @@ class DevicePanel extends DeviceConnection {
     this.$isRotation = this.$panel.find('.checkbox-rotation');
     this.$screenPositionMsg = this.$panel.find('.debug-screen-position');
     this.$isSyncScreen = this.$panel.find('.checkbox-sync-screen');
+    this.$isGetColor = this.$panel.find('.checkbox-get-color');
+    this.$colorRecords = this.$panel.find('.color-records');
+    this.$consolelog = this.$panel.find('.consolelog');
 
     this.$btnConnect.unbind('click').bind('click', this.connect.bind(this));
     this.$btnDisconnect.unbind('click').bind('click', this.disconnect.bind(this));
@@ -84,11 +92,23 @@ class DevicePanel extends DeviceConnection {
     this.$btnQuickRunScripts.unbind('click').bind('click', this.quickRunScripts.bind(this));
     this.$isRotation.unbind('change').bind('change', () => { this.isRotation = !this.isRotation; });
     this.$isSyncScreen.unbind('change').bind('change', () => { this.isSyncScreen = !this.isSyncScreen; });
+    this.$isGetColor.unbind('change').bind('change', () => { this.isGetColor = !this.isGetColor; });
 
     this.$screenshot.on('dragstart', (event) => { event.preventDefault(); });
     this.$screenshot.unbind('mousedown').bind('mousedown', this.onTapDown.bind(this));
     this.$screenshot.unbind('mousemove').bind('mousemove', this.onMoveTo.bind(this));
     this.$screenshot.unbind('mouseup').bind('mouseup', this.onTapUp.bind(this));
+
+    // apis
+    this.$runApi = this.$panel.find('.btn-run-api');
+    this.$runApi.unbind('click').bind('click', (e) => {
+      const $target = this.$panel.find(e.target);
+      const cmd = $target.prev('.scripts').text();
+      this.runScriptByString(cmd);
+      this.onLogMsg = (log) => {
+        this.$consolelog.html(log.message);
+      };
+    });
   }
 
   hide() {
@@ -146,9 +166,22 @@ class DevicePanel extends DeviceConnection {
   }
 
   onTapDown(event) {
-    this.isTap = true;
     const [x, y] = this.toScreenXY(event.offsetX, event.offsetY);
-    this.tapDown(x, y, 50);
+    if (!this.isGetColor) {
+      this.isTap = true;
+      this.tapDown(x, y, 50);
+    } else {
+      this.runScriptByString(`
+        var onTapDownImg = getScreenshot();
+        var onTapDownImgColor = getImageColor(onTapDownImg, ${x}, ${y});
+        console.log(JSON.stringify(onTapDownImgColor));
+        releaseImage(onTapDownImg);
+      `);
+      this.onLogMsg = (log) => {
+        this.$colorRecords.append(`<div>x:${x}, y:${y} ${log.message}</div>`);
+        this.onLogMsg = null;
+      };
+    }
   }
 
   onMoveTo(event) {
@@ -163,9 +196,11 @@ class DevicePanel extends DeviceConnection {
   }
 
   onTapUp(event) {
-    this.isTap = false;
-    const [x, y] = this.toScreenXY(event.offsetX, event.offsetY);
-    this.tapUp(x, y, 50);
+    if (!this.isGetColor) {
+      this.isTap = false;
+      const [x, y] = this.toScreenXY(event.offsetX, event.offsetY);
+      this.tapUp(x, y, 50);
+    }
   }
 
   getTemplateHtml() {
