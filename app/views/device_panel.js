@@ -71,8 +71,9 @@ class DevicePanel extends DeviceConnection {
     this.$btnTaskControllerStop = this.$panel.find('.btn-controller-stop');
     this.$btnTaskControllerStatus = this.$panel.find('.btn-controller-status');
     this.$btnRunScript = this.$panel.find('.btn-run-script');
-    this.$btnQuickRunScripts = this.$panel.find('.btn-quick-run');
     this.$btnStartService = this.$panel.find('.btn-start-service');
+    this.$dropdownToggle = this.$panel.find('.dropdown-toggle');
+    this.$dropdownMenu = this.$panel.find('.dropdown-menu');
     this.$textScriptName = this.$panel.find('.text-script-name');
     this.$textPid = this.$panel.find('.text-pid');
     this.$isRotation = this.$panel.find('.checkbox-rotation');
@@ -89,7 +90,7 @@ class DevicePanel extends DeviceConnection {
     this.$btnTaskControllerStop.unbind('click').bind('click', this.stopTaskController.bind(this));
     this.$btnTaskControllerStatus.unbind('click').bind('click', this.taskControllerStatus.bind(this));
     this.$btnRunScript.unbind('click').bind('click', this.runScriptCustomer.bind(this));
-    this.$btnQuickRunScripts.unbind('click').bind('click', this.quickRunScripts.bind(this));
+    this.$dropdownToggle.unbind('click').bind('click', this.initDropdownMenu.bind(this));
     this.$isRotation.unbind('change').bind('change', () => { this.isRotation = !this.isRotation; });
     this.$isSyncScreen.unbind('change').bind('change', () => { this.isSyncScreen = !this.isSyncScreen; });
     this.$isGetColor.unbind('change').bind('change', () => { this.isGetColor = !this.isGetColor; });
@@ -224,9 +225,18 @@ class DevicePanel extends DeviceConnection {
     this.runScriptByFilename(this.$textScriptName.val());
   }
 
-  quickRunScripts(event) {
+  setScriptFile(event) {
     const filename = this.$panel.find(event.target).html();
-    this.runScriptByFilename(filename);
+    this.$textScriptName.val(filename);
+  }
+
+  initDropdownMenu() {
+    this.$dropdownMenu.empty();
+    fs.readdirSync(`${__dirname}/../../scripts/`).forEach((file) => {
+      this.$dropdownMenu.append(`<li><a href="#" class="btn-quick-run">${file}</a></li>`);
+    });
+    this.$btnQuickRunScripts = this.$panel.find('.btn-quick-run');
+    this.$btnQuickRunScripts.unbind('click').bind('click', this.setScriptFile.bind(this));
   }
 
   runScriptByString(js) {
