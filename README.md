@@ -52,7 +52,30 @@ tapUp(int x, int y, int during)
 moveTo(int x, int y, int during)
 typing(string words, int during)
 keycode(string label, int during)
-getIdentityScore(int sourceImg, tint argetImg) int score
+clone(int sourceImg) int imgPtr
+smooth(int sourceImg, int smoothType, size int)
+	smoothType:
+		0 = CV_BLUR_NO_SCALE
+		1 = CV_BLUR
+		2 = CV_GAUSSIAN
+		3 = CV_MEDIAN
+		4 = CV_BILATERAL
+convertColor(int sourceImg, int code)
+	code:
+		40 = CV_BGR2HSV
+		52 = CV_BGR2HLS
+	see: imgproc/types_c.h 
+
+absDiff(int sourceImg, int targetImg) int diffImgPtr
+threshold(int sourceImg, float thr, maxThr, int code)
+	code:
+		0 = CV_THRES_BINARY
+	see: imgproc/types_c.h
+
+eroid(int sourceImg, int w, int h, int x, int y)
+canny(int sourceImg, float t1, float t2, int apertureSize) int cannyImgPtr
+findContours(int cannyImgPtr, float minArea, float maxArea) {"0": {int x, int y}}
+getIdentityScore(int sourceImg, int targetImg) int score
 findImage(int sourceImg, int targetImg) {int x, int y, int score}
 cropImage(int sourceImg, int x, int y, int width, int height) int imgPtr
 resizeImage(int sourceImg, int width, int height) int imgPtr
@@ -66,6 +89,7 @@ getStoragePath() string path
 getImageFromURL(string url) int imgPtr
 getImageFromBase64(string base64) int imgPtr
 getBase64FromImage(int imgPtr) string base64
+log(string tag, string msg) string logMsg
 ```
 
 ### Grpc APIs (Client)
