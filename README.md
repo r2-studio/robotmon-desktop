@@ -5,6 +5,11 @@ Robotmon Desktop
 
 ### Install Desktop
 
+if you're on Windows:
+```
+npm install --global --production windows-build-tools
+```
+and then
 ``` shell
 npm install
 ./node_modules/.bin/electron-rebuild
