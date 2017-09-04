@@ -52,7 +52,7 @@ EndlessFrontier.prototype.init = function() {
   } else {
     this.ScreenInfo.gameHeight = Config.screenHeight;
   }
-  var screenRatio = this.ScreenInfo.gameHeight / Config.screenWidth;
+  var screenRatio = Config.screenHeight / Config.screenWidth;
   var gameWidthRatio = 0.9;
   if (screenRatio >= 1.6) { // h/w 1.6
     gameWidthRatio = 1;
@@ -64,11 +64,6 @@ EndlessFrontier.prototype.init = function() {
   this.ScreenInfo.offsetX = (Config.screenWidth - this.ScreenInfo.gameWidth) / 2;
   console.log(JSON.stringify(this.ScreenInfo));
 };
-
-EndlessFrontier.prototype.tapLayout = function(xy) {
-  var x = xy.x, y = xy.y;
-  // convert to captured position 
-}
 
 new EndlessFrontier();
 
