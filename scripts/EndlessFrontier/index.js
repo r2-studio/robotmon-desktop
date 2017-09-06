@@ -25,7 +25,7 @@ function log () {
 
 function isSameColor(c1, c2, diff) {
   if (diff == undefined) {
-    diff = 20;
+    diff = 40;
   }
   if (Math.abs(c1.r - c2.r) > diff) {
     return false;
@@ -111,7 +111,7 @@ function EndlessFrontier() {
     Treasure: {x: 550, y: 550},
 
     // config
-    during: 400,
+    during: 300,
   };
   this.ScreenInfo = {
     ratio: 0,
@@ -122,7 +122,8 @@ function EndlessFrontier() {
   // from 1776 * 1080 screen
   this.Buttons = {};
   this.Status = {
-    taskWarIdx: 4,
+    taskTaskIgnore: 0,
+    taskWarIdx: 0,
   };
   this.init();
 }
@@ -229,7 +230,7 @@ EndlessFrontier.prototype.tap = function(xy, during) {
   if (during === undefined) {
     during = this.Const.during;
   }
-  console.log('tap', xy.x, xy.y);
+  // console.log('tap', xy.x, xy.y);
   tap(Math.round(xy.x), Math.round(xy.y), during);
 }
 
@@ -277,6 +278,7 @@ EndlessFrontier.prototype.goToGame = function(during) {
   if (during === undefined) {
     during = 35 * 1000;
   }
+  tapUp(0, 0);
   var start = Date.now();
   while(true) {
     log('檢查是否在遊戲中');
@@ -284,6 +286,7 @@ EndlessFrontier.prototype.goToGame = function(during) {
     var color = getColor(img, this.InGameCheck);
     var isMenu1 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 0.90, y: this.menuY }));
     var isMenu2 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 2.90, y: this.menuY }));
+    var isMenuEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, this.ButtonMenuTask));
     releaseImage(img);
     if ((isMenu1 || isMenu2) && isSameColor(this.Const.InGameCheck.color, color)) {
       return;
@@ -292,7 +295,9 @@ EndlessFrontier.prototype.goToGame = function(during) {
       return;
     }
     this.goBack();
-    this.tap(this.ButtonMenuTask);
+    if (!isMenuEnable) {
+      this.tap(this.ButtonMenuTask);
+    }
     sleep(3000);
   }
 }
@@ -301,8 +306,8 @@ EndlessFrontier.prototype.screenshot = function() {
   return getScreenshotModify(0, 0, 0, 0, Config.resizeWidth, Config.resizeHeight);
 }
 
-EndlessFrontier.prototype.tapTableMaxValue = function(y) {
-  for (var i = 0; i < 4; i++) {
+EndlessFrontier.prototype.tapTableMaxValue = function(y, clickIcon) {
+  for (var i = 0; i < 5; i++) {
     this.tap({x: this.ButtonTableRightOther.x, y: y}, 100);
   }
   var img = this.screenshot();
@@ -311,27 +316,53 @@ EndlessFrontier.prototype.tapTableMaxValue = function(y) {
   if (btnEnable) {
     this.tap({x: this.ButtonTaskMax.x, y: y}, 100);
   }
+  if (clickIcon) {
+    this.tap({x: this.ButtonTaskIcon.x, y: y});
+  }
 }
 
-EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes) {
+EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes, ignoreCount, clickIcon) {
   var cellHeight = this.TableCellHeight;
   var rightBtnX = xy.x;
   var rightBtn1Y = xy.y;
   var rightBtn2Y = rightBtn1Y + cellHeight;
   var rightBtn3Y = rightBtn2Y + cellHeight;
+  var rightBtn4Y = rightBtn3Y + cellHeight;
+  
+  var rightBtn5YBottom = this.ButtonTableRightOtherBottom.y;
+  var rightBtn4YBottom = rightBtn5YBottom - cellHeight;
+  var rightBtn3YBottom = rightBtn4YBottom - cellHeight;
+  var rightBtn2YBottom = rightBtn3YBottom - cellHeight;
+  
   this.swipeTableTop();
   sleep(this.Const.during);
+  if (ignoreCount > 0) {
+    this.swipeTableDown(ignoreCount);
+  }
 
+  var enableSlideTime = 0;
   for(var i = 0; i < slideTimes; i++) {
     var img = this.screenshot();
     var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
     var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
     var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
+    var btnEnable4 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4Y}));
+    var btnEnable2B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2YBottom}));
+    var btnEnable3B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3YBottom}));
+    var btnEnable4B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4YBottom}));
+    var btnEnable5B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn5YBottom}));
     releaseImage(img);
-    log(btnEnable1, btnEnable2, btnEnable3);
-    if (btnEnable1) { this.tapTableMaxValue(rightBtn1Y); }
-    if (btnEnable2) { this.tapTableMaxValue(rightBtn2Y); }
-    if (btnEnable3) { this.tapTableMaxValue(rightBtn3Y); }
+    // log(btnEnable1, btnEnable2, btnEnable3);
+    if (btnEnable1) { this.tapTableMaxValue(rightBtn1Y, clickIcon); }
+    if (btnEnable2) { this.tapTableMaxValue(rightBtn2Y, clickIcon); }
+    if (btnEnable3) { this.tapTableMaxValue(rightBtn3Y, clickIcon); }
+    if (btnEnable4) { this.tapTableMaxValue(rightBtn4Y, clickIcon); }
+    if (btnEnable2B) { this.tapTableMaxValue(rightBtn2YBottom, clickIcon); }
+    if (btnEnable3B) { this.tapTableMaxValue(rightBtn3YBottom, clickIcon); }
+    if (btnEnable4B) { this.tapTableMaxValue(rightBtn4YBottom, clickIcon); }
+    if (btnEnable5B) { this.tapTableMaxValue(rightBtn5YBottom, clickIcon); }
+
+    if (btnEnable1 || btnEnable2 || btnEnable3 || btnEnable4 || btnEnable2B || btnEnable3B || btnEnable4B || btnEnable5B) {enableSlideTime = i}
     if (i >= slideTimes - 2) {
       this.swipeTableDown(1);
     } else {
@@ -339,6 +370,7 @@ EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes) {
     }
     sleep(this.Const.during);
   }
+  return enableSlideTime;
 }
 
 // game controller
@@ -348,9 +380,6 @@ EndlessFrontier.prototype.taskDoubleSpeed = function() {
   this.tap(this.ButtonMenuStore);
   this.tap(this.ButtonMenuStoreProp);
   this.tap(this.ButtonDoubleSpeed);
-  this.goBack();
-  this.goBack();
-  this.tap(this.ButtonMenuTask);
 };
 
 EndlessFrontier.prototype.taskTreasure = function() {
@@ -365,7 +394,7 @@ EndlessFrontier.prototype.taskTreasure = function() {
     log('[寶箱] 是鑽石寶箱阿！！！');
     this.tap(this.ButtonDiamondSeeAd);
     sleep(2000);
-    goToGame();
+    this.goToGame();
   }
 };
 
@@ -373,14 +402,19 @@ EndlessFrontier.prototype.taskArmy = function() {
   log('檢查自動升級士兵');
   this.goToGame();
   this.tap(this.ButtonMenuArmy);
-  this.checkAndClickTable(this.ButtonTableRightOther, 5);
+  this.checkAndClickTable(this.ButtonTableRightOther, 5, 0, false);
 }
 
 EndlessFrontier.prototype.taskTask = function() {
-  log('檢查自動做任務');
+  log('檢查自動做任務' + ',跳過' + this.Status.taskTaskIgnore);
   this.goToGame();
   this.tap(this.ButtonMenuTask);
-  this.checkAndClickTable(this.ButtonTableRightTask, 14);
+  var slideTimes = 15 - Math.floor(this.Status.taskTaskIgnore / 2);
+  var maxClickSlide = this.checkAndClickTable(this.ButtonTableRightTask, slideTimes, this.Status.taskTaskIgnore, true);
+  this.Status.taskTaskIgnore = Math.max(20, (maxClickSlide + Math.floor(this.Status.taskTaskIgnore / 2)) * 2);
+  if (maxClickSlide == 0) {
+    this.Status.taskTaskIgnore = Math.floor(this.Status.taskTaskIgnore * 2 / 3);
+  }
 }
 
 EndlessFrontier.prototype.taskWar = function() {
@@ -417,6 +451,7 @@ EndlessFrontier.prototype.taskWar = function() {
   }
   
   this.tap({x: rightBtnX, y: rightBtnYs[warIdx]});
+  sleep(2000);
 
   var img = this.screenshot();
   var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
@@ -424,7 +459,10 @@ EndlessFrontier.prototype.taskWar = function() {
   var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
   releaseImage(img);
 
-  if (btnEnable3) {
+  if (!btnEnable1 && !btnEnable2 && !btnEnable3) {
+    this.goBack();
+    return;
+  } else if (btnEnable3) {
     this.tap({x: rightBtnX, y: rightBtn2Y});
   } else {
     this.tap({x: rightBtnX, y: rightBtn1Y});
@@ -433,4 +471,23 @@ EndlessFrontier.prototype.taskWar = function() {
   this.goToGame();
 }
 
+EndlessFrontier.prototype.taskRevolution = function() {
+  log('===轉世===');
+  this.goToGame();
+  this.tap(this.ButtonMenuArmy);
+
+  this.tap(this.ButtonMenuArmyRevolution);
+  this.tap(this.ButtonRevolution);
+  this.tap(this.ButtonRevolutionTeam);
+  sleep(2000);
+  this.goToGame();
+}
+
 var ef = new EndlessFrontier();
+
+gTaskController.newTask('taskTreasure', ef.taskTreasure.bind(ef), 300, 0);
+gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);
+gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);
+gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);
+gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 15 * 60 * 1000, 0);
+gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), 40 * 60 * 1000, 0, true);
