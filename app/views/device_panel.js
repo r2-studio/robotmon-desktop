@@ -210,7 +210,7 @@ class DevicePanel extends DeviceConnection {
   }
 
   runTaskController() {
-    this.runScriptByFilename('tasks_controller.js');
+    this.runScriptByFilename('tasks.js');
   }
 
   stopTaskController() {
