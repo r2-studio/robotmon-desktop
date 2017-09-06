@@ -81,9 +81,11 @@ function EndlessFrontier() {
     ButtonMenuArmyRevolution: {x: 725, y: 920},
     ButtonRevolutionTeam: {x: 500, y: 1180},
     ButtonMenuStoreProp: {x: 700, y: 750},
-    ButtonTaskIcon: {x: 100, y: 1070},
-    ButtonTaskMoney: {x: 1040, y: 1070},
-    ButtonTaskMax: {x: 420, y: 1060},
+    ButtonTableRightTask: {x: 1040, y: 1100},
+    ButtonTableRightOther: {x: 1040, y: 1070},
+    ButtonTaskIcon: {x: 100, y: 1100},
+    ButtonTaskMoney: {x: 1040, y: 1100},
+    ButtonTaskMax: {x: 420, y: 1100},
     ButtonAutoTask: {x: 1040, y: 900},
     ButtonUnopenedTask: {x: 630, y: 1120},
     ButtonTooLongBack: {x: 650, y: 1450},
@@ -187,6 +189,8 @@ EndlessFrontier.prototype.initButtons = function() {
   this.ButtonMenuArmyRevolution = this.getRealWHRatio(this.Const.ButtonMenuArmyRevolution);
   this.ButtonRevolutionTeam = this.getRealWHRatio(this.Const.ButtonRevolutionTeam);
   this.ButtonMenuStoreProp = this.getRealWHRatio(this.Const.ButtonMenuStoreProp);
+  this.ButtonTableRightTask = this.getRealWHRatio(this.Const.ButtonTableRightTask);
+  this.ButtonTableRightOther = this.getRealWHRatio(this.Const.ButtonTableRightOther);
   this.ButtonTaskIcon = this.getRealWHRatio(this.Const.ButtonTaskIcon);
   this.ButtonTaskMoney = this.getRealWHRatio(this.Const.ButtonTaskMoney);
   this.ButtonTaskMax = this.getRealWHRatio(this.Const.ButtonTaskMax);
@@ -224,30 +228,35 @@ EndlessFrontier.prototype.swipeTableTop = function() {
   for (var i = 0; i < 2; i++) {
     tapDown(x, topY, 50);
     for (var j = 0; j <= 2; j++) {
-      moveTo(x, topY + deltaY * j * 3, during);
-      moveTo(x, topY + deltaY * j * 3, during);
+      moveTo(x, topY + deltaY * j * 5, during);
+      moveTo(x, topY + deltaY * j * 5, during);
     }
-    tapUp(x, topY + deltaY * j * 3, 10);
+    tapUp(x, topY + deltaY * j * 5, 10);
     sleep(100);
   }
 }
 
-EndlessFrontier.prototype.swipeTableUp = function(number) {
-  var during = 20;
+EndlessFrontier.prototype.swipeTable = function(number, m) {
+  var during = 60;
   var cellHeight = this.TableCellHeight;
   var x = Math.floor(this.ScreenInfo.gameWidth / 2);
   var topY = Math.floor(this.ButtonTableTop.y + cellHeight);
-  var deltaY = Math.floor(cellHeight / 5);
-  for (var i = 0; i < number; i++) {
-    tapDown(x, topY, during);
-    for (var j = 0; j <= 6; j++) {
-      moveTo(x, topY + deltaY * j + 1, during);
-      moveTo(x, topY + deltaY * j + 1, during);
-    }
-    sleep(60);
-    tapUp(x, topY + deltaY * 6, 1);
-    sleep(60);
+  var deltaY = m * cellHeight / 5 * number;
+  tapDown(x, topY, during);
+  for (var j = 0; j <= 6; j++) {
+    moveTo(x, topY + deltaY * j, during);
+    moveTo(x, topY + deltaY * j, during);
   }
+  sleep(during);
+  tapUp(x, topY + deltaY * 6, during);
+}
+
+EndlessFrontier.prototype.swipeTableUp = function(number) {
+  this.swipeTable(number, 1);
+}
+
+EndlessFrontier.prototype.swipeTableDown = function(number) {
+  this.swipeTable(number, -1);
 }
 
 EndlessFrontier.prototype.goToGame = function(during) {
@@ -274,6 +283,46 @@ EndlessFrontier.prototype.goToGame = function(during) {
 
 EndlessFrontier.prototype.screenshot = function() {
   return getScreenshotModify(0, 0, 0, 0, Config.resizeWidth, Config.resizeHeight);
+}
+
+EndlessFrontier.prototype.tapTableMaxValue = function(y) {
+  for (var i = 0; i < 4; i++) {
+    this.tap({x: this.ButtonTableRightOther.x, y: y}, 100);
+  }
+  var img = this.screenshot();
+  var btnEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: this.ButtonTableRightOther.x, y: y}));
+  releaseImage(img);
+  if (btnEnable) {
+    this.tap({x: this.ButtonTaskMax.x, y: y}, 100);
+  }
+}
+
+EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes) {
+  var cellHeight = this.TableCellHeight;
+  var rightBtnX = xy.x;
+  var rightBtn1Y = xy.y;
+  var rightBtn2Y = rightBtn1Y + cellHeight;
+  var rightBtn3Y = rightBtn2Y + cellHeight;
+  this.swipeTableTop();
+  sleep(this.Const.during);
+
+  for(var i = 0; i < slideTimes; i++) {
+    var img = this.screenshot();
+    var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
+    var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
+    var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
+    releaseImage(img);
+    log(btnEnable1, btnEnable2, btnEnable3);
+    if (btnEnable1) { this.tapTableMaxValue(rightBtn1Y); }
+    if (btnEnable2) { this.tapTableMaxValue(rightBtn2Y); }
+    if (btnEnable3) { this.tapTableMaxValue(rightBtn3Y); }
+    if (i >= slideTimes - 2) {
+      this.swipeTableDown(1);
+    } else {
+      this.swipeTableDown(2);
+    }
+    sleep(this.Const.during);
+  }
 }
 
 // game controller
@@ -304,27 +353,18 @@ EndlessFrontier.prototype.taskTreasure = function() {
   }
 };
 
+EndlessFrontier.prototype.taskArmy = function() {
+  log('檢查自動升級士兵');
+  this.goToGame();
+  this.tap(this.ButtonMenuArmy);
+  this.checkAndClickTable(this.ButtonTableRightOther, 5);
+}
+
 EndlessFrontier.prototype.taskTask = function() {
-  // log('檢查自動做任務');
-  
-  // this.goToGame();
-  
-  // this.tap(this.ButtonMenuTask);
-  this.swipeTableUp(5);
-  // tapDown(555, 1700, 300);
-  // moveTo(555, 1650, 300);
-  // moveTo(555, 1600, 300);
-  // moveTo(555, 1550, 300);
-  // moveTo(555, 1500, 300);
-  // moveTo(555, 1450, 300);
-  // moveTo(555, 1412, 300);
-  // moveTo(555, 1312, 300);
-  // moveTo(555, 1212, 300);
-  // moveTo(555, 1093, 300);
-  // tapUp(555, 1093, 300);
-  // this.swipe({x: 555, y: 1712}, {x: 555, y: 1093});
-  // log('swipe');
-  // swipe(555, 1712, 555, 1093, 1000);
+  log('檢查自動做任務');
+  this.goToGame();
+  this.tap(this.ButtonMenuTask);
+  this.checkAndClickTable(this.ButtonTableRightTask, 14);
 }
 
 new EndlessFrontier();
