@@ -75,7 +75,9 @@ function EndlessFrontier() {
     menuHeight: 136,
     tableCellHeight: 186,
 
+    MenuColor: {r: 32, g:32, b: 32, a: 0},
     ButtonEnableColor: {r: 1, g:1, b: 1, a: 0},
+    ButtonRedCancelColor: {r: 32, g:54, b: 179, a: 0},
 
     InGameCheck: {x: 340, y: 820, color: {r: 1, g:1, b: 1, a: 0}},
     ButtonMenuArmyRevolution: {x: 725, y: 920},
@@ -119,6 +121,9 @@ function EndlessFrontier() {
   };
   // from 1776 * 1080 screen
   this.Buttons = {};
+  this.Status = {
+    taskWarIdx: 4,
+  };
   this.init();
 }
 
@@ -140,7 +145,6 @@ EndlessFrontier.prototype.init = function() {
   this.ScreenInfo.offsetX = (Config.screenWidth - this.ScreenInfo.gameWidth) / 2;
 
   this.initButtons();
-  this.taskTask();
   console.log(JSON.stringify(this.ScreenInfo));
 };
 
@@ -168,6 +172,10 @@ EndlessFrontier.prototype.initButtons = function() {
   var menuY = this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight) / 2;
   var menuW = this.ScreenInfo.gameWidth / 6;
   var menuOffset = menuW / 2;
+
+  this.menuY = menuY;
+  this.menuW = menuW;
+
   this.ButtonMenuTask = {x: (menuW * 1 - menuOffset), y: menuY};
   this.ButtonMenuArmy = {x: (menuW * 2 - menuOffset), y: menuY};
   this.ButtonMenuWar = {x: (menuW * 3 - menuOffset), y: menuY};
@@ -179,11 +187,6 @@ EndlessFrontier.prototype.initButtons = function() {
   this.ButtonTableTop = this.getRealWHRatio(this.Const.ButtonTableTop);
   this.ButtonTableBottom = this.getRealWHRatioBottom(this.Const.ButtonTableBottom);
   this.TableCellHeight = this.getRealHeightRatio(this.Const.tableCellHeight);
-
-  // from bottom
-  this.ButtonRevolution = {x: menuW * 5, y: menuY};
-  this.ButtonRevolutionDone = {x: menuW * 3, y: menuY};
-  this.ButtonArmyInfoCancel = this.getRealWHRatioBottom(this.Const.ButtonArmyInfoCancel);
 
   // from top
   this.ButtonMenuArmyRevolution = this.getRealWHRatio(this.Const.ButtonMenuArmyRevolution);
@@ -206,6 +209,17 @@ EndlessFrontier.prototype.initButtons = function() {
   this.ButtonExitGame = this.getRealWHRatio(this.Const.ButtonExitGame);
   this.Treasure = this.getRealWHRatio(this.Const.Treasure);
   this.InGameCheck = this.getRealWHRatio(this.Const.InGameCheck);
+
+  // from bottom
+  var cellHeight = this.TableCellHeight;
+
+  this.ButtonRevolution = {x: menuW * 5, y: menuY};
+  this.ButtonRevolutionDone = {x: menuW * 3, y: menuY};
+  this.ButtonArmyInfoCancel = this.getRealWHRatioBottom(this.Const.ButtonArmyInfoCancel);
+  this.ButtonTableRightOtherBottom = {
+    x: this.ButtonTableRightTask.x,
+    y: this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight) - cellHeight / 2,
+  };
   
 };
 
@@ -268,8 +282,10 @@ EndlessFrontier.prototype.goToGame = function(during) {
     log('檢查是否在遊戲中');
     var img = this.screenshot();
     var color = getColor(img, this.InGameCheck);
+    var isMenu1 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 0.90, y: this.menuY }));
+    var isMenu2 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 2.90, y: this.menuY }));
     releaseImage(img);
-    if (isSameColor(this.Const.InGameCheck.color, color)) {
+    if ((isMenu1 || isMenu2) && isSameColor(this.Const.InGameCheck.color, color)) {
       return;
     }
     if (Date.now() - start > during) {
@@ -277,7 +293,7 @@ EndlessFrontier.prototype.goToGame = function(during) {
     }
     this.goBack();
     this.tap(this.ButtonMenuTask);
-    sleep(2000);
+    sleep(3000);
   }
 }
 
@@ -367,7 +383,54 @@ EndlessFrontier.prototype.taskTask = function() {
   this.checkAndClickTable(this.ButtonTableRightTask, 14);
 }
 
-new EndlessFrontier();
+EndlessFrontier.prototype.taskWar = function() {
+  log('檢查自動打素材');
+  this.goToGame();
+  this.tap(this.ButtonMenuWar);
 
+  var warIdx = this.Status.taskWarIdx % 5;
+  var cellHeight = this.TableCellHeight;
+  var rightBtnX = this.ButtonTableRightOther.x;
 
+  var rightBtn1Y = this.ButtonTableRightOther.y;
+  var rightBtn2Y = rightBtn1Y + cellHeight;
+  var rightBtn3Y = rightBtn2Y + cellHeight;
+  var rightBtn4YBottom = this.ButtonTableRightOtherBottom.y - cellHeight;
+  var rightBtn5YBottom = this.ButtonTableRightOtherBottom.y;
 
+  var rightBtnYs = [
+    rightBtn1Y,
+    rightBtn2Y,
+    rightBtn3Y,
+    rightBtn4YBottom,
+    rightBtn5YBottom,
+  ];
+
+  this.Status.taskWarIdx++;
+
+  this.swipeTableTop();
+  sleep(this.Const.during);
+
+  if (warIdx > 2) {
+    this.swipeTableDown(1);
+    sleep(this.Const.during);
+  }
+  
+  this.tap({x: rightBtnX, y: rightBtnYs[warIdx]});
+
+  var img = this.screenshot();
+  var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
+  var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
+  var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
+  releaseImage(img);
+
+  if (btnEnable3) {
+    this.tap({x: rightBtnX, y: rightBtn2Y});
+  } else {
+    this.tap({x: rightBtnX, y: rightBtn1Y});
+  }
+  sleep(3000);
+  this.goToGame();
+}
+
+var ef = new EndlessFrontier();
