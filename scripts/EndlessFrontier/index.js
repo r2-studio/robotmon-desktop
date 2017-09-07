@@ -89,10 +89,13 @@ function EndlessFrontier() {
     ButtonTaskMoney: {x: 1040, y: 1100},
     ButtonTaskMax: {x: 420, y: 1100},
     ButtonAutoTask: {x: 1040, y: 900},
+    ButtonBuyArmy: {x: 760, y: 900},
     ButtonUnopenedTask: {x: 630, y: 1120},
     ButtonTooLongBack: {x: 650, y: 1450},
     ButtonDiamondFree: {x: 650, y: 1250},
     ButtonDiamondSeeAd: {x: 460, y: 1130},
+    ButtonBuyArmyOK: {x: 460, y: 1220},
+    ButtonBuyArmyBuy: {x: 460, y: 1320},
     ButtonDiamondCancel: {x: 780, y: 1130},
     ButtonDoubleSpeed: {x: 1010, y: 1093},
     ButtonTaskInfoCancel: {x: 620, y: 1410},
@@ -122,7 +125,7 @@ function EndlessFrontier() {
   // from 1776 * 1080 screen
   this.Buttons = {};
   this.Status = {
-    taskTaskIgnore: 0,
+    taskTaskIgnore: 20,
     taskWarIdx: 0,
   };
   this.init();
@@ -199,10 +202,13 @@ EndlessFrontier.prototype.initButtons = function() {
   this.ButtonTaskMoney = this.getRealWHRatio(this.Const.ButtonTaskMoney);
   this.ButtonTaskMax = this.getRealWHRatio(this.Const.ButtonTaskMax);
   this.ButtonAutoTask = this.getRealWHRatio(this.Const.ButtonAutoTask);
+  this.ButtonBuyArmy = this.getRealWHRatio(this.Const.ButtonBuyArmy);
   this.ButtonUnopenedTask = this.getRealWHRatio(this.Const.ButtonUnopenedTask);
   this.ButtonTooLongBack = this.getRealWHRatio(this.Const.ButtonTooLongBack);
   this.ButtonDiamondFree = this.getRealWHRatio(this.Const.ButtonDiamondFree);
   this.ButtonDiamondSeeAd = this.getRealWHRatio(this.Const.ButtonDiamondSeeAd);
+  this.ButtonBuyArmyOK = this.getRealWHRatio(this.Const.ButtonBuyArmyOK);
+  this.ButtonBuyArmyBuy = this.getRealWHRatio(this.Const.ButtonBuyArmyBuy);
   this.ButtonDiamondCancel = this.getRealWHRatio(this.Const.ButtonDiamondCancel);
   this.ButtonDoubleSpeed = this.getRealWHRatio(this.Const.ButtonDoubleSpeed);
   this.ButtonTaskInfoCancel = this.getRealWHRatio(this.Const.ButtonTaskInfoCancel);
@@ -321,58 +327,6 @@ EndlessFrontier.prototype.tapTableMaxValue = function(y, clickIcon) {
   }
 }
 
-// EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes, ignoreCount, clickIcon) {
-//   var cellHeight = this.TableCellHeight;
-//   var rightBtnX = xy.x;
-//   var rightBtn1Y = xy.y;
-//   var rightBtn2Y = rightBtn1Y + cellHeight;
-//   var rightBtn3Y = rightBtn2Y + cellHeight;
-//   var rightBtn4Y = rightBtn3Y + cellHeight;
-  
-//   var rightBtn5YBottom = this.ButtonTableRightOtherBottom.y;
-//   var rightBtn4YBottom = rightBtn5YBottom - cellHeight;
-//   var rightBtn3YBottom = rightBtn4YBottom - cellHeight;
-//   var rightBtn2YBottom = rightBtn3YBottom - cellHeight;
-  
-//   this.swipeTableTop();
-//   sleep(this.Const.during);
-//   if (ignoreCount > 0) {
-//     this.swipeTableDown(ignoreCount);
-//   }
-
-//   var enableSlideTime = 0;
-//   for(var i = 0; i < slideTimes; i++) {
-//     var img = this.screenshot();
-//     var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
-//     var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
-//     var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
-//     var btnEnable4 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4Y}));
-//     var btnEnable2B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2YBottom}));
-//     var btnEnable3B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3YBottom}));
-//     var btnEnable4B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4YBottom}));
-//     var btnEnable5B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn5YBottom}));
-//     releaseImage(img);
-//     // log(btnEnable1, btnEnable2, btnEnable3);
-//     if (btnEnable1) { this.tapTableMaxValue(rightBtn1Y, clickIcon); }
-//     if (btnEnable2) { this.tapTableMaxValue(rightBtn2Y, clickIcon); }
-//     if (btnEnable3) { this.tapTableMaxValue(rightBtn3Y, clickIcon); }
-//     if (btnEnable4) { this.tapTableMaxValue(rightBtn4Y, clickIcon); }
-//     if (btnEnable2B) { this.tapTableMaxValue(rightBtn2YBottom, clickIcon); }
-//     if (btnEnable3B) { this.tapTableMaxValue(rightBtn3YBottom, clickIcon); }
-//     if (btnEnable4B) { this.tapTableMaxValue(rightBtn4YBottom, clickIcon); }
-//     if (btnEnable5B) { this.tapTableMaxValue(rightBtn5YBottom, clickIcon); }
-
-//     if (btnEnable1 || btnEnable2 || btnEnable3 || btnEnable4 || btnEnable2B || btnEnable3B || btnEnable4B || btnEnable5B) {enableSlideTime = i}
-//     if (i >= slideTimes - 2) {
-//       this.swipeTableDown(1);
-//     } else {
-//       this.swipeTableDown(2);
-//     }
-//     sleep(this.Const.during);
-//   }
-//   return enableSlideTime;
-// }
-
 EndlessFrontier.prototype.checkEnabledTableButtons = function() {
   var cellHeight = this.TableCellHeight;
   var x = this.ButtonTableRightOther.x;
@@ -388,7 +342,7 @@ EndlessFrontier.prototype.checkEnabledTableButtons = function() {
     }
   }
   releaseImage(img);
-  log('enableButtons', JSON.stringify(enableButtons));
+  // log('enableButtons', JSON.stringify(enableButtons));
   return enableButtons;
 }
 
@@ -464,9 +418,11 @@ EndlessFrontier.prototype.taskTask = function() {
     this.swipeTableTop();
     sleep(this.Const.during);
     this.Status.taskTaskIgnore = Math.floor(this.Status.taskTaskIgnore * 2 / 3);
+    this.Status.taskTaskIgnore += this.checkAndClickTable(this.Status.taskTaskIgnore, 28 - 2, true);
+  } else {
+    var count = 28 - 2 - this.Status.taskTaskIgnore;
+    this.Status.taskTaskIgnore += this.checkAndClickTable(0, count, true);
   }
-  log('this.Status.taskTaskIgnore', this.Status.taskTaskIgnore);
-  this.Status.taskTaskIgnore += this.checkAndClickTable(this.Status.taskTaskIgnore, 28 - 2, true);
   this.Status.taskTaskIgnore = Math.max(20, this.Status.taskTaskIgnore);
 }
 
@@ -536,11 +492,37 @@ EndlessFrontier.prototype.taskRevolution = function() {
   this.goToGame();
 }
 
+EndlessFrontier.prototype.taskBuyArmy = function() {
+  log('檢查自動購買士兵');
+  this.goToGame();
+  this.tap(this.ButtonMenuArmy);
+  this.tap(this.ButtonAutoTask);
+  var enableButtons = this.checkEnabledTableButtons();
+  if (enableButtons.length <= 1) {
+    this.tap(this.ButtonBuyArmy);
+    sleep(this.Const.during);
+    var img = this.screenshot();
+    var isEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, this.ButtonBuyArmyOK));
+    releaseImage(img);
+    if (isEnable) {
+      this.goBack();
+      return;
+    }
+  }
+  enableButtons = this.checkEnabledTableButtons();
+  for (var i = 0; i < 4 && i < enableButtons.length - 1; i++) {
+    this.tap(enableButtons[i]);
+    this.tap(this.ButtonBuyArmyBuy);
+    sleep(1000);
+  }
+}
+
 var ef = new EndlessFrontier();
 
 gTaskController.newTask('taskTreasure', ef.taskTreasure.bind(ef), 300, 0);
 gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);
 gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);
 gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);
-gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 15 * 60 * 1000, 0);
+gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);
+gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 21 * 60 * 1000, 0);
 gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), 40 * 60 * 1000, 0, true);
