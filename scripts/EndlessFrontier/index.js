@@ -25,7 +25,7 @@ function log () {
 
 function isSameColor(c1, c2, diff) {
   if (diff == undefined) {
-    diff = 40;
+    diff = 20;
   }
   if (Math.abs(c1.r - c2.r) > diff) {
     return false;
@@ -186,7 +186,7 @@ EndlessFrontier.prototype.initButtons = function() {
 
   // table size
   this.ButtonTableTop = this.getRealWHRatio(this.Const.ButtonTableTop);
-  this.ButtonTableBottom = this.getRealWHRatioBottom(this.Const.ButtonTableBottom);
+  this.ButtonTableBottom = {x: this.ButtonTableTop.x, y: this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight)};
   this.TableCellHeight = this.getRealHeightRatio(this.Const.tableCellHeight);
 
   // from top
@@ -311,7 +311,7 @@ EndlessFrontier.prototype.tapTableMaxValue = function(y, clickIcon) {
     this.tap({x: this.ButtonTableRightOther.x, y: y}, 100);
   }
   var img = this.screenshot();
-  var btnEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: this.ButtonTableRightOther.x, y: y}));
+  var btnEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: this.ButtonTaskMax.x, y: y}));
   releaseImage(img);
   if (btnEnable) {
     this.tap({x: this.ButtonTaskMax.x, y: y}, 100);
@@ -321,56 +321,98 @@ EndlessFrontier.prototype.tapTableMaxValue = function(y, clickIcon) {
   }
 }
 
-EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes, ignoreCount, clickIcon) {
+// EndlessFrontier.prototype.checkAndClickTable = function(xy, slideTimes, ignoreCount, clickIcon) {
+//   var cellHeight = this.TableCellHeight;
+//   var rightBtnX = xy.x;
+//   var rightBtn1Y = xy.y;
+//   var rightBtn2Y = rightBtn1Y + cellHeight;
+//   var rightBtn3Y = rightBtn2Y + cellHeight;
+//   var rightBtn4Y = rightBtn3Y + cellHeight;
+  
+//   var rightBtn5YBottom = this.ButtonTableRightOtherBottom.y;
+//   var rightBtn4YBottom = rightBtn5YBottom - cellHeight;
+//   var rightBtn3YBottom = rightBtn4YBottom - cellHeight;
+//   var rightBtn2YBottom = rightBtn3YBottom - cellHeight;
+  
+//   this.swipeTableTop();
+//   sleep(this.Const.during);
+//   if (ignoreCount > 0) {
+//     this.swipeTableDown(ignoreCount);
+//   }
+
+//   var enableSlideTime = 0;
+//   for(var i = 0; i < slideTimes; i++) {
+//     var img = this.screenshot();
+//     var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
+//     var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
+//     var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
+//     var btnEnable4 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4Y}));
+//     var btnEnable2B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2YBottom}));
+//     var btnEnable3B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3YBottom}));
+//     var btnEnable4B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4YBottom}));
+//     var btnEnable5B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn5YBottom}));
+//     releaseImage(img);
+//     // log(btnEnable1, btnEnable2, btnEnable3);
+//     if (btnEnable1) { this.tapTableMaxValue(rightBtn1Y, clickIcon); }
+//     if (btnEnable2) { this.tapTableMaxValue(rightBtn2Y, clickIcon); }
+//     if (btnEnable3) { this.tapTableMaxValue(rightBtn3Y, clickIcon); }
+//     if (btnEnable4) { this.tapTableMaxValue(rightBtn4Y, clickIcon); }
+//     if (btnEnable2B) { this.tapTableMaxValue(rightBtn2YBottom, clickIcon); }
+//     if (btnEnable3B) { this.tapTableMaxValue(rightBtn3YBottom, clickIcon); }
+//     if (btnEnable4B) { this.tapTableMaxValue(rightBtn4YBottom, clickIcon); }
+//     if (btnEnable5B) { this.tapTableMaxValue(rightBtn5YBottom, clickIcon); }
+
+//     if (btnEnable1 || btnEnable2 || btnEnable3 || btnEnable4 || btnEnable2B || btnEnable3B || btnEnable4B || btnEnable5B) {enableSlideTime = i}
+//     if (i >= slideTimes - 2) {
+//       this.swipeTableDown(1);
+//     } else {
+//       this.swipeTableDown(2);
+//     }
+//     sleep(this.Const.during);
+//   }
+//   return enableSlideTime;
+// }
+
+EndlessFrontier.prototype.checkEnabledTableButtons = function() {
   var cellHeight = this.TableCellHeight;
-  var rightBtnX = xy.x;
-  var rightBtn1Y = xy.y;
-  var rightBtn2Y = rightBtn1Y + cellHeight;
-  var rightBtn3Y = rightBtn2Y + cellHeight;
-  var rightBtn4Y = rightBtn3Y + cellHeight;
-  
-  var rightBtn5YBottom = this.ButtonTableRightOtherBottom.y;
-  var rightBtn4YBottom = rightBtn5YBottom - cellHeight;
-  var rightBtn3YBottom = rightBtn4YBottom - cellHeight;
-  var rightBtn2YBottom = rightBtn3YBottom - cellHeight;
-  
-  this.swipeTableTop();
-  sleep(this.Const.during);
+  var x = this.ButtonTableRightOther.x;
+  var enableButtons = [];
+  var initY = this.ButtonTableTop.y + cellHeight / 4;
+  var img = this.screenshot();
+  for (var y = initY; y < this.ButtonTableBottom.y; y += cellHeight / 4) {
+    var isEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: x, y: y}));
+    var isEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: x, y: y + cellHeight / 8}));
+    if (isEnable1 && isEnable2) {
+      enableButtons.push({x: x, y: y});
+      y += cellHeight / 4;
+    }
+  }
+  releaseImage(img);
+  log('enableButtons', JSON.stringify(enableButtons));
+  return enableButtons;
+}
+
+EndlessFrontier.prototype.checkAndClickTable = function(ignoreCount, maxCount, clickIcon) {
+  var cellHeight = this.TableCellHeight;
   if (ignoreCount > 0) {
     this.swipeTableDown(ignoreCount);
   }
-
-  var enableSlideTime = 0;
+  var slideTimes = Math.floor((maxCount - ignoreCount) / 2);
+  var maxSlideTimes = 0;
   for(var i = 0; i < slideTimes; i++) {
-    var img = this.screenshot();
-    var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
-    var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
-    var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
-    var btnEnable4 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4Y}));
-    var btnEnable2B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2YBottom}));
-    var btnEnable3B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3YBottom}));
-    var btnEnable4B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn4YBottom}));
-    var btnEnable5B = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn5YBottom}));
-    releaseImage(img);
-    // log(btnEnable1, btnEnable2, btnEnable3);
-    if (btnEnable1) { this.tapTableMaxValue(rightBtn1Y, clickIcon); }
-    if (btnEnable2) { this.tapTableMaxValue(rightBtn2Y, clickIcon); }
-    if (btnEnable3) { this.tapTableMaxValue(rightBtn3Y, clickIcon); }
-    if (btnEnable4) { this.tapTableMaxValue(rightBtn4Y, clickIcon); }
-    if (btnEnable2B) { this.tapTableMaxValue(rightBtn2YBottom, clickIcon); }
-    if (btnEnable3B) { this.tapTableMaxValue(rightBtn3YBottom, clickIcon); }
-    if (btnEnable4B) { this.tapTableMaxValue(rightBtn4YBottom, clickIcon); }
-    if (btnEnable5B) { this.tapTableMaxValue(rightBtn5YBottom, clickIcon); }
-
-    if (btnEnable1 || btnEnable2 || btnEnable3 || btnEnable4 || btnEnable2B || btnEnable3B || btnEnable4B || btnEnable5B) {enableSlideTime = i}
-    if (i >= slideTimes - 2) {
-      this.swipeTableDown(1);
-    } else {
-      this.swipeTableDown(2);
+    var enableButtons = this.checkEnabledTableButtons();
+    for (var j in enableButtons) {
+      this.tapTableMaxValue(enableButtons[j].y, clickIcon);
     }
+    if (enableButtons.length == 0 && maxSlideTimes != 0) {
+      break;
+    } else {
+      maxSlideTimes = i;
+    }
+    this.swipeTableDown(2);
     sleep(this.Const.during);
   }
-  return enableSlideTime;
+  return maxSlideTimes * 2;
 }
 
 // game controller
@@ -402,19 +444,30 @@ EndlessFrontier.prototype.taskArmy = function() {
   log('檢查自動升級士兵');
   this.goToGame();
   this.tap(this.ButtonMenuArmy);
-  this.checkAndClickTable(this.ButtonTableRightOther, 5, 0, false);
+  this.swipeTableTop();
+  sleep(this.Const.during);
+  
+  var enableButtons = this.checkEnabledTableButtons();
+  if (enableButtons.length == 0) {
+    return;
+  }
+  this.checkAndClickTable(0, 12 - 2, false);
 }
 
 EndlessFrontier.prototype.taskTask = function() {
   log('檢查自動做任務' + ',跳過' + this.Status.taskTaskIgnore);
   this.goToGame();
   this.tap(this.ButtonMenuTask);
-  var slideTimes = 15 - Math.floor(this.Status.taskTaskIgnore / 2);
-  var maxClickSlide = this.checkAndClickTable(this.ButtonTableRightTask, slideTimes, this.Status.taskTaskIgnore, true);
-  this.Status.taskTaskIgnore = Math.max(20, (maxClickSlide + Math.floor(this.Status.taskTaskIgnore / 2)) * 2);
-  if (maxClickSlide == 0) {
+
+  var enableButtons = this.checkEnabledTableButtons();
+  if (enableButtons.length == 0) {
+    this.swipeTableTop();
+    sleep(this.Const.during);
     this.Status.taskTaskIgnore = Math.floor(this.Status.taskTaskIgnore * 2 / 3);
   }
+  log('this.Status.taskTaskIgnore', this.Status.taskTaskIgnore);
+  this.Status.taskTaskIgnore += this.checkAndClickTable(this.Status.taskTaskIgnore, 28 - 2, true);
+  this.Status.taskTaskIgnore = Math.max(20, this.Status.taskTaskIgnore);
 }
 
 EndlessFrontier.prototype.taskWar = function() {
