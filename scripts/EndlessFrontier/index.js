@@ -359,8 +359,10 @@ EndlessFrontier.prototype.checkAndClickTable = function(ignoreCount, maxCount, c
     for (var j in enableButtons) {
       this.tapTableMaxValue(enableButtons[j].y, clickIcon);
     }
-    if (enableButtons.length == 0 && maxSlideTimes != 0) {
-      break;
+    if (enableButtons.length == 0) {
+      if (maxSlideTimes != 0) {
+        break;
+      }
     } else {
       maxSlideTimes = i;
     }
@@ -382,7 +384,10 @@ EndlessFrontier.prototype.taskDoubleSpeed = function() {
 EndlessFrontier.prototype.taskTreasure = function() {
   log('檢查自動開寶箱');
   this.goToGame();
-  this.tap(this.Treasure);
+  var interval = this.ScreenInfo.gameWidth / 5;
+  for (var x = interval; x < this.ScreenInfo.gameWidth; x += this.ScreenInfo.gameWidth) {
+    this.tap({x: x, y: this.Treasure.y}, 80);
+  }
   // check and watch Ad
   var img = this.screenshot();
   var color = getColor(img, this.ButtonDiamondSeeAd);
@@ -509,8 +514,9 @@ EndlessFrontier.prototype.taskBuyArmy = function() {
       this.goBack();
       return;
     }
+    enableButtons = this.checkEnabledTableButtons();
   }
-  enableButtons = this.checkEnabledTableButtons();
+  
   for (var i = 0; i < 4 && i < enableButtons.length - 2; i++) {
     this.tap(enableButtons[i]);
     this.tap(this.ButtonBuyArmyBuy);
