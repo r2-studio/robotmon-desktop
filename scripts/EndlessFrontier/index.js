@@ -90,6 +90,7 @@ function EndlessFrontier() {
     ButtonTaskMax: {x: 420, y: 1100},
     ButtonAutoTask: {x: 1040, y: 900},
     ButtonBuyArmy: {x: 760, y: 900},
+    ButtonStartBattle: {x: 925, y: 1490},
     ButtonUnopenedTask: {x: 630, y: 1120},
     ButtonTooLongBack: {x: 650, y: 1450},
     ButtonDiamondFree: {x: 650, y: 1250},
@@ -125,7 +126,7 @@ function EndlessFrontier() {
   // from 1776 * 1080 screen
   this.Buttons = {};
   this.Status = {
-    taskTaskIgnore: 20,
+    taskTaskIgnore: 0,
     taskWarIdx: 0,
   };
   this.init();
@@ -227,7 +228,7 @@ EndlessFrontier.prototype.initButtons = function() {
     x: this.ButtonTableRightTask.x,
     y: this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight) - cellHeight / 2,
   };
-  
+  this.ButtonStartBattle = this.getRealWHRatioBottom(this.Const.ButtonStartBattle);
 };
 
 EndlessFrontier.prototype.goBack = function() {keycode('BACK', this.Const.during);}
@@ -423,7 +424,7 @@ EndlessFrontier.prototype.taskTask = function() {
     var count = 28 - 2 - this.Status.taskTaskIgnore;
     this.Status.taskTaskIgnore += this.checkAndClickTable(0, count, true);
   }
-  this.Status.taskTaskIgnore = Math.max(20, this.Status.taskTaskIgnore);
+  this.Status.taskTaskIgnore = Math.min(20, this.Status.taskTaskIgnore);
 }
 
 EndlessFrontier.prototype.taskWar = function() {
@@ -510,11 +511,23 @@ EndlessFrontier.prototype.taskBuyArmy = function() {
     }
   }
   enableButtons = this.checkEnabledTableButtons();
-  for (var i = 0; i < 4 && i < enableButtons.length - 1; i++) {
+  for (var i = 0; i < 4 && i < enableButtons.length - 2; i++) {
     this.tap(enableButtons[i]);
     this.tap(this.ButtonBuyArmyBuy);
     sleep(1000);
   }
+}
+
+EndlessFrontier.prototype.taskBattle = function() {
+  log('檢查自動對戰');
+  this.goToGame();
+  this.tap(this.ButtonMenuBattle);
+  this.tap(this.ButtonTableRightOther);
+  sleep(3000); // network loading
+  this.tap(this.ButtonStartBattle);
+  this.goToGame();
+  sleep(3000); // network loading
+  this.goToGame();
 }
 
 var ef = new EndlessFrontier();
@@ -524,5 +537,6 @@ gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);
 gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);
 gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);
 gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);
-gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 21 * 60 * 1000, 0);
+gTaskController.newTask('taskBattle', ef.taskBattle.bind(ef), 30 * 60 * 1000, 0);
+gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 60 * 60 * 1000, 0);
 gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), 40 * 60 * 1000, 0, true);
