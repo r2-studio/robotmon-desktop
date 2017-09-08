@@ -1,17 +1,13 @@
+function TaskController(){this.tasks={},this.isRunning=!1,this.interval=200}TaskController.prototype.getFirstPriorityTaskName=function(){var t=null,n=Date.now();for(var s in this.tasks){var o=this.tasks[s];n-o.lastRunTime<o.interval||(null!==t?o.priority<t.priority?t=o:o.interval>t.interval?t=o:o.lastRunTime<t.lastRunTime&&(t=o):t=o)}return null===t?"":t.name},TaskController.prototype.loop=function(){for(console.log("loop start");this.isRunning;){var t=this.getFirstPriorityTaskName(),n=this.tasks[t];void 0!==n&&(n.run(),n.lastRunTime=Date.now(),0===--n.runTimes&&delete this.tasks[t]),sleep(this.interval)}this.isRunning=!1,console.log("loop stop")},TaskController.prototype.updateRunInterval=function(t){t<this.interval&&t>=50&&(this.interval=t)},TaskController.prototype.newTaskObject=function(t,n,s,o,i){return{name:t,run:n,interval:s||1e3,runTimes:o||0,priority:i,lastRunTime:0,status:0}},TaskController.prototype.newTask=function(t,n,s,o,i){void 0===i&&(i=!1);{if("function"==typeof n){var e=this.newTaskObject(t,n,s,o,0);i&&(e.lastRunTime=Date.now()),this.updateRunInterval(e.interval);var r="system_newTask_"+t,a=this.newTaskObject(r,function(){this.tasks[t]=e}.bind(this),0,1,-20);return this.tasks[r]=a,e}console.log("Error not a function",t,n)}},TaskController.prototype.removeTask=function(t){var n="system_removeTask_"+Date.now().toString(),s=this.newTaskObject(n,function(){delete this.tasks[t]}.bind(this),0,1,-20);this.tasks[n]=s},TaskController.prototype.removeAllTasks=function(){var t="system_removeAllTask_"+Date.now().toString(),n=this.newTaskObject(t,function(){for(var t in this.tasks)delete this.tasks[t]}.bind(this),0,1,-20);this.tasks[t]=n},TaskController.prototype.start=function(){this.isRunning||(this.isRunning=!0,this.loop())},TaskController.prototype.stop=function(){this.isRunning&&(this.isRunning=!1,console.log("wait loop stop..."))};
+
 var Config = {
   screenWidth: 0, // auto detect
   screenHeight: 0, // auto detect
   resizeWidth: 0,
   resizeHeight: 0,
   virtualButtonHeight: 0, // auto detect
-  // isCheckTask: false,
-  // isCheckTreasure: true,
-  // isCheckAutoTask: false,
-  // isCheckArmy: false,
-  // isCheckDoubleSpeed: true,
-  // isCheckRevolution: true,
-  // revolutionMinutes: 10,
   hasVirtualButtonBar: false,
+  isRunning: false,
 };
 
 function log () {
@@ -65,6 +61,7 @@ function toResizeXY(x, y) {
   Config.resizeWidth = Math.floor(Config.screenWidth / 3);
   Config.resizeHeight =Math.floor(Config.screenHeight / 3);
   Config.virtualButtonHeight = getVirtualButtonHeight();
+  Config.hasVirtualButtonBar = true;
 })();
 
 function EndlessFrontier() {
@@ -117,6 +114,7 @@ function EndlessFrontier() {
     // config
     during: 300,
   };
+  this.running = false;
   this.ScreenInfo = {
     ratio: 0,
     offsetX: 0,
@@ -287,8 +285,8 @@ EndlessFrontier.prototype.goToGame = function(during) {
   }
   tapUp(0, 0);
   var start = Date.now();
-  while(true) {
-    log('檢查是否在遊戲中');
+  while(Config.isRunning) {
+    // log('檢查室是否在遊戲中');
     var img = this.screenshot();
     var color = getColor(img, this.InGameCheck);
     var isMenu1 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 0.90, y: this.menuY }));
@@ -355,6 +353,7 @@ EndlessFrontier.prototype.checkAndClickTable = function(ignoreCount, maxCount, c
   var slideTimes = Math.floor((maxCount - ignoreCount) / 2);
   var maxSlideTimes = 0;
   for(var i = 0; i < slideTimes; i++) {
+    if (!Config.isRunning) {break;}
     var enableButtons = this.checkEnabledTableButtons();
     for (var j in enableButtons) {
       this.tapTableMaxValue(enableButtons[j].y, clickIcon);
@@ -535,14 +534,33 @@ EndlessFrontier.prototype.taskBattle = function() {
   sleep(3000); // network loading
   this.goToGame();
 }
+// ===================================================================================
+var ef;
 
-var ef = new EndlessFrontier();
+function stop() {
+  log('[無盡的邊疆] 停止');
+  Config.isRunning = false;
+  sleep(1000);
+  gTaskController.removeAllTasks();
+}
 
-gTaskController.newTask('taskTreasure', ef.taskTreasure.bind(ef), 300, 0);
-gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);
-gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);
-gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);
-gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);
-gTaskController.newTask('taskBattle', ef.taskBattle.bind(ef), 30 * 60 * 1000, 0);
-gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 60 * 60 * 1000, 0);
-gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), 40 * 60 * 1000, 0, true);
+function start(taskTreasure, taskTask, taskArmy, taskWar, taskDoubleSpeed, taskBattle, taskBuyArmy, taskRevolution, revolutionMinutes, virtualButton) {
+  log('[無盡的邊疆] 啟動');
+  Config.isRunning = true;
+  Config.hasVirtualButtonBar = virtualButton;
+  ef = new EndlessFrontier();
+  log(Config);
+  gTaskController = new TaskController();
+  if(taskTreasure){gTaskController.newTask('taskTreasure', ef.taskTreasure.bind(ef), 300, 0);}
+  if(taskTask){gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);}
+  if(taskArmy){gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);}
+  if(taskWar){gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);}
+  if(taskDoubleSpeed){gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);}
+  if(taskBattle){gTaskController.newTask('taskBattle', ef.taskBattle.bind(ef), 30 * 60 * 1000, 0);}
+  if(taskBuyArmy){gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 60 * 60 * 1000, 0);}
+  if(taskRevolution){gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), revolutionMinutes * 60 * 1000, 0, true);}
+  sleep(1000);
+  gTaskController.start();
+};
+// start(true,true,true,true,true,true,true,true, 60, false);
+// stop();
