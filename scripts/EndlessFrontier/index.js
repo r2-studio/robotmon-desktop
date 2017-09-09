@@ -555,7 +555,7 @@ function start(taskTreasure, taskTask, taskArmy, taskWar, taskDoubleSpeed, taskB
   if(taskTask){gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);}
   if(taskArmy){gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);}
   if(taskWar){gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);}
-  if(taskDoubleSpeed){gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);}
+  if(taskDoubleSpeed){gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 21 * 60 * 1000, 0);}
   if(taskBattle){gTaskController.newTask('taskBattle', ef.taskBattle.bind(ef), 30 * 60 * 1000, 0);}
   if(taskBuyArmy){gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 60 * 60 * 1000, 0);}
   if(taskRevolution){gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), revolutionMinutes * 60 * 1000, 0, true);}
