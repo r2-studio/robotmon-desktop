@@ -1,121 +1,22 @@
-/* eslint-disable */
+function TaskController(){this.tasks={},this.isRunning=!1,this.interval=200}TaskController.prototype.getFirstPriorityTaskName=function(){var t=null,n=Date.now();for(var s in this.tasks){var o=this.tasks[s];n-o.lastRunTime<o.interval||(null!==t?o.priority<t.priority?t=o:o.interval>t.interval?t=o:o.lastRunTime<t.lastRunTime&&(t=o):t=o)}return null===t?"":t.name},TaskController.prototype.loop=function(){for(console.log("loop start");this.isRunning;){var t=this.getFirstPriorityTaskName(),n=this.tasks[t];void 0!==n&&(n.run(),n.lastRunTime=Date.now(),0===--n.runTimes&&delete this.tasks[t]),sleep(this.interval)}this.isRunning=!1,console.log("loop stop")},TaskController.prototype.updateRunInterval=function(t){t<this.interval&&t>=50&&(this.interval=t)},TaskController.prototype.newTaskObject=function(t,n,s,o,i){return{name:t,run:n,interval:s||1e3,runTimes:o||0,priority:i,lastRunTime:0,status:0}},TaskController.prototype.newTask=function(t,n,s,o,i){void 0===i&&(i=!1);{if("function"==typeof n){var e=this.newTaskObject(t,n,s,o,0);i&&(e.lastRunTime=Date.now()),this.updateRunInterval(e.interval);var r="system_newTask_"+t,a=this.newTaskObject(r,function(){this.tasks[t]=e}.bind(this),0,1,-20);return this.tasks[r]=a,e}console.log("Error not a function",t,n)}},TaskController.prototype.removeTask=function(t){var n="system_removeTask_"+Date.now().toString(),s=this.newTaskObject(n,function(){delete this.tasks[t]}.bind(this),0,1,-20);this.tasks[n]=s},TaskController.prototype.removeAllTasks=function(){var t="system_removeAllTask_"+Date.now().toString(),n=this.newTaskObject(t,function(){for(var t in this.tasks)delete this.tasks[t]}.bind(this),0,1,-20);this.tasks[t]=n},TaskController.prototype.start=function(){this.isRunning||(this.isRunning=!0,this.loop())},TaskController.prototype.stop=function(){this.isRunning&&(this.isRunning=!1,console.log("wait loop stop..."))};
 
-function Task(name, func, times, during) {
-  this.name = name;
-  this.func = func;
-  this.times = times;
-  this.during = during;
-}
-
-Task.prototype.run = function() {
-  var loop = function (func, times, during) {
-    if (times) {
-      func();
-      times = times - 1;
-      sleep(during);
-      loop(func, times);
-    }
-  }
-  var times = this.times;
-  loop(this.func, times, this.during);
-}
-
-function TaskController(during) {
-  this.during = during;
-  this.isRunning = false;
-  this.tasks = {};
-}
-
-TaskController.prototype.loop = function() {  
-  if (this.isRunning) {
-    for (var taskName in this.tasks) {
-     this.tasks[taskName].run();
-    }
-    sleep(this.during);
-    this.loop();
-  }
-}
-
-TaskController.prototype.addTask = function(taskName, func, times, during) {
-  var task = new Task(taskName, func, times, during);
-  this.tasks[taskName] = task;
-}
-
-TaskController.prototype.removeTask = function(taskName) {
-  delete this.tasks[taskName];
-}
-
-TaskController.prototype.removeAllTasks = function() {
-  log('[任務控制器] 移除所有任務');
-  this.tasks = {};
-  this.stop();
-}
-
-TaskController.prototype.start = function() {
-  if (!this.isRunning) {
-    log('[任務控制器] 啟動');
-    this.isRunning = true;
-    this.loop(this.tasks, this.isRunning);
-  }
-}
-
-TaskController.prototype.stop = function() {
-  log('[任務控制器] 停止');
-  this.isRunning = false;
-}
-
-var gTaskController = new TaskController(500);
-
-var SCREEN_WIDTH = 0;
-var SCREEN_HEIGHT = 0;
-
-var RESIZE_WIDTH = 270;
-var RESIZE_HEIGHT = 480;
+var Config = {
+  screenWidth: 0, // auto detect
+  screenHeight: 0, // auto detect
+  resizeWidth: 0,
+  resizeHeight: 0,
+  virtualButtonHeight: 0, // auto detect
+  hasVirtualButtonBar: false,
+  isRunning: false,
+};
 
 function log() {
   sleep(100);
-  console.log.apply(console, arguments);
-}
-
-function initScreenWH() {
-  if (SCREEN_WIDTH == 0 || SCREEN_HEIGHT == 0) {
-    var size = getScreenSize();
-    SCREEN_WIDTH = size.width;
-    SCREEN_HEIGHT = size.height;
+  if (typeof arguments[0] == 'object') {
+    console.log(JSON.stringify(arguments[0]));
+  } else {
+    console.log.apply(console, arguments);
   }
-}
-// must call first
-initScreenWH();
-
-// Utils
-function toResizeXY(x, y) {
-  var rx = Math.floor(x * RESIZE_WIDTH / SCREEN_WIDTH);
-  var ry = Math.floor(y * RESIZE_HEIGHT / SCREEN_HEIGHT);
-  return [rx, ry];
-}
-
-function toResizeXYs(xy) {
-  return toResizeXY(xy[0], xy[1]);
-}
-
-function toRotationRXY(x, y) {
-  return [y, SCREEN_WIDTH - x];
-}
-
-function toRotationObjectRXY(position) {
-  return {x: position.y, y: SCREEN_WIDTH - position.x};
-}
-
-function toRotationRXYs(xy) {
-  return toRotationRXY(xy[0], xy[1]);
-}
-
-function toRotationLXY(x, y) {
-  return [SCREEN_HEIGHT - y, x];
-}
-
-function toRotationLXYs(xy) {
-  return toRotationLXY(xy[0], xy[1]);
 }
 
 function isSameColor(c1, c2, diff) {
@@ -137,538 +38,549 @@ function isSameColor(c1, c2, diff) {
   return true;
 }
 
-var DEFAULT_CHECK_CONFIG = {
-  isCheckTask: false,
-  isCheckTreasure: true,
-  isCheckAutoTask: false,
-  isCheckArmy: false,
-  isCheckDoubleSpeed: true,
-  isCheckRevolution: true,
-  revolutionMinutes: 10,
-  hasVirtualButtonBar: false,
-};
-
-var GLOBAL = {
-  lastRevolutionTime: new Date().getTime(),
-  checkConfig: DEFAULT_CHECK_CONFIG,
-};
-
-var ROW_HEIGHT = 185;
-var VIRTUAL_BUTTON_BAR_HEIGHT = 140;
-var DURING = 300;
-var DURING_DOUBLE_SPEED_SLEEP = 30 * 60 * 1000;
-var DURING_AD = 50 * 1000;
-var DURING_REVOLUTION = 60 * 1000;
-
-var ButtonBack = {x: 250, y: 1850};
-var ButtonLandscapedBack = toRotationObjectRXY(ButtonBack);
-var ButtonMenuTask = {x: 90, y: 1700};
-var ButtonMenuArmy = {x: 270, y: 1700};
-var ButtonMenuArmyRevolution = {x: 725, y: 920};
-var ButtonRevolution = {x: 930, y: 1680};
-var ButtonRevolutionTeam = {x: 500, y: 1180};
-var ButtonRevolutionDone = {x: 620, y: 1700};
-var ButtonMenuStore = {x: 1000, y: 1700};
-var ButtonMenuStoreProp = {x: 700, y: 750};
-var ButtonTaskIcon = {x: 100, y: 1070};
-var ButtonTaskMoney = {x: 1040, y: 1070};
-var ButtonTaskMax = {x: 420, y: 1060};
-var ButtonAutoTask = {x: 1040, y: 900};
-var ButtonUnopenedTask = {x: 630, y: 1120};
-var ButtonTooLongBack = {x: 650, y: 1450};
-var ButtonDiamondFree = {x: 650, y: 1250};
-var ButtonDiamondSeeAd = {x: 460, y: 1130};
-var ButtonDiamondCancel = {x: 780, y: 1130};
-var ButtonDoubleSpeed = {x: 1010, y: 1093};
-var ButtonTaskInfoCancel = {x: 620, y: 1410};
-var ButtonArmyInfoCancel = {x: 1020, y: 260};
-var ButtonNetwork = {x: 650, y: 1093};
-var ButtonExitGame = {x: 820, y: 990};
-var AdButtonBottomRightCancel = {x: 1036, y: 1736};
-var AdButtonTopRightCancel = {x: 1003, y: 83};
-var AdButtonTopLeftCancel = {x: 73, y: 73};
-var AdButtonPersonalizedOK = {x: 750, y: 820};
-var AdBackground = {x: 160, y: 1750};
-var AdInfoIconBottomLeft = {x: 20, y: 1756};
-var AdInfoIconTopRight = {x: 1056, y: 20};
-var Treasure = {x: 550, y: 550};
-
-var ButtonEnabledColor = {r: 1, g:1, b: 1, a: 0};
-var ButtonArmyInfoCancelColor = {r: 102, g:72, b: 161, a: 0};
-var AdButtonBottomRightCancelColor = {r: 195, g:195, b: 195, a: 0};
-var AdButtonTopRightCancelColor = {r: 203, g:203, b: 203, a: 0};
-var AdButtonTopLeftCancelColor = {r: 0, g:11, b: 0, a: 0};
-var AdButtonPersonalizedOKColor = {r: 209, g:120, b: 6, a: 0};
-var AdBackgroundColorWhite = {r: 255, g:255, b: 255, a: 0};
-var AdBackgroundColorLight = {r: 224, g:224, b: 224, a: 0};
-var AdBackgroundColorDark = {r: 1, g:1, b: 1, a: 0};
-var AdIconColor = {r: 176, g:176, b: 176, a: 0};
-var AdIconColor2 = {r: 204, g:190, b: 192, a: 0};
-
-function printColor(img, xy) {
-  var xy = toResizeXYs(xy);
-  var color = getImageColor(img, xy[0], xy[1]);
-  log('r: ' + color.r + ', g: ' + color.g + ', b: ' + color.b + ', a: ' + color.a);
-};
-
 function getColor(img, xy) {
   var xy = toResizeXYs(xy);
-  return getImageColor(img, xy[0], xy[1]);
+  return getImageColor(img, xy.x, xy.y);
 }
 
-function goToNextRow() {
-  var x = 900;
-  var y1 = 1500;
-  var y2 = 1265;
-
-  tapDown(x, y1);
-  sleep(DURING);
-
-  var count = (y1 - y2) / 50;
-  for (var i = 1; i < count; i++) {
-    moveTo(x, y1 - i * 50);
-    sleep(DURING);
-  }
-
-  moveTo(x, y2);
-  sleep(DURING);
-  tapUp(x, y2);
+function toResizeXYs(xy) {
+  return toResizeXY(xy.x, xy.y);
 }
 
-function goToPreviousRow() {
-  var x = 900;
-  var y1 = 1500;
-  var y2 = 1265;
-
-  tapDown(x, y2);
-  sleep(DURING);
-
-  var count = (y1 - y2) / 50;
-  for (var i = 1; i < count; i++) {
-    moveTo(x, y2 + i * 50);    
-    sleep(DURING);
-  }
-
-  moveTo(x, y1);
-  sleep(DURING);
-  tapUp(x, y1);
+function toResizeXY(x, y) {
+  var rx = Math.floor(x * Config.resizeWidth / Config.screenWidth);
+  var ry = Math.floor(y * Config.resizeHeight / Config.screenHeight);
+  return {x: rx, y: ry};
 }
 
-function goToPreviousRowHalf() {
-  var x = 900;
-  var y1 = 1500;
-  var y2 = 1382;
+// init
+(function(){
+  var size = getScreenSize();
+  Config.screenHeight = size.height;
+  Config.screenWidth = size.width;
+  Config.resizeWidth = Math.floor(Config.screenWidth / 3);
+  Config.resizeHeight = Math.floor(Config.screenHeight / 3);
+  Config.virtualButtonHeight = getVirtualButtonHeight();
+  Config.hasVirtualButtonBar = true;
+})();
 
-  tapDown(x, y2);
-  sleep(DURING);
+function EndlessFrontier() {
+  this.Const = {
+    PackageName: 'com.ekkorr.endlessfrontier.global.line2',
 
-  var count = (y1 - y2) / 50;
-  for (var i = 1; i < count; i++) {
-    moveTo(x, y2 + i * 50);    
-    sleep(DURING);
-  }
+    // screen layout
+    captureWidth: 1080,
+    captureHeight: 1776,
+    menuHeight: 136,
+    tableCellHeight: 186,
 
-  moveTo(x, y1);
-  sleep(DURING);
-  tapUp(x, y1);
+    MenuColor: {r: 32, g:32, b: 32, a: 0},
+    ButtonEnableColor: {r: 1, g:1, b: 1, a: 0},
+    ButtonRedCancelColor: {r: 32, g:54, b: 179, a: 0},
+
+    InGameCheck: {x: 340, y: 820, color: {r: 1, g:1, b: 1, a: 0}},
+    ButtonMenuArmyRevolution: {x: 725, y: 920},
+    ButtonRevolutionTeam: {x: 500, y: 1180},
+    ButtonMenuStoreProp: {x: 700, y: 750},
+    ButtonTableRightTask: {x: 1040, y: 1100},
+    ButtonTableRightOther: {x: 1040, y: 1070},
+    ButtonTaskIcon: {x: 100, y: 1100},
+    ButtonTaskMoney: {x: 1040, y: 1100},
+    ButtonTaskMax: {x: 420, y: 1100},
+    ButtonAutoTask: {x: 1040, y: 900},
+    ButtonBuyArmy: {x: 760, y: 900},
+    ButtonStartBattle: {x: 925, y: 1490},
+    ButtonUnopenedTask: {x: 630, y: 1120},
+    ButtonTooLongBack: {x: 650, y: 1450},
+    ButtonDiamondFree: {x: 650, y: 1250},
+    ButtonDiamondSeeAd: {x: 460, y: 1130},
+    ButtonBuyArmyOK: {x: 460, y: 1220},
+    ButtonBuyArmyBuy: {x: 460, y: 1320},
+    ButtonDiamondCancel: {x: 780, y: 1130},
+    ButtonDoubleSpeed: {x: 1010, y: 1093},
+    ButtonTaskInfoCancel: {x: 620, y: 1410},
+    ButtonNetwork: {x: 650, y: 1093},
+    ButtonExitGame: {x: 820, y: 990},
+    ButtonArmyInfoCancel: {x: 1020, y: 260},
+    ButtonTableTop: {x: 1040, y: 996},
+    ButtonTableBottom: {x: 1040, y: 1642},
+    // AdButtonBottomRightCancel: {x: 1036, y: 1736},
+    // AdButtonTopRightCancel: {x: 1003, y: 83},
+    // AdButtonTopLeftCancel: {x: 73, y: 73},
+    // AdButtonPersonalizedOK: {x: 750, y: 820},
+    // AdBackground: {x: 160, y: 1750},
+    // AdInfoIconBottomLeft: {x: 20, y: 1756},
+    // AdInfoIconTopRight: {x: 1056, y: 20},
+    Treasure: {x: 550, y: 550},
+
+    // config
+    during: 300,
+  };
+  this.running = false;
+  this.ScreenInfo = {
+    ratio: 0,
+    offsetX: 0,
+    gameHeight: 0,
+    gameWidth: 0,
+  };
+  // from 1776 * 1080 screen
+  this.Buttons = {};
+  this.Status = {
+    taskTaskIgnore: 0,
+    taskWarIdx: 0,
+  };
+  this.init();
 }
 
-function taps(x, y, times) {
-  for (var i = 0; i < times; i++) {
-    tap(x, y)
-    sleep(DURING);
-  }
-}
-
-function pressTaskButton(rowIndex, clickTimes) {
-  var diffHeight = rowIndex * ROW_HEIGHT;
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight]);
-  var checkColor2 = getColor(screenshot, [ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight + ROW_HEIGHT / 2]);    
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonTaskIcon.x, ButtonTaskIcon.y + diffHeight)
-    sleep(DURING);
-    taps(ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight, clickTimes);
-  } else if (isSameColor(ButtonEnabledColor, checkColor2)) {
-    tap(ButtonTaskIcon.x, ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight + ROW_HEIGHT / 2)
-    sleep(DURING);
-    taps(ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight + ROW_HEIGHT / 2, clickTimes);
-    sleep(DURING);
-    goToPreviousRowHalf();
-    return;
+EndlessFrontier.prototype.init = function() {
+  if (Config.hasVirtualButtonBar) {
+    this.ScreenInfo.gameHeight = Config.virtualButtonHeight;
   } else {
-    sleep(DURING)
-    goToPreviousRow();
-    return;
+    this.ScreenInfo.gameHeight = Config.screenHeight;
   }
-
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskMax.x, ButtonTaskMax.y + diffHeight]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    taps(ButtonTaskMax.x, ButtonTaskMax.y + diffHeight, clickTimes);
+  var screenRatio = Config.screenHeight / Config.screenWidth;
+  var gameWidthRatio = 0.9;
+  if (screenRatio >= 1.6) { // h/w 1.6
+    gameWidthRatio = 1;
+  } else if (screenRatio < 1.5) { // h/w 1.5
+    gameWidthRatio = 0.8;
   }
+  this.ScreenInfo.gameWidth = Config.screenWidth * gameWidthRatio;
+  this.ScreenInfo.ratio = this.ScreenInfo.gameHeight / this.ScreenInfo.gameWidth;
+  this.ScreenInfo.offsetX = (Config.screenWidth - this.ScreenInfo.gameWidth) / 2;
 
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskInfoCancel.x, ButtonTaskInfoCancel.y]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonTaskInfoCancel.x, ButtonTaskInfoCancel.y);
-    sleep(DURING);
+  this.initButtons();
+  console.log(JSON.stringify(this.ScreenInfo));
+};
+
+EndlessFrontier.prototype.getRealHeightRatio = function(v) {
+  return v * this.ScreenInfo.gameWidth / this.Const.captureWidth;
+}
+
+EndlessFrontier.prototype.getRealWHRatio = function(xy) {
+  return {
+    x: xy.x * this.ScreenInfo.gameWidth / this.Const.captureWidth, 
+    y: xy.y * this.ScreenInfo.gameWidth / this.Const.captureWidth,
   }
 }
 
-function pressArmyButton(rowIndex, clickTimes) {
-  var diffHeight = rowIndex * ROW_HEIGHT;
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    taps(ButtonTaskMoney.x, ButtonTaskMoney.y + diffHeight, clickTimes);
-  } else {
-    return;
-  }
-
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskMax.x, ButtonTaskMax.y + diffHeight]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    taps(ButtonTaskMax.x, ButtonTaskMax.y + diffHeight, clickTimes);
-  }
-
-  tap(ButtonArmyInfoCancel.x, ButtonArmyInfoCancel.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
-}
-
-function checkTooLongBack() {
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTooLongBack.x, ButtonTooLongBack.y]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonTooLongBack.x, ButtonTooLongBack.y);
-    sleep(DURING);
+EndlessFrontier.prototype.getRealWHRatioBottom = function(xy) {
+  var y = this.Const.captureHeight - xy.y;
+  return {
+    x: xy.x * this.ScreenInfo.gameWidth / this.Const.captureWidth, 
+    y: this.ScreenInfo.gameHeight - y * this.ScreenInfo.gameWidth / this.Const.captureWidth,
   }
 }
 
-function pressBackButton() {
-  // keycode('BACK', DURING);
-  tap(ButtonBack.x, ButtonBack.y);
-  sleep(DURING);
-  
-  tap(ButtonLandscapedBack.x, ButtonLandscapedBack.y);
-  sleep(DURING);
+EndlessFrontier.prototype.initButtons = function() {
+  // Menu
+  var menuY = this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight) / 2;
+  var menuW = this.ScreenInfo.gameWidth / 6;
+  var menuOffset = menuW / 2;
+
+  this.menuY = menuY;
+  this.menuW = menuW;
+
+  this.ButtonMenuTask = {x: (menuW * 1 - menuOffset), y: menuY};
+  this.ButtonMenuArmy = {x: (menuW * 2 - menuOffset), y: menuY};
+  this.ButtonMenuWar = {x: (menuW * 3 - menuOffset), y: menuY};
+  this.ButtonMenuTreasure = {x: (menuW * 4 - menuOffset), y: menuY};
+  this.ButtonMenuBattle = {x: (menuW * 5 - menuOffset), y: menuY};
+  this.ButtonMenuStore = {x: (menuW * 6 - menuOffset), y: menuY};
+
+  // table size
+  this.ButtonTableTop = this.getRealWHRatio(this.Const.ButtonTableTop);
+  this.ButtonTableBottom = {x: this.ButtonTableTop.x, y: this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight)};
+  this.TableCellHeight = this.getRealHeightRatio(this.Const.tableCellHeight);
+
+  // from top
+  this.ButtonMenuArmyRevolution = this.getRealWHRatio(this.Const.ButtonMenuArmyRevolution);
+  this.ButtonRevolutionTeam = this.getRealWHRatio(this.Const.ButtonRevolutionTeam);
+  this.ButtonMenuStoreProp = this.getRealWHRatio(this.Const.ButtonMenuStoreProp);
+  this.ButtonTableRightTask = this.getRealWHRatio(this.Const.ButtonTableRightTask);
+  this.ButtonTableRightOther = this.getRealWHRatio(this.Const.ButtonTableRightOther);
+  this.ButtonTaskIcon = this.getRealWHRatio(this.Const.ButtonTaskIcon);
+  this.ButtonTaskMoney = this.getRealWHRatio(this.Const.ButtonTaskMoney);
+  this.ButtonTaskMax = this.getRealWHRatio(this.Const.ButtonTaskMax);
+  this.ButtonAutoTask = this.getRealWHRatio(this.Const.ButtonAutoTask);
+  this.ButtonBuyArmy = this.getRealWHRatio(this.Const.ButtonBuyArmy);
+  this.ButtonUnopenedTask = this.getRealWHRatio(this.Const.ButtonUnopenedTask);
+  this.ButtonTooLongBack = this.getRealWHRatio(this.Const.ButtonTooLongBack);
+  this.ButtonDiamondFree = this.getRealWHRatio(this.Const.ButtonDiamondFree);
+  this.ButtonDiamondSeeAd = this.getRealWHRatio(this.Const.ButtonDiamondSeeAd);
+  this.ButtonBuyArmyOK = this.getRealWHRatio(this.Const.ButtonBuyArmyOK);
+  this.ButtonBuyArmyBuy = this.getRealWHRatio(this.Const.ButtonBuyArmyBuy);
+  this.ButtonDiamondCancel = this.getRealWHRatio(this.Const.ButtonDiamondCancel);
+  this.ButtonDoubleSpeed = this.getRealWHRatio(this.Const.ButtonDoubleSpeed);
+  this.ButtonTaskInfoCancel = this.getRealWHRatio(this.Const.ButtonTaskInfoCancel);
+  this.ButtonNetwork = this.getRealWHRatio(this.Const.ButtonNetwork);
+  this.ButtonExitGame = this.getRealWHRatio(this.Const.ButtonExitGame);
+  this.Treasure = this.getRealWHRatio(this.Const.Treasure);
+  this.InGameCheck = this.getRealWHRatio(this.Const.InGameCheck);
+
+  // from bottom
+  var cellHeight = this.TableCellHeight;
+
+  this.ButtonRevolution = {x: menuW * 5, y: menuY};
+  this.ButtonRevolutionDone = {x: menuW * 3, y: menuY};
+  this.ButtonArmyInfoCancel = this.getRealWHRatioBottom(this.Const.ButtonArmyInfoCancel);
+  this.ButtonTableRightOtherBottom = {
+    x: this.ButtonTableRightTask.x,
+    y: this.ScreenInfo.gameHeight - this.getRealHeightRatio(this.Const.menuHeight) - cellHeight / 2,
+  };
+  this.ButtonStartBattle = this.getRealWHRatioBottom(this.Const.ButtonStartBattle);
+};
+
+EndlessFrontier.prototype.goBack = function() {
+  // keycode('BACK', this.Const.during);
+  execute('input keyevent 4');
+  sleep(this.Const.during);
 }
 
-function checkAd() {
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonDiamondFree.x, ButtonDiamondFree.y + VIRTUAL_BUTTON_BAR_HEIGHT / 2]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    log('[寶箱] 恭喜你撿到免費鑽石 :)');
-    tap(ButtonDiamondFree.x, ButtonDiamondFree.y + VIRTUAL_BUTTON_BAR_HEIGHT / 2);
-    sleep(2000);
-  } else {
-    log('[寶箱] 觀看廣告拿鑽石 :(');
-    sleep(DURING_AD);
-    checkTooLongBack();
+EndlessFrontier.prototype.tap = function(xy, during) {
+  if (during === undefined) {
+    during = this.Const.during;
   }
-  
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [AdBackground.x, AdBackground.y + VIRTUAL_BUTTON_BAR_HEIGHT]);
-  if (isSameColor(AdBackgroundColorWhite, checkColor) || isSameColor(AdBackgroundColorLight, checkColor) || isSameColor(AdBackgroundColorDark, checkColor)) {
-    pressBackButton();
-    sleep(1000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-
-  var checkColor = getColor(screenshot, [AdInfoIconBottomLeft.x, AdInfoIconBottomLeft.y + VIRTUAL_BUTTON_BAR_HEIGHT]);
-  if (isSameColor(AdIconColor, checkColor)) {
-    pressBackButton();
-    sleep(1000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-
-  var checkColor = getColor(screenshot, [AdInfoIconTopRight.x, AdInfoIconTopRight.y]);
-  if (isSameColor(AdIconColor2, checkColor)) {
-    pressBackButton();
-    sleep(1000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-
-  var checkColor = getColor(screenshot, [AdButtonTopRightCancel.x, AdButtonTopRightCancel.y]);
-  if (isSameColor(AdButtonTopRightCancelColor, checkColor)) {
-    tap(AdButtonTopRightCancel.x, AdButtonTopRightCancel.y);
-    sleep(2000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-
-  var checkColor = getColor(screenshot, [AdButtonTopLeftCancel.x, AdButtonTopLeftCancel.y]);
-  if (isSameColor(AdButtonTopLeftCancelColor, checkColor)) {
-    tap(AdButtonTopLeftCancel.x, AdButtonTopLeftCancel.y);
-    sleep(2000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-
-  var checkColor = getColor(screenshot, [AdButtonPersonalizedOK.x, AdButtonPersonalizedOK.y]);
-  if (isSameColor(AdButtonPersonalizedOKColor, checkColor)) {
-    pressBackButton();
-    sleep(1000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-
-  var checkColor = getColor(screenshot, [AdButtonBottomRightCancel.x, AdButtonBottomRightCancel.y + VIRTUAL_BUTTON_BAR_HEIGHT]);
-  if (isSameColor(AdButtonBottomRightCancelColor, checkColor)) {
-    pressBackButton();
-    sleep(1000);
-    checkTooLongBack();
-    releaseImage(screenshot);
-    return;
-  }
-  
-  sleep(2000);
-  pressBackButton();
-  sleep(1000);
-  checkTooLongBack();
+  // console.log('tap', xy.x, xy.y);
+  tap(Math.round(xy.x), Math.round(xy.y), during);
 }
 
-function checkTreasure() {
+EndlessFrontier.prototype.swipeTableTop = function() {
+  var during = 10;
+  var cellHeight = this.TableCellHeight;
+  var x = Math.floor(this.ScreenInfo.gameWidth / 2);
+  var topY = Math.floor(this.ButtonTableTop.y + cellHeight);
+  var deltaY = Math.floor((this.ScreenInfo.gameHeight - topY));
+  for (var i = 0; i < 2; i++) {
+    tapDown(x, topY, 50);
+    for (var j = 0; j <= 2; j++) {
+      moveTo(x, topY + deltaY * j * 5, during);
+      moveTo(x, topY + deltaY * j * 5, during);
+    }
+    tapUp(x, topY + deltaY * j * 5, 10);
+    sleep(100);
+  }
+}
+
+EndlessFrontier.prototype.swipeTable = function(number, m) {
+  var during = 60;
+  var cellHeight = this.TableCellHeight;
+  var x = Math.floor(this.ScreenInfo.gameWidth / 2);
+  var topY = Math.floor(this.ButtonTableTop.y + cellHeight);
+  var deltaY = m * cellHeight / 5 * number;
+  tapDown(x, topY, during);
+  for (var j = 0; j <= 6; j++) {
+    moveTo(x, topY + deltaY * j, during);
+    moveTo(x, topY + deltaY * j, during);
+  }
+  sleep(during);
+  tapUp(x, topY + deltaY * 6, during);
+}
+
+EndlessFrontier.prototype.swipeTableUp = function(number) {
+  this.swipeTable(number, 1);
+}
+
+EndlessFrontier.prototype.swipeTableDown = function(number) {
+  this.swipeTable(number, -1);
+}
+
+EndlessFrontier.prototype.goToGame = function(during) {
+  if (during === undefined) {
+    during = 35 * 1000;
+  }
+  tapUp(0, 0);
+  var start = Date.now();
+  while(Config.isRunning) {
+    // log('檢查室是否在遊戲中');
+    var img = this.screenshot();
+    var color = getColor(img, this.InGameCheck);
+    var isMenu1 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 0.90, y: this.menuY }));
+    var isMenu2 = isSameColor(this.Const.MenuColor, getColor(img, {x: this.menuW * 2.90, y: this.menuY }));
+    var isMenuEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, this.ButtonMenuTask));
+    releaseImage(img);
+    if ((isMenu1 || isMenu2) && isSameColor(this.Const.InGameCheck.color, color)) {
+      return;
+    }
+    if (Date.now() - start > during) {
+      return;
+    }
+    this.goBack();
+    if (!isMenuEnable) {
+      this.tap(this.ButtonMenuTask);
+    }
+    sleep(3000);
+  }
+}
+
+EndlessFrontier.prototype.screenshot = function() {
+  return getScreenshotModify(0, 0, 0, 0, Config.resizeWidth, Config.resizeHeight);
+}
+
+EndlessFrontier.prototype.tapTableMaxValue = function(y, clickIcon) {
+  for (var i = 0; i < 5; i++) {
+    this.tap({x: this.ButtonTableRightOther.x, y: y}, 100);
+  }
+  var img = this.screenshot();
+  var btnEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: this.ButtonTaskMax.x, y: y}));
+  releaseImage(img);
+  if (btnEnable) {
+    this.tap({x: this.ButtonTaskMax.x, y: y}, 100);
+  }
+  if (clickIcon) {
+    this.tap({x: this.ButtonTaskIcon.x, y: y});
+  }
+}
+
+EndlessFrontier.prototype.checkEnabledTableButtons = function() {
+  var cellHeight = this.TableCellHeight;
+  var x = this.ButtonTableRightOther.x;
+  var enableButtons = [];
+  var initY = this.ButtonTableTop.y + cellHeight / 4;
+  var img = this.screenshot();
+  for (var y = initY; y < this.ButtonTableBottom.y; y += cellHeight / 4) {
+    var isEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: x, y: y}));
+    var isEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: x, y: y + cellHeight / 8}));
+    if (isEnable1 && isEnable2) {
+      enableButtons.push({x: x, y: y});
+      y += cellHeight / 4;
+    }
+  }
+  releaseImage(img);
+  // log('enableButtons', JSON.stringify(enableButtons));
+  return enableButtons;
+}
+
+EndlessFrontier.prototype.checkAndClickTable = function(ignoreCount, maxCount, clickIcon) {
+  var cellHeight = this.TableCellHeight;
+  if (ignoreCount > 0) {
+    this.swipeTableDown(ignoreCount);
+  }
+  var slideTimes = Math.floor((maxCount - ignoreCount) / 2);
+  var maxSlideTimes = 0;
+  for(var i = 0; i < slideTimes; i++) {
+    if (!Config.isRunning) {break;}
+    var enableButtons = this.checkEnabledTableButtons();
+    for (var j in enableButtons) {
+      this.tapTableMaxValue(enableButtons[j].y, clickIcon);
+    }
+    if (enableButtons.length == 0) {
+      if (maxSlideTimes != 0) {
+        break;
+      }
+    } else {
+      maxSlideTimes = i;
+    }
+    this.swipeTableDown(2);
+    sleep(this.Const.during);
+  }
+  return maxSlideTimes * 2;
+}
+
+// game controller
+EndlessFrontier.prototype.taskDoubleSpeed = function() {
+  log('檢查兩倍速度');
+  this.goToGame();
+  this.tap(this.ButtonMenuStore);
+  this.tap(this.ButtonMenuStoreProp);
+  this.tap(this.ButtonDoubleSpeed);
+};
+
+EndlessFrontier.prototype.taskTreasure = function() {
   log('檢查自動開寶箱');
-  taps(Treasure.x, Treasure.y, 10);
-
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonDiamondSeeAd.x, ButtonDiamondSeeAd.y]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
+  this.goToGame();
+  var interval = this.ScreenInfo.gameWidth / 5;
+  for (var x = interval; x < this.ScreenInfo.gameWidth; x += this.ScreenInfo.gameWidth) {
+    this.tap({x: x, y: this.Treasure.y}, 80);
+  }
+  // check and watch Ad
+  var img = this.screenshot();
+  var color = getColor(img, this.ButtonDiamondSeeAd);
+  releaseImage(img);
+  if (isSameColor(this.Const.ButtonEnableColor, color)) {
     log('[寶箱] 是鑽石寶箱阿！！！');
-    tap(ButtonDiamondSeeAd.x, ButtonDiamondSeeAd.y);
+    this.tap(this.ButtonDiamondSeeAd);
     sleep(2000);
-    checkAd();
+    this.goToGame();
   }
-}
+};
 
-function checkTask() {
-  log('檢查自動完成任務');
-  tap(ButtonMenuTask.x, ButtonMenuTask.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
-
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskMoney.x, ButtonTaskMoney.y + ROW_HEIGHT * 2]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    sleep(DURING)
-    goToNextRow();
+EndlessFrontier.prototype.taskArmy = function() {
+  log('檢查自動升級士兵');
+  this.goToGame();
+  this.tap(this.ButtonMenuArmy);
+  this.swipeTableTop();
+  sleep(this.Const.during);
+  
+  var enableButtons = this.checkEnabledTableButtons();
+  if (enableButtons.length == 0) {
     return;
   }
-  
-  pressTaskButton(0, 4);
-  pressTaskButton(1, 4);
+  this.checkAndClickTable(0, 12 - 2, false);
 }
 
-function checkArmy() {
-  log('檢查自動完成士兵');
-  // Go to army list
-  tap(ButtonMenuArmy.x, ButtonMenuArmy.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
+EndlessFrontier.prototype.taskTask = function() {
+  log('檢查自動做任務' + ',跳過' + this.Status.taskTaskIgnore);
+  this.goToGame();
+  this.tap(this.ButtonMenuTask);
 
-  for (var i = 0; i < 9; i++) {
-    pressArmyButton(0, 4);
-    pressArmyButton(1, 4);
-    pressArmyButton(2, 4);
-    pressArmyButton(3, 4);
-    if (!GLOBAL.checkConfig.hasVirtualButtonBar) {
-      pressArmyButton(4, 4);
-    }
-    sleep(DURING)
-    goToNextRow();
+  var enableButtons = this.checkEnabledTableButtons();
+  if (enableButtons.length == 0) {
+    this.swipeTableTop();
+    sleep(this.Const.during);
+    this.Status.taskTaskIgnore = Math.floor(this.Status.taskTaskIgnore * 2 / 3);
+    this.Status.taskTaskIgnore += this.checkAndClickTable(this.Status.taskTaskIgnore, 28 - 2, true);
+  } else {
+    var count = 28 - 2 - this.Status.taskTaskIgnore;
+    this.Status.taskTaskIgnore += this.checkAndClickTable(0, count, true);
   }
-  for (var i = 0; i < 9; i++) {
-    sleep(DURING)
-    goToPreviousRow();
-  }
-
-  // Go back to task list
-  tap(ButtonMenuTask.x, ButtonMenuTask.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
+  this.Status.taskTaskIgnore = Math.min(20, this.Status.taskTaskIgnore);
 }
 
-function checkAutoTask() {
-  log('檢查自動完成自動任務');
-  tap(ButtonMenuTask.x, ButtonMenuTask.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
+EndlessFrontier.prototype.taskWar = function() {
+  log('檢查自動打素材');
+  this.goToGame();
+  this.tap(this.ButtonMenuWar);
 
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonAutoTask.x, ButtonAutoTask.y]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonAutoTask.x, ButtonAutoTask.y);
-    sleep(DURING)
+  var warIdx = this.Status.taskWarIdx % 5;
+  var cellHeight = this.TableCellHeight;
+  var rightBtnX = this.ButtonTableRightOther.x;
 
-    var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-    var checkColor = getColor(screenshot, [ButtonUnopenedTask.x, ButtonUnopenedTask.y]);
-    releaseImage(screenshot);
-    if (isSameColor(ButtonEnabledColor, checkColor)) {
-      tap(ButtonUnopenedTask.x, ButtonUnopenedTask.y);
-      sleep(DURING)
-    }
-  }
-}
+  var rightBtn1Y = this.ButtonTableRightOther.y;
+  var rightBtn2Y = rightBtn1Y + cellHeight;
+  var rightBtn3Y = rightBtn2Y + cellHeight;
+  var rightBtn4YBottom = this.ButtonTableRightOtherBottom.y - cellHeight;
+  var rightBtn5YBottom = this.ButtonTableRightOtherBottom.y;
 
-function checkDoubleSpeed() {
-  log('檢查自動兩倍遊戲加速');
-  tap(ButtonMenuStore.x, ButtonMenuStore.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
-  tap(ButtonMenuStoreProp.x, ButtonMenuStoreProp.y);
-  sleep(DURING);
+  var rightBtnYs = [
+    rightBtn1Y,
+    rightBtn2Y,
+    rightBtn3Y,
+    rightBtn4YBottom,
+    rightBtn5YBottom,
+  ];
 
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonDoubleSpeed.x, ButtonDoubleSpeed.y]);
-  releaseImage(screenshot);
-  if (!isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonDoubleSpeed.x, ButtonDoubleSpeed.y);
-    sleep(2000);
-    checkAd();
-  }
+  this.Status.taskWarIdx++;
 
-  // Go back to task list
-  tap(ButtonMenuTask.x, ButtonMenuTask.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
-}
+  this.swipeTableTop();
+  sleep(this.Const.during);
 
-function checkRevolution() {
-  var time = new Date().getTime();
-  var revolutionMilliseconds = DURING_REVOLUTION * GLOBAL.checkConfig.revolutionMinutes;
-  log('檢查自動定時轉世: 剩下 ' + Math.round((revolutionMilliseconds - (time - GLOBAL.lastRevolutionTime)) / 1000) + ' 秒');
-  if (time - GLOBAL.lastRevolutionTime <= revolutionMilliseconds) {
-    return;
+  if (warIdx > 2) {
+    this.swipeTableDown(1);
+    sleep(this.Const.during);
   }
   
-  tap(ButtonMenuArmy.x, ButtonMenuArmy.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(1000);
-  tap(ButtonMenuArmyRevolution.x, ButtonMenuArmyRevolution.y)
+  this.tap({x: rightBtnX, y: rightBtnYs[warIdx]});
   sleep(2000);
 
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonRevolution.x, ButtonRevolution.y + VIRTUAL_BUTTON_BAR_HEIGHT]);
-  releaseImage(screenshot);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonRevolution.x, ButtonRevolution.y + VIRTUAL_BUTTON_BAR_HEIGHT)
-    sleep(2000);
-    tap(ButtonRevolutionTeam.x, ButtonRevolutionTeam.y)
-    sleep(20 * 1000);
-    tap(ButtonRevolutionDone.x, ButtonRevolutionDone.y + VIRTUAL_BUTTON_BAR_HEIGHT)
-    sleep(DURING);
-    GLOBAL.lastRevolutionTime = time;
+  var img = this.screenshot();
+  var btnEnable1 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn1Y}));
+  var btnEnable2 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn2Y}));
+  var btnEnable3 = isSameColor(this.Const.ButtonEnableColor, getColor(img, {x: rightBtnX, y: rightBtn3Y}));
+  releaseImage(img);
+
+  if (!btnEnable1 && !btnEnable2 && !btnEnable3) {
+    this.goBack();
+    return;
+  } else if (btnEnable3) {
+    this.tap({x: rightBtnX, y: rightBtn2Y});
+  } else {
+    this.tap({x: rightBtnX, y: rightBtn1Y});
+  }
+  sleep(3000);
+  this.goToGame();
+}
+
+EndlessFrontier.prototype.taskRevolution = function() {
+  log('===轉世===');
+  this.goToGame();
+  this.tap(this.ButtonMenuArmy);
+
+  this.tap(this.ButtonMenuArmyRevolution);
+  this.tap(this.ButtonRevolution);
+  this.tap(this.ButtonRevolutionTeam);
+  sleep(2000);
+  this.goToGame();
+}
+
+EndlessFrontier.prototype.taskBuyArmy = function() {
+  log('檢查自動購買士兵');
+  this.goToGame();
+  this.tap(this.ButtonMenuArmy);
+  this.tap(this.ButtonAutoTask);
+  var enableButtons = this.checkEnabledTableButtons();
+  if (enableButtons.length <= 1) {
+    this.tap(this.ButtonBuyArmy);
+    sleep(this.Const.during);
+    var img = this.screenshot();
+    var isEnable = isSameColor(this.Const.ButtonEnableColor, getColor(img, this.ButtonBuyArmyOK));
+    releaseImage(img);
+    if (isEnable) {
+      this.goBack();
+      return;
+    }
+    enableButtons = this.checkEnabledTableButtons();
   }
   
-  tap(ButtonMenuTask.x, ButtonMenuTask.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
+  for (var i = 0; i < 4 && i < enableButtons.length - 2; i++) {
+    this.tap(enableButtons[i]);
+    this.tap(this.ButtonBuyArmyBuy);
+    sleep(1000);
+  }
 }
 
-function checkAccidentlyPressed() {
-  console.log('檢查意外點擊');
-  var screenshot = getScreenshotModify(0, 0, 0, 0, RESIZE_WIDTH, RESIZE_HEIGHT);
-  var checkColor = getColor(screenshot, [ButtonTaskInfoCancel.x, ButtonTaskInfoCancel.y]);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonTaskInfoCancel.x, ButtonTaskInfoCancel.y);
-    sleep(DURING);
-  }
-
-  tap(ButtonArmyInfoCancel.x, ButtonArmyInfoCancel.y + VIRTUAL_BUTTON_BAR_HEIGHT);
-  sleep(DURING);
-  
-  var checkColor = getColor(screenshot, [ButtonTooLongBack.x, ButtonTooLongBack.y]);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonTooLongBack.x, ButtonTooLongBack.y);
-    sleep(DURING);
-  }
-
-  var checkColor = getColor(screenshot, [ButtonNetwork.x, ButtonNetwork.y]);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonNetwork.x, ButtonNetwork.y);
-    sleep(DURING);
-  }
-
-  var checkColor = getColor(screenshot, [ButtonExitGame.x, ButtonExitGame.y + VIRTUAL_BUTTON_BAR_HEIGHT / 2]);
-  if (isSameColor(ButtonEnabledColor, checkColor)) {
-    tap(ButtonExitGame.x, ButtonExitGame.y + VIRTUAL_BUTTON_BAR_HEIGHT / 2);
-    sleep(DURING);
-  }
-
-  releaseImage(screenshot);
+EndlessFrontier.prototype.taskBattle = function() {
+  log('檢查自動對戰');
+  this.goToGame();
+  this.tap(this.ButtonMenuBattle);
+  this.tap(this.ButtonTableRightOther);
+  sleep(3000); // network loading
+  this.tap(this.ButtonStartBattle);
+  this.goToGame();
+  sleep(3000); // network loading
+  this.goToGame();
 }
 
-function priority25Task() {
-  if (GLOBAL.checkConfig.isCheckTreasure) {
-    checkTreasure();
-  }
-  if (GLOBAL.checkConfig.isCheckTask) {
-    checkTask();
-  }
-  checkAccidentlyPressed();
+EndlessFrontier.prototype.taskRestartApp = function() {
+  log('檢查重啟無盡的邊疆');
+  execute('am force-stop ' + this.Const.PackageName);
+  sleep(this.Const.during);
+  execute('monkey -p ' + this.Const.PackageName + ' -c android.intent.category.LAUNCHER 1');
+  sleep(50000);
+  this.goToGame();
+  sleep(3000); // network loading
+  this.goToGame();
+  sleep(3000); // network loading
+  this.goToGame();
 }
-
-function priority0Task() {
-  if (GLOBAL.checkConfig.isCheckAutoTask) {
-    checkAutoTask();
-  }
-  if (GLOBAL.checkConfig.isCheckArmy) {
-    checkArmy();
-  }
-  if (GLOBAL.checkConfig.isCheckDoubleSpeed) {
-    checkDoubleSpeed();
-  }
-  if (GLOBAL.checkConfig.isCheckRevolution) {
-    checkRevolution();
-  }
-  checkAccidentlyPressed();
-}
+// ===================================================================================
+var ef;
 
 function stop() {
   log('[無盡的邊疆] 停止');
+  Config.isRunning = false;
+  sleep(1000);
   gTaskController.removeAllTasks();
 }
 
-function start(isCheckTask, isCheckTreasure, isCheckAutoTask, isCheckArmy, isCheckDoubleSpeed, isCheckRevolution, revolutionMinutes, hasVirtualButtonBar) {
+function start(taskTreasure, taskTask, taskArmy, taskWar, taskDoubleSpeed, taskBattle, taskBuyArmy, taskRevolution, revolutionMinutes, taskRestartApp, restartAppMinutes, virtualButton) {
   log('[無盡的邊疆] 啟動');
-  
-  GLOBAL.lastRevolutionTime = new Date().getTime();
-  GLOBAL.checkConfig = {
-    isCheckTask: isCheckTask,
-    isCheckTreasure: isCheckTreasure,
-    isCheckAutoTask: isCheckAutoTask,
-    isCheckArmy: isCheckArmy,
-    isCheckDoubleSpeed: isCheckDoubleSpeed,
-    isCheckRevolution: isCheckRevolution,
-    revolutionMinutes: revolutionMinutes,
-    hasVirtualButtonBar: hasVirtualButtonBar,
-  };
- 
-  if (hasVirtualButtonBar) {
-    VIRTUAL_BUTTON_BAR_HEIGHT = 0;
-  } else {
-    VIRTUAL_BUTTON_BAR_HEIGHT = 140;
-  }
-
-  log(JSON.stringify(GLOBAL.checkConfig));
-  stop();
-
-  gTaskController = new TaskController(500);
-  gTaskController.addTask('priority25Task', priority25Task, 20, 500);
-  gTaskController.addTask('priority0Task', priority0Task, 1);
+  Config.isRunning = true;
+  Config.hasVirtualButtonBar = virtualButton;
+  ef = new EndlessFrontier();
+  log(Config);
+  gTaskController = new TaskController();
+  if(taskTreasure){gTaskController.newTask('taskTreasure', ef.taskTreasure.bind(ef), 300, 0);}
+  if(taskTask){gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);}
+  if(taskArmy){gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);}
+  if(taskWar){gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);}
+  if(taskDoubleSpeed){gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);}
+  if(taskBattle){gTaskController.newTask('taskBattle', ef.taskBattle.bind(ef), 30 * 60 * 1000, 0);}
+  if(taskBuyArmy){gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 60 * 60 * 1000, 0);}
+  if(taskRevolution){gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), revolutionMinutes * 60 * 1000, 0, true);}
+  if(taskRestartApp){gTaskController.newTask('taskRestartApp', ef.taskRestartApp.bind(ef), restartAppMinutes * 60 * 1000, 0, true);}
+  sleep(1000);
   gTaskController.start();
 };
-
-// start(DEFAULT_CHECK_CONFIG.isCheckTask, DEFAULT_CHECK_CONFIG.isCheckTreasure, DEFAULT_CHECK_CONFIG.isCheckAutoTask, DEFAULT_CHECK_CONFIG.isCheckArmy, DEFAULT_CHECK_CONFIG.isCheckDoubleSpeed, DEFAULT_CHECK_CONFIG.isCheckRevolution, DEFAULT_CHECK_CONFIG.revolutionMinutes, DEFAULT_CHECK_CONFIG.hasVirtualButtonBar);
+// start(true, true, true, true, true, true, true, true, 60, true, 60, false);
+// stop();
