@@ -104,7 +104,7 @@ class DevicePanel extends DeviceConnection {
     this.$runApi = this.$panel.find('.btn-run-api');
     this.$runApi.unbind('click').bind('click', (e) => {
       const $target = this.$panel.find(e.target);
-      const cmd = $target.prev('.scripts').text();
+      const cmd = $target.prev('.scripts').val();
       this.runScriptByString(cmd);
       this.onLogMsg = (log) => {
         this.$consolelog.html(log.message);
@@ -210,7 +210,7 @@ class DevicePanel extends DeviceConnection {
   }
 
   runTaskController() {
-    this.runScriptByFilename('tasks_controller.js');
+    this.runScriptByFilename('tasks.js');
   }
 
   stopTaskController() {
