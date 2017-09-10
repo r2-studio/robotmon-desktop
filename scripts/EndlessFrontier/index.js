@@ -66,7 +66,8 @@ function toResizeXY(x, y) {
 
 function EndlessFrontier() {
   this.Const = {
-    PackageName: 'com.ekkorr.endlessfrontier.global.line2',
+    PackageName: 'com.ekkorr.endlessfrontier.global',
+    PackageNameLine: 'com.ekkorr.endlessfrontier.global.line2',
 
     // screen layout
     captureWidth: 1080,
@@ -542,10 +543,20 @@ EndlessFrontier.prototype.taskBattle = function() {
 }
 
 EndlessFrontier.prototype.taskRestartApp = function() {
-  log('檢查重啟無盡的邊疆');
-  execute('am force-stop ' + this.Const.PackageName);
+  log('檢查重啟遊戲');
+  var packageName = this.Const.PackageNameLine;
+  var length = execute('pm path ' + packageName).split('/n').length;
+  if (length <= 2) {
+    packageName = this.Const.PackageName;
+    length = execute('pm path ' + packageName).split('/n').length;
+    if (length <= 2) {
+      log('未安裝無盡的邊疆');
+      return;
+    }
+  }
+  execute('am force-stop ' + packageName);
   sleep(this.Const.during);
-  execute('monkey -p ' + this.Const.PackageName + ' -c android.intent.category.LAUNCHER 1');
+  execute('monkey -p ' + packageName + ' -c android.intent.category.LAUNCHER 1');
   sleep(50000);
   this.goToGame();
   sleep(3000); // network loading
