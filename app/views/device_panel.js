@@ -2,6 +2,8 @@ const DeviceConnection = require('../models/api.js');
 
 const fs = require('fs');
 const ejs = require('ejs');
+const glob = require('glob');
+const app = require('electron').remote.app;
 
 const DEVICE_TEMPLATE_HTML = 'templates/device_panel.ejs';
 
@@ -232,11 +234,15 @@ class DevicePanel extends DeviceConnection {
 
   initDropdownMenu() {
     this.$dropdownMenu.empty();
-    fs.readdirSync(`${__dirname}/../../scripts/`).forEach((file) => {
-      this.$dropdownMenu.append(`<li><a href="#" class="btn-quick-run">${file}</a></li>`);
+    const scriptFolderPath = `${app.getAppPath().replace('app', '')}scripts/`;
+    glob(`${__dirname}/../../scripts/**/*.js`, (er, files) => {
+      files.forEach((file) => {
+        const filePath = file.replace(scriptFolderPath, '');
+        this.$dropdownMenu.append(`<li><a href="#" class="btn-quick-run">${filePath}</a></li>`);
+      });
+      this.$btnQuickRunScripts = this.$panel.find('.btn-quick-run');
+      this.$btnQuickRunScripts.unbind('click').bind('click', this.setScriptFile.bind(this));
     });
-    this.$btnQuickRunScripts = this.$panel.find('.btn-quick-run');
-    this.$btnQuickRunScripts.unbind('click').bind('click', this.setScriptFile.bind(this));
   }
 
   runScriptByString(js) {
