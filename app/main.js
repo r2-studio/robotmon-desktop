@@ -1,8 +1,4 @@
-const electron = require('electron');
-// Module to control application life.
-const app = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
+const { app, shell, Menu, BrowserWindow } = require('electron');
 
 const path = require('path');
 const url = require('url');
@@ -56,5 +52,183 @@ app.on('activate', () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// Create default menu.
+app.once('ready', () => {
+  if (Menu.getApplicationMenu()) return;
+
+  const template = [
+    {
+      label: 'Edit',
+      submenu: [
+        {
+          role: 'undo',
+        },
+        {
+          role: 'redo',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          role: 'cut',
+        },
+        {
+          role: 'copy',
+        },
+        {
+          role: 'paste',
+        },
+        {
+          role: 'pasteandmatchstyle',
+        },
+        {
+          role: 'delete',
+        },
+        {
+          role: 'selectall',
+        },
+      ],
+    },
+    {
+      label: 'View',
+      submenu: [
+        {
+          role: 'reload',
+        },
+        {
+          role: 'forcereload',
+        },
+        {
+          role: 'toggledevtools',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          role: 'resetzoom',
+        },
+        {
+          role: 'zoomin',
+        },
+        {
+          role: 'zoomout',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          role: 'togglefullscreen',
+        },
+      ],
+    },
+    {
+      role: 'window',
+      submenu: [
+        {
+          role: 'minimize',
+        },
+        {
+          role: 'close',
+        },
+      ],
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'Documentation',
+          click() {
+            shell.openExternal('https://github.com/r2-studio/robotmon-desktop/blob/master/README.md');
+          },
+        },
+        {
+          label: 'Search Issues',
+          click() {
+            shell.openExternal('https://github.com/r2-studio/robotmon-desktop/issues');
+          },
+        },
+      ],
+    },
+  ];
+
+  if (process.platform === 'darwin') {
+    template.unshift({
+      label: 'Robotmon',
+      submenu: [
+        {
+          role: 'about',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          role: 'services',
+          submenu: [],
+        },
+        {
+          type: 'separator',
+        },
+        {
+          role: 'hide',
+        },
+        {
+          role: 'hideothers',
+        },
+        {
+          role: 'unhide',
+        },
+        {
+          type: 'separator',
+        },
+        {
+          role: 'quit',
+        },
+      ],
+    });
+    template[1].submenu.push(
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Speech',
+        submenu: [
+          {
+            role: 'startspeaking',
+          },
+          {
+            role: 'stopspeaking',
+          },
+        ],
+      },
+    );
+    template[3].submenu = [
+      {
+        role: 'close',
+      },
+      {
+        role: 'minimize',
+      },
+      {
+        role: 'zoom',
+      },
+      {
+        type: 'separator',
+      },
+      {
+        role: 'front',
+      },
+    ];
+  } else {
+    template.unshift({
+      label: 'File',
+      submenu: [
+        {
+          role: 'quit',
+        },
+      ],
+    });
+  }
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+});
