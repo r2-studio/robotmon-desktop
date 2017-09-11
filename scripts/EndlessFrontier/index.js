@@ -10,7 +10,7 @@ var Config = {
   isRunning: false,
 };
 
-function log () {
+function log() {
   sleep(100);
   if (typeof arguments[0] == 'object') {
     console.log(JSON.stringify(arguments[0]));
@@ -59,13 +59,16 @@ function toResizeXY(x, y) {
   Config.screenHeight = size.height;
   Config.screenWidth = size.width;
   Config.resizeWidth = Math.floor(Config.screenWidth / 3);
-  Config.resizeHeight =Math.floor(Config.screenHeight / 3);
+  Config.resizeHeight = Math.floor(Config.screenHeight / 3);
   Config.virtualButtonHeight = getVirtualButtonHeight();
   Config.hasVirtualButtonBar = true;
 })();
 
 function EndlessFrontier() {
   this.Const = {
+    PackageName: 'com.ekkorr.endlessfrontier.global',
+    PackageNameLine: 'com.ekkorr.endlessfrontier.global.line2',
+
     // screen layout
     captureWidth: 1080,
     captureHeight: 1776,
@@ -229,7 +232,11 @@ EndlessFrontier.prototype.initButtons = function() {
   this.ButtonStartBattle = this.getRealWHRatioBottom(this.Const.ButtonStartBattle);
 };
 
-EndlessFrontier.prototype.goBack = function() {keycode('BACK', this.Const.during);}
+EndlessFrontier.prototype.goBack = function() {
+  // keycode('BACK', this.Const.during);
+  execute('input keyevent 4');
+  sleep(this.Const.during);
+}
 
 EndlessFrontier.prototype.tap = function(xy, during) {
   if (during === undefined) {
@@ -534,6 +541,29 @@ EndlessFrontier.prototype.taskBattle = function() {
   sleep(3000); // network loading
   this.goToGame();
 }
+
+EndlessFrontier.prototype.taskRestartApp = function() {
+  log('檢查重啟遊戲');
+  var packageName = this.Const.PackageNameLine;
+  var length = execute('pm path ' + packageName).split('/n').length;
+  if (length <= 2) {
+    packageName = this.Const.PackageName;
+    length = execute('pm path ' + packageName).split('/n').length;
+    if (length <= 2) {
+      log('未安裝無盡的邊疆');
+      return;
+    }
+  }
+  execute('am force-stop ' + packageName);
+  sleep(this.Const.during);
+  execute('monkey -p ' + packageName + ' -c android.intent.category.LAUNCHER 1');
+  sleep(50000);
+  this.goToGame();
+  sleep(3000); // network loading
+  this.goToGame();
+  sleep(3000); // network loading
+  this.goToGame();
+}
 // ===================================================================================
 var ef;
 
@@ -544,7 +574,7 @@ function stop() {
   gTaskController.removeAllTasks();
 }
 
-function start(taskTreasure, taskTask, taskArmy, taskWar, taskDoubleSpeed, taskBattle, taskBuyArmy, taskRevolution, revolutionMinutes, virtualButton) {
+function start(taskTreasure, taskTask, taskArmy, taskWar, taskDoubleSpeed, taskBattle, taskBuyArmy, taskRevolution, revolutionMinutes, taskRestartApp, restartAppMinutes, virtualButton) {
   log('[無盡的邊疆] 啟動');
   Config.isRunning = true;
   Config.hasVirtualButtonBar = virtualButton;
@@ -555,12 +585,13 @@ function start(taskTreasure, taskTask, taskArmy, taskWar, taskDoubleSpeed, taskB
   if(taskTask){gTaskController.newTask('taskTask', ef.taskTask.bind(ef), 40 * 1000, 0);}
   if(taskArmy){gTaskController.newTask('taskArmy', ef.taskArmy.bind(ef), 120 * 1000, 0);}
   if(taskWar){gTaskController.newTask('taskWar', ef.taskWar.bind(ef), 100 * 1000, 0);}
-  if(taskDoubleSpeed){gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 21 * 60 * 1000, 0);}
+  if(taskDoubleSpeed){gTaskController.newTask('taskDoubleSpeed', ef.taskDoubleSpeed.bind(ef), 16 * 60 * 1000, 0);}
   if(taskBattle){gTaskController.newTask('taskBattle', ef.taskBattle.bind(ef), 30 * 60 * 1000, 0);}
   if(taskBuyArmy){gTaskController.newTask('taskBuyArmy', ef.taskBuyArmy.bind(ef), 60 * 60 * 1000, 0);}
   if(taskRevolution){gTaskController.newTask('taskRevolution', ef.taskRevolution.bind(ef), revolutionMinutes * 60 * 1000, 0, true);}
+  if(taskRestartApp){gTaskController.newTask('taskRestartApp', ef.taskRestartApp.bind(ef), restartAppMinutes * 60 * 1000, 0, true);}
   sleep(1000);
   gTaskController.start();
 };
-// start(true,true,true,true,true,true,true,true, 60, false);
+// start(true, true, true, true, true, true, true, true, 60, true, 60, false);
 // stop();
