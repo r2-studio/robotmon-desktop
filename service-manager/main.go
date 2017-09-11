@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -14,12 +17,16 @@ const (
 )
 
 func getAdbPath() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
 	if runtime.GOOS == "linux" {
-		return "bin/adb.linux"
+		return dir + "/adb.linux"
 	} else if runtime.GOOS == "darwin" {
-		return "bin/adb.darwin"
+		return dir + "/adb.darwin"
 	} else {
-		return "bin\\adb.win32"
+		return dir + "\\adb.win32"
 	}
 }
 
@@ -91,6 +98,7 @@ func listServices() {
 }
 
 func main() {
+
 	startCmd := flag.Bool("start", false, "start robotmon service")
 	stopCmd := flag.Bool("stop", false, "stop robotmon service")
 	flag.Parse()
