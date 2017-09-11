@@ -4,13 +4,18 @@
   "description": "Robotmon desktop",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --asar=true --prune",
+    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --asar=true --prune",
+    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --asar=true --prune",
+    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --asar=true --prune"
   },
   "repository": "git@github.com:poi5305/robotmon-desktop.git",
   "keywords": [],
   "author": "Robotmon",
   "license": "CC0-1.0",
   "devDependencies": {
+    "electron-packager": "^9.0.1",
     "electron-rebuild": "^1.6.0",
     "eslint": "^3.17.1",
     "eslint-config-airbnb": "^14.1.0",
