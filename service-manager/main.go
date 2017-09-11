@@ -15,7 +15,7 @@ import (
 
 const (
 	// StartCommand launch service command
-	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2sutdio.robotmon/lib CLASSPATH=%s %s /system/bin com.r2sutdio.robotmon.Main $@\" > /dev/null 2> /dev/null &"
+	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2sutdio.robotmon/lib:/data/app/com.r2sutdio.robotmon-1/lib/arm:/data/app/com.r2sutdio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2sutdio.robotmon.Main $@\" > /dev/null 2> /dev/null &"
 )
 
 func getAdbPath() string {
