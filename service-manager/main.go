@@ -69,6 +69,7 @@ func isExistPath(device, path string) bool {
 	} else {
 		result, _ = exec.Command(getAdbPath(), "-s", device, "shell", "ls "+path).Output()
 	}
+	adbDelay()
 	if bytes.Contains(result, []byte("No such file")) {
 		return false
 	}
@@ -95,9 +96,10 @@ func getApkPath(device string) string {
 }
 
 func getStartCommand(device string) string {
-	nohup := "nohup"
-	if !isExistPath(device, "/system/bin/nohup") {
-		// TODO check and test it
+	nohup := "" // some device not exist nohup
+	if isExistPath(device, "/system/bin/nohup") {
+		nohup = "nohup"
+	} else if isExistPath(device, "/system/bin/daemonize") {
 		nohup = "daemonize"
 	}
 	apk := getApkPath(device)
@@ -118,6 +120,7 @@ func startServices() {
 		adbDelay()
 		if pid == "" {
 			command := getStartCommand(device)
+			fmt.Println(command)
 			adbDelay()
 			exec.Command(getAdbPath(), "-s", device, "shell", command).Output()
 			adbDelay()
