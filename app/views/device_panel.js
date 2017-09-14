@@ -37,8 +37,6 @@ class DevicePanel extends DeviceConnection {
       this.height = obj.height;
       this.displayWidth = Math.floor(this.$screenshot.width());
       this.displayHeight = Math.floor((this.height * this.displayWidth) / this.width);
-      this.$screenshot.width(this.displayWidth);
-      this.$screenshot.height(this.displayHeight);
       this.syncScreen();
     })
     .catch((err) => {
@@ -137,7 +135,14 @@ class DevicePanel extends DeviceConnection {
       setTimeout(() => { this.syncScreen(); }, 1000);
       return;
     }
-    this.getScreenshot(0, 0, 0, 0, this.displayWidth * 2, this.displayHeight * 2, 80)
+    let fetchWidth = this.displayWidth * 2;
+    let fetchHeight = this.displayHeight * 2;
+    if (this.isRotation) {
+      fetchWidth = this.displayHeight * 2;
+      fetchHeight = this.displayWidth * 2;
+    }
+
+    this.getScreenshot(0, 0, 0, 0, fetchWidth, fetchHeight, 80)
     .then((obj) => {
       if (this.isConnect) {
         const now = Date.now();
@@ -157,13 +162,13 @@ class DevicePanel extends DeviceConnection {
   }
 
   toScreenXY(x, y) {
-    if (!this.isRotation) {
-      const sx = Math.floor((x / this.displayWidth) * this.width);
-      const sy = Math.floor((y / this.displayHeight) * this.height);
+    if (this.isRotation) {
+      const sx = Math.floor((x / this.$screenshot.width()) * this.height);
+      const sy = Math.floor((y / this.$screenshot.height()) * this.width);
       return [sx, sy];
     }
-    const sy = Math.floor(((this.displayWidth - x) / this.displayWidth) * this.width);
-    const sx = Math.floor((y / this.displayHeight) * this.height);
+    const sx = Math.floor((x / this.$screenshot.width()) * this.width);
+    const sy = Math.floor((y / this.$screenshot.height()) * this.height);
     return [sx, sy];
   }
 
