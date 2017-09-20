@@ -15,7 +15,7 @@ import (
 
 const (
 	// StartCommand launch service command
-	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2sutdio.robotmon/lib:/data/app/com.r2sutdio.robotmon-1/lib/arm:/data/app/com.r2sutdio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2sutdio.robotmon.Main $@\" > /dev/null 2> /dev/null &"
+	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null &"
 )
 
 func getAdbPath() string {
@@ -86,9 +86,9 @@ func getAppProcess(device string) string {
 func getApkPath(device string) string {
 	var result []byte
 	if device == "" {
-		result, _ = exec.Command(getAdbPath(), "shell", "pm path com.r2sutdio.robotmon;").Output()
+		result, _ = exec.Command(getAdbPath(), "shell", "pm path com.r2studio.robotmon;").Output()
 	} else {
-		result, _ = exec.Command(getAdbPath(), "-s", device, "shell", "pm path com.r2sutdio.robotmon;").Output()
+		result, _ = exec.Command(getAdbPath(), "-s", device, "shell", "pm path com.r2studio.robotmon;").Output()
 	}
 	result = bytes.Trim(result, "\r\n")
 	path := strings.Split(string(result), ":")[1]
