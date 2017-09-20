@@ -25,7 +25,7 @@ adb install robotmon.apk
 ### Run Robotmon service on background
 
 ```
-nohup sh -c "LD_LIBRARY_PATH=/system/lib:/data/app/com.r2sutdio.robotmon-1/lib/arm:/data/app/com.r2sutdio.robotmon-2/lib/arm CLASSPATH=/data/app/com.r2sutdio.robotmon-1/base.apk:/data/app/com.r2sutdio.robotmon-2/base.apk app_process32 /system/bin com.r2sutdio.robotmon.Main $@" > /dev/null 2> /dev/null &
+nohup sh -c "LD_LIBRARY_PATH=/system/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=/data/app/com.r2studio.robotmon-1/base.apk:/data/app/com.r2studio.robotmon-2/base.apk app_process32 /system/bin com.r2studio.robotmon.Main $@" > /dev/null 2> /dev/null &
 ```
 
 ### Kill background process
