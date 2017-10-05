@@ -3,24 +3,25 @@
   "version": "0.1.0",
   "description": "Robotmon react desktop",
   "homepage": "./",
-  "main": "src/electron-starter.js",
+  "main": "main.js",
   "private": true,
   "devDependencies": {
-    "electron": "^1.7.8",
-    "foreman": "^2.0.0",
-    "react-scripts": "1.0.14"
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-react": "^6.23.0",
+    "css-loader": "^0.26.1",
+    "electron": "^1.4.15",
+    "electron-reload": "^1.1.0",
+    "extract-text-webpack-plugin": "^2.0.0-rc.3",
+    "file-loader": "^0.9.0",
+    "webpack": "^2.2.1"
   },
   "dependencies": {
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
   },
   "scripts": {
-    "start": "nf start -p 3000",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "electron": "electron .",
-    "electron-start": "node src/electron-wait-react",
-    "react-start": "react-scripts start"
+    "dev": "webpack",
+    "start": "electron ."
   }
 }
