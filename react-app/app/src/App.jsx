@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import {} from './styles/global.css';
 import Logo from './components/Logo.jsx';
 import Link from './components/Link.jsx';
-import RService from './modules/remote-service';
+
+import SM from './modules/service-manager';
+
 
 const logos = [
   require('./assets/electron.png'),
@@ -12,8 +14,7 @@ const logos = [
 
 export default class App extends Component {
   render() {
-    const r = new RService();
-    r.listDevices();
+    SM.scanService().then(console.log);
     const logosRender = logos.map((logo, index) => <Logo key={index} src={logo} />);
 
     return (
