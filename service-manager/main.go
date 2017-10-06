@@ -1,22 +1,29 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
+
+	adb "github.com/yosemite-open/go-adb"
 )
 
 const (
 	// StartCommand launch service command
 	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null &"
 )
+
+var client *adb.Adb
+
+func init() {
+	client, _ = adb.New()
+	// client.StartServer()
+}
 
 func getAdbPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
@@ -33,26 +40,16 @@ func getAdbPath() string {
 }
 
 func getDevices() []string {
-	devices := []string{}
-	result, _ := exec.Command(getAdbPath(), "devices").Output()
-	lines := strings.Split(string(result), "\n")
-	for _, line := range lines {
-		tabs := strings.Split(line, "\t")
-		if len(tabs) > 1 {
-			devices = append(devices, tabs[0])
-		}
-	}
-	return devices
+	serials, _ := client.ListDeviceSerials()
+	return serials
 }
 
-func getPid(device string) string {
-	var result []byte
-	if device == "" {
-		result, _ = exec.Command(getAdbPath(), "shell", "ps | grep app_process").Output()
-	} else {
-		result, _ = exec.Command(getAdbPath(), "-s", device, "shell", "ps | grep app_process").Output()
-	}
-	line := strings.Split(string(result), "\n")[0]
+func getPid(serial string) string {
+	descriptor := adb.DeviceWithSerial(serial)
+	device := client.Device(descriptor)
+	result, _ := device.RunCommand("ps | grep app_process")
+
+	line := strings.Split(result, "\n")[0]
 	tabs := strings.Split(line, " ")
 	for i, tab := range tabs {
 		if i > 0 && tab != "" {
@@ -62,48 +59,43 @@ func getPid(device string) string {
 	return ""
 }
 
-func isExistPath(device, path string) bool {
-	var result []byte
-	if device == "" {
-		result, _ = exec.Command(getAdbPath(), "shell", "ls "+path).Output()
-	} else {
-		result, _ = exec.Command(getAdbPath(), "-s", device, "shell", "ls "+path).Output()
-	}
-	adbDelay()
-	if bytes.Contains(result, []byte("No such file")) {
+func isExistPath(serial, path string) bool {
+	descriptor := adb.DeviceWithSerial(serial)
+	device := client.Device(descriptor)
+	result, _ := device.RunCommand("ls " + path)
+
+	if strings.Contains(result, "No such file") {
 		return false
 	}
 	return true
 }
 
-func getAppProcess(device string) string {
-	if isExistPath(device, "/system/bin/app_process32") {
+func getAppProcess(serial string) string {
+	if isExistPath(serial, "/system/bin/app_process32") {
 		return "app_process32"
 	}
 	return "app_process"
 }
 
-func getApkPath(device string) string {
-	var result []byte
-	if device == "" {
-		result, _ = exec.Command(getAdbPath(), "shell", "pm path com.r2studio.robotmon;").Output()
-	} else {
-		result, _ = exec.Command(getAdbPath(), "-s", device, "shell", "pm path com.r2studio.robotmon;").Output()
-	}
-	result = bytes.Trim(result, "\r\n")
+func getApkPath(serial string) string {
+	descriptor := adb.DeviceWithSerial(serial)
+	device := client.Device(descriptor)
+	result, _ := device.RunCommand("pm path com.r2studio.robotmon")
+
+	result = strings.Trim(result, "\r\n")
 	path := strings.Split(string(result), ":")[1]
 	return path
 }
 
-func getStartCommand(device string) string {
+func getStartCommand(serial string) string {
 	nohup := "" // some device not exist nohup
-	if isExistPath(device, "/system/bin/nohup") {
+	if isExistPath(serial, "/system/bin/nohup") {
 		nohup = "nohup"
-	} else if isExistPath(device, "/system/bin/daemonize") {
+	} else if isExistPath(serial, "/system/bin/daemonize") {
 		nohup = "daemonize"
 	}
-	apk := getApkPath(device)
-	process := getAppProcess(device)
+	apk := getApkPath(serial)
+	process := getAppProcess(serial)
 	command := fmt.Sprintf(StartCommand, nohup, apk, process)
 	return command
 }
@@ -113,47 +105,58 @@ func adbDelay() {
 }
 
 func startServices() {
-	devices := getDevices()
-	adbDelay()
-	for _, device := range devices {
-		pid := getPid(device)
-		adbDelay()
+	serials := getDevices()
+	// adbDelay()
+	for _, serial := range serials {
+		pid := getPid(serial)
+		// adbDelay()
 		if pid == "" {
-			command := getStartCommand(device)
+			command := getStartCommand(serial)
 			fmt.Println(command)
 			adbDelay()
-			exec.Command(getAdbPath(), "-s", device, "shell", command).Output()
+			descriptor := adb.DeviceWithSerial(serial)
+			device := client.Device(descriptor)
 			adbDelay()
-			pid := getPid(device)
-			fmt.Println("start robotmon service", device, "pid", pid)
+			// result, err := device.RunCommand(command)
+			// for i := 0; i < 10; i++ {
+			// result, err := device.RunCommand("sh", "-c", "LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=/data/app/com.r2studio.robotmon-1/base.apk app_process32 /system/bin com.r2studio.robotmon.Main $@ & sleep 1")
+			result, err := device.RunCommand("LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=/data/app/com.r2studio.robotmon-1/base.apk app_process32 /system/bin com.r2studio.robotmon.Main $@")
+			fmt.Println(result, err)
+			// }
+
+			adbDelay()
+			pid := getPid(serial)
+			fmt.Println("start robotmon service", serial, "pid", pid)
 		} else {
-			fmt.Println("robotmon service already started", device, pid)
+			fmt.Println("robotmon service already started", serial, pid)
 		}
 	}
 }
 
 func stopServices() {
-	devices := getDevices()
-	adbDelay()
-	for _, device := range devices {
-		pid := getPid(device)
+	serials := getDevices()
+	// adbDelay()
+	for _, serial := range serials {
+		pid := getPid(serial)
 		if pid != "" {
-			adbDelay()
-			exec.Command(getAdbPath(), "-s", device, "shell", "kill "+pid).Output()
+			// adbDelay()
+			descriptor := adb.DeviceWithSerial(serial)
+			device := client.Device(descriptor)
+			device.RunCommand("kill " + pid)
 		}
-		fmt.Println("stop robotmon service", device, pid)
+		fmt.Println("stop robotmon service", serial, pid)
 	}
 }
 
 func listServices() {
-	devices := getDevices()
+	serials := getDevices()
 	adbDelay()
-	for _, device := range devices {
-		pid := getPid(device)
+	for _, serial := range serials {
+		pid := getPid(serial)
 		if pid == "" {
-			fmt.Println("Device", device, "service is not running")
+			fmt.Println("Device", serial, "service is not running")
 		} else {
-			fmt.Println("Device", device, "service is running", pid)
+			fmt.Println("Device", serial, "service is running", pid)
 		}
 	}
 }
