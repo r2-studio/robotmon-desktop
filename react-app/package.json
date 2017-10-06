@@ -14,9 +14,19 @@
     "electron-reload": "^1.1.0",
     "extract-text-webpack-plugin": "^2.0.0-rc.3",
     "file-loader": "^0.9.0",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "electron-packager": "^9.0.1",
+    "electron-rebuild": "^1.6.0",
+    "eslint": "^3.17.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0"
   },
   "dependencies": {
+    "adbkit": "^2.11.0",
+    "func-pipe": "^1.0.4",
+    "lodash": "^4.17.4",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
