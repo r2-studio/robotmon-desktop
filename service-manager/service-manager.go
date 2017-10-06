@@ -21,22 +21,27 @@ const (
 var client *adb.Adb
 
 func init() {
-	client, _ = adb.New()
-	// client.StartServer()
+	adbPath := getAdbPath(false)
+	fmt.Println(adbPath)
+	client, _ = adb.NewWithConfig(adb.ServerConfig{
+		PathToAdb: adbPath,
+	})
+	client.StartServer()
 }
 
-func getAdbPath() string {
+func getAdbPath(bin bool) string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	prefixes := []string{".", "..", "bin"}
 	if err != nil {
 		log.Fatal(err)
 	}
-	if runtime.GOOS == "linux" {
-		return dir + "/adb.linux"
-	} else if runtime.GOOS == "darwin" {
-		return dir + "/adb.darwin"
-	} else {
-		return dir + "\\adb.win32"
+	for _, prefix := range prefixes {
+		adbPath := dir + string(os.PathSeparator) + prefix + string(os.PathSeparator) + "adb." + runtime.GOOS
+		if _, err := os.Stat(adbPath); !os.IsNotExist(err) {
+			return adbPath
+		}
 	}
+	return ""
 }
 
 func getDevices() []string {
@@ -106,29 +111,32 @@ func adbDelay() {
 
 func startServices() {
 	serials := getDevices()
-	// adbDelay()
 	for _, serial := range serials {
 		pid := getPid(serial)
-		// adbDelay()
 		if pid == "" {
 			command := getStartCommand(serial)
 			fmt.Println(command)
-			adbDelay()
 			descriptor := adb.DeviceWithSerial(serial)
 			device := client.Device(descriptor)
 			adbDelay()
-			// result, err := device.RunCommand(command)
-			// for i := 0; i < 10; i++ {
-			// result, err := device.RunCommand("sh", "-c", "LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=/data/app/com.r2studio.robotmon-1/base.apk app_process32 /system/bin com.r2studio.robotmon.Main $@ & sleep 1")
-			result, err := device.RunCommand("LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=/data/app/com.r2studio.robotmon-1/base.apk app_process32 /system/bin com.r2studio.robotmon.Main $@")
-			fmt.Println(result, err)
-			// }
-
-			adbDelay()
-			pid := getPid(serial)
-			fmt.Println("start robotmon service", serial, "pid", pid)
+			for i := 0; i < 10; i++ {
+				_, err := device.RunCommand(command)
+				if err != nil {
+					fmt.Println("Failed", err)
+				}
+				pid = getPid(serial)
+				if pid != "" {
+					fmt.Println("Success", serial, "pid", pid)
+					break
+				}
+				fmt.Println("Retry...", i)
+				time.Sleep(800 * time.Millisecond)
+			}
+			if pid == "" {
+				fmt.Println("Failed")
+			}
 		} else {
-			fmt.Println("robotmon service already started", serial, pid)
+			fmt.Println("Already started", serial, pid)
 		}
 	}
 }
@@ -162,7 +170,6 @@ func listServices() {
 }
 
 func main() {
-
 	startCmd := flag.Bool("start", false, "start robotmon service")
 	stopCmd := flag.Bool("stop", false, "stop robotmon service")
 	flag.Parse()
@@ -174,4 +181,5 @@ func main() {
 	} else {
 		listServices()
 	}
+	time.Sleep(3 * time.Second)
 }
