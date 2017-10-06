@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	adb "github.com/yosemite-open/go-adb"
+	adb "github.com/poi5305/go-adb"
 )
 
 const (
