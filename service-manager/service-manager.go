@@ -143,16 +143,17 @@ func startServices() {
 
 func stopServices() {
 	serials := getDevices()
-	// adbDelay()
 	for _, serial := range serials {
-		pid := getPid(serial)
-		if pid != "" {
-			// adbDelay()
-			descriptor := adb.DeviceWithSerial(serial)
-			device := client.Device(descriptor)
-			device.RunCommand("kill " + pid)
+		for i := 0; i < 2; i++ {
+			pid := getPid(serial)
+			if pid != "" {
+				descriptor := adb.DeviceWithSerial(serial)
+				device := client.Device(descriptor)
+				device.RunCommand("kill " + pid)
+				fmt.Println("stop robotmon service", serial, pid)
+			}
+			adbDelay()
 		}
-		fmt.Println("stop robotmon service", serial, pid)
 	}
 }
 
