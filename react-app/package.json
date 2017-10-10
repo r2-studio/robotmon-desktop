@@ -9,6 +9,7 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-react": "^6.24.1",
+    "concurrently": "^3.5.0",
     "css-loader": "^0.28.7",
     "electron": "^1.7.8",
     "electron-reload": "^1.2.2",
@@ -31,7 +32,8 @@
     "react-dom": "^16.0.0"
   },
   "scripts": {
-    "dev": "webpack",
-    "start": "electron ."
+    "webpack-start": "./node_modules/.bin/webpack",
+    "electron-start": "./node_modules/.bin/electron .",
+    "start": "./node_modules/.bin/concurrently \"npm run webpack-start\" \"npm run electron-start\""
   }
 }
