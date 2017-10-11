@@ -6,19 +6,17 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"syscall"
 )
 
 func main() {
 	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	path := dir + string(os.PathSeparator) + "service-manager." + runtime.GOOS
 	fmt.Println(path)
-	binary, lookErr := exec.LookPath(path)
-	if lookErr != nil {
-		panic(lookErr)
+	cmd := exec.Command(path, "-stop")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println(err)
 	}
-	args := []string{"service-manager", "--stop"}
-	env := os.Environ()
-	err := syscall.Exec(binary, args, env)
-	fmt.Println(err)
 }

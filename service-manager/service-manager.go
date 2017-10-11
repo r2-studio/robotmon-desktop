@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -23,9 +24,11 @@ var client *adb.Adb
 func init() {
 	adbPath := getAdbPath(false)
 	fmt.Println(adbPath)
-	client, _ = adb.NewWithConfig(adb.ServerConfig{
-		PathToAdb: adbPath,
-	})
+	cmd := exec.Command(adbPath, "start-server")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+	client, _ = adb.New()
 	client.StartServer()
 }
 
