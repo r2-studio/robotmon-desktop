@@ -3,52 +3,25 @@ import {} from './styles/global.css';
 import Logo from './components/Logo.jsx';
 import Link from './components/Link.jsx';
 
-import SM from './modules/service-manager';
-
-
-const logos = [
-  require('./assets/electron.png'),
-  require('./assets/react.png'),
-  require('./assets/webpack.png'),
-];
+import ServiceManager from './modules/service-manager';
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      devices: [],
+    };
+
+    ServiceManager.scanService().then(devices => this.setState({ devices }));
+  }
+
   render() {
-    SM.scanService().then(console.log);
-    const logosRender = logos.map((logo, index) => <Logo key={index} src={logo} />);
-
     return (
-      <div>
-        {logosRender}
-
-        <div className="hello">
-          <h1>Hello React!!!</h1>
-        </div>
-
-        <p>
-          If you are trying to build Electron apps using React, or you just
-          want to play around with them like me, feel free to use this
-          seed as a starting point.
-        </p>
-
-        <p>
-          Pay attention to how everything inside src/ are bundled
-          into build/, how global and scoped CSS work, how to compose
-          React components, or simply how Webpack changes relative
-          image paths to public paths after building.
-        </p>
-
-        <p>
-          Check out the docs for&nbsp;
-          <Link to="http://electron.atom.io/docs/">Electron</Link>,&nbsp;
-          <Link to="https://facebook.github.io/react/docs/hello-world.html">React </Link> and&nbsp;
-          <Link to="https://webpack.js.org/configuration/">Webpack 2</Link>.
-          Customize this template as you wish by adding any fancy tool
-          you are used to. If you have any issue, please file an issue at this seeds
-          <Link to="https://github.com/pastahito/electron-react-webpack">
-          repository</Link>.
-        </p>
-      </div>
+      <ul>
+        {
+          this.state.devices.map((item, idx) => <li key={idx}>{item.pid} </li>)
+        }
+      </ul>
     );
   }
 }
