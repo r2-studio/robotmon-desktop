@@ -15,7 +15,7 @@ import (
 
 const (
 	// StartCommand launch service command
-	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null &"
+	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null && sleep 1 &"
 )
 
 var client *adb.Adb
@@ -120,9 +120,18 @@ func startServices() {
 			device := client.Device(descriptor)
 			adbDelay()
 			for i := 0; i < 10; i++ {
-				_, err := device.RunCommand(command)
-				if err != nil {
-					fmt.Println("Failed", err)
+				cv := make(chan bool, 1)
+				go func() {
+					_, err := device.RunCommand(command)
+					if err != nil {
+						fmt.Println("Failed", err)
+						cv <- false
+					}
+					cv <- true
+				}()
+				select {
+				case <-cv:
+				case <-time.After(3 * time.Second):
 				}
 				pid = getPid(serial)
 				if pid != "" {
