@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,24 +19,110 @@ const (
 	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null && sleep 1 &"
 )
 
-var client *adb.Adb
+type Adb interface {
+	GetDevices() []string
+	RunCommand(string, string) string
+}
 
-func init() {
-	adbPath := getAdbPath(false)
-	fmt.Println(adbPath)
+type AdbClient struct {
+	AdbPath string
+	Client  *adb.Adb
+}
+
+func (a *AdbClient) GetDevices() []string {
+	serials, err := a.Client.ListDeviceSerials()
+	if err != nil {
+		fmt.Println(err)
+		return []string{}
+	}
+	if len(serials) == 0 {
+		fmt.Println("Can not find any devicde")
+	}
+	return serials
+}
+
+func (a *AdbClient) RunCommand(serial, command string) string {
+	descriptor := adb.DeviceWithSerial(serial)
+	device := a.Client.Device(descriptor)
+	result, err := device.RunCommand(command)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return result
+}
+
+type AdbExec struct {
+	AdbPath string
+}
+
+func (a *AdbExec) GetDevices() []string {
+	devices := []string{}
+	cmd := exec.Command(a.AdbPath, "devices")
+	cmd.Stderr = os.Stderr
+	result, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+		return []string{}
+	}
+	lines := strings.Split(string(result), "\n")
+	for _, line := range lines {
+		tabs := strings.Split(line, "\t")
+		if len(tabs) > 1 {
+			devices = append(devices, tabs[0])
+		}
+	}
+	if len(devices) == 0 {
+		fmt.Println("Can not find any devicde")
+	}
+	return devices
+}
+
+func (a *AdbExec) RunCommand(serial, command string) string {
+	cmd := exec.Command(a.AdbPath, "-s", serial, "shell", command)
+	cmd.Stderr = os.Stderr
+	result, err := cmd.Output()
+	if err != nil {
+		fmt.Println(nil)
+		return ""
+	}
+	return string(result)
+}
+
+func NewAdbClient(adbPath string) Adb {
 	cmd := exec.Command(adbPath, "start-server")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Run()
-	client, _ = adb.New()
+
+	client, err := adb.New()
+
+	if err != nil {
+		fmt.Println(err)
+		bufio.NewReader(os.Stdin).ReadBytes('\n')
+		os.Exit(0)
+	}
+
 	client.StartServer()
+	return &AdbClient{
+		AdbPath: adbPath,
+		Client:  client,
+	}
 }
 
-func getAdbPath(bin bool) string {
+func NewAdbExec(adbPath string) Adb {
+	return &AdbExec{
+		AdbPath: adbPath,
+	}
+}
+
+var client Adb
+
+func getAdbPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	prefixes := []string{".", "..", "bin"}
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	for _, prefix := range prefixes {
 		adbPath := dir + string(os.PathSeparator) + prefix + string(os.PathSeparator) + "adb." + runtime.GOOS
@@ -47,15 +133,8 @@ func getAdbPath(bin bool) string {
 	return ""
 }
 
-func getDevices() []string {
-	serials, _ := client.ListDeviceSerials()
-	return serials
-}
-
 func getPid(serial string) string {
-	descriptor := adb.DeviceWithSerial(serial)
-	device := client.Device(descriptor)
-	result, _ := device.RunCommand("ps | grep app_process")
+	result := client.RunCommand(serial, "ps | grep app_process")
 
 	line := strings.Split(result, "\n")[0]
 	tabs := strings.Split(line, " ")
@@ -68,9 +147,7 @@ func getPid(serial string) string {
 }
 
 func isExistPath(serial, path string) bool {
-	descriptor := adb.DeviceWithSerial(serial)
-	device := client.Device(descriptor)
-	result, _ := device.RunCommand("ls " + path)
+	result := client.RunCommand(serial, "ls "+path)
 
 	if strings.Contains(result, "No such file") {
 		return false
@@ -86,9 +163,7 @@ func getAppProcess(serial string) string {
 }
 
 func getApkPath(serial string) string {
-	descriptor := adb.DeviceWithSerial(serial)
-	device := client.Device(descriptor)
-	result, _ := device.RunCommand("pm path com.r2studio.robotmon")
+	result := client.RunCommand(serial, "pm path com.r2studio.robotmon")
 
 	result = strings.Trim(result, "\r\n")
 	path := strings.Split(string(result), ":")[1]
@@ -113,23 +188,18 @@ func adbDelay() {
 }
 
 func startServices() {
-	serials := getDevices()
+	serials := client.GetDevices()
 	for _, serial := range serials {
 		pid := getPid(serial)
 		if pid == "" {
 			command := getStartCommand(serial)
+			fmt.Println("start service command:")
 			fmt.Println(command)
-			descriptor := adb.DeviceWithSerial(serial)
-			device := client.Device(descriptor)
 			adbDelay()
 			for i := 0; i < 10; i++ {
 				cv := make(chan bool, 1)
 				go func() {
-					_, err := device.RunCommand(command)
-					if err != nil {
-						fmt.Println("Failed", err)
-						cv <- false
-					}
+					client.RunCommand(serial, command)
 					cv <- true
 				}()
 				select {
@@ -154,14 +224,12 @@ func startServices() {
 }
 
 func stopServices() {
-	serials := getDevices()
+	serials := client.GetDevices()
 	for _, serial := range serials {
 		for i := 0; i < 2; i++ {
 			pid := getPid(serial)
 			if pid != "" {
-				descriptor := adb.DeviceWithSerial(serial)
-				device := client.Device(descriptor)
-				device.RunCommand("kill " + pid)
+				client.RunCommand(serial, "kill "+pid)
 				fmt.Println("stop robotmon service", serial, pid)
 			}
 			adbDelay()
@@ -170,7 +238,7 @@ func stopServices() {
 }
 
 func listServices() {
-	serials := getDevices()
+	serials := client.GetDevices()
 	adbDelay()
 	for _, serial := range serials {
 		pid := getPid(serial)
@@ -185,7 +253,17 @@ func listServices() {
 func main() {
 	startCmd := flag.Bool("start", false, "start robotmon service")
 	stopCmd := flag.Bool("stop", false, "stop robotmon service")
+	isExecAdb := flag.Bool("exec", true, "use exec adb")
 	flag.Parse()
+
+	adbPath := getAdbPath()
+	fmt.Println("find adb path:", adbPath)
+
+	if *isExecAdb {
+		client = NewAdbExec(adbPath)
+	} else {
+		client = NewAdbClient(adbPath)
+	}
 
 	if *startCmd {
 		startServices()
@@ -194,5 +272,6 @@ func main() {
 	} else {
 		listServices()
 	}
-	time.Sleep(3 * time.Second)
+	fmt.Println("Enter to exit...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }

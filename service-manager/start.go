@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -19,4 +20,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("Enter to exit...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
