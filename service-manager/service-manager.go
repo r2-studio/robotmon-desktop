@@ -254,6 +254,7 @@ func main() {
 	startCmd := flag.Bool("start", false, "start robotmon service")
 	stopCmd := flag.Bool("stop", false, "stop robotmon service")
 	isExecAdb := flag.Bool("exec", true, "use exec adb")
+	isConnectVM := flag.Bool("connvm", false, "connect to 5555 and 62001")
 	flag.Parse()
 
 	adbPath := getAdbPath()
@@ -263,6 +264,20 @@ func main() {
 		client = NewAdbExec(adbPath)
 	} else {
 		client = NewAdbClient(adbPath)
+	}
+
+	if *isConnectVM {
+		// connect to BS
+		cmd := exec.Command(adbPath, "connect", "127.0.0.1:5555")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Run()
+		// connetc to 夜神
+		cmd = exec.Command(adbPath, "connect", "127.0.0.1:62001")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Run()
+		time.Sleep(1 * time.Second)
 	}
 
 	if *startCmd {
