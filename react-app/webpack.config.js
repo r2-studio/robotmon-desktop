@@ -14,6 +14,12 @@ module.exports = {
     filename: 'bundle.js',
   },
 
+  context: __dirname,
+  node: {
+    __filename: true,
+    __dirname: true,
+  },
+
   module: {
     rules: [
       {

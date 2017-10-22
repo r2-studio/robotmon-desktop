@@ -2,12 +2,33 @@ import { EventEmitter } from 'fbemitter';
 
 const GlobalEB = new EventEmitter();
 
-class CServiceController extends EventEmitter {}
-CServiceController.EventNewItem = 'newItem';
+class CServiceControllerEventBus extends EventEmitter {
+  constructor() {
+    super();
+    this.EventNewItem = 'newItem';
+  }
+}
+const CServiceControllerEB = new CServiceControllerEventBus();
 
-const CServiceControllerEB = new CServiceController();
+class CAppEventBus extends EventEmitter {
+  constructor() {
+    super();
+    this.EventNewEditor = 'newEditor';
+  }
+}
+const CAppEB = new CAppEventBus();
+
+class CEditor extends EventEmitter {
+  constructor() {
+    super();
+    this.EventClientChanged = 'clientChanged';
+  }
+}
+const CEditorEB = new CEditor();
 
 export {
   GlobalEB,
   CServiceControllerEB,
+  CAppEB,
+  CEditorEB,
 };
