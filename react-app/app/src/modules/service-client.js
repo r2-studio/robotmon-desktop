@@ -1,13 +1,14 @@
 // if dlopen error, rebuild it, https://electron.atom.io/docs/tutorial/using-native-node-modules/
 // ./node_modules/.bin/electron-rebuild
-const grpc = require('grpc');
+const electron = window.require('electron').remote;
+const grpc = electron.require('grpc');
 
 const PORT = ':8081';
 
 const protoDescriptor = grpc.load(`${__dirname}/../grpc.proto`);
 const RPC = protoDescriptor.rpc;
 
-class ServiceClient {
+export default class ServiceClient {
   constructor(ip) {
     this.ip = ip;
   }
@@ -125,5 +126,3 @@ class ServiceClient {
     grpc.closeClient(this.client);
   }
 }
-
-module.exports = ServiceClient;
