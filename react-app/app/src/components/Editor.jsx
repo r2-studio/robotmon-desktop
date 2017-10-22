@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import ServiceClient from '../modules/service-client';
 import { CEditorEB } from '../modules/event-bus';
+import Scripts from './Scripts.jsx';
 
 import {} from '../styles/global.css';
 
@@ -74,13 +75,19 @@ export default class Editor extends Component {
   }
 
   render() {
-    let header = 'Use Service Controller To Start Editor';
     if (this.props.ip !== '') {
-      header = `Editor (${this.props.ip}) (${this.state.currentEditor.connectState}) `;
+      const header = `Editor (${this.props.ip}) (${this.state.currentEditor.connectState}) `;
+      return (
+        <div>
+          <Panel header={header}>
+            <Scripts ip={this.props.ip} editorClient={this.state.currentEditor} />
+          </Panel>
+        </div>
+      );
     }
     return (
       <div>
-        <Panel header={header} />
+        <Panel header="Use Service Controller To Start Editor" />
       </div>
     );
   }
