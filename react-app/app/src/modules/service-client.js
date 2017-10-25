@@ -11,6 +11,16 @@ const RPC = protoDescriptor.rpc;
 export default class ServiceClient {
   constructor(ip) {
     this.ip = ip;
+
+    this.runScript = this.runScript.bind(this);
+    this.getScreenshot = this.getScreenshot.bind(this);
+    this.getScreenSize = this.getScreenSize.bind(this);
+    this.tap = this.tap.bind(this);
+    this.tapUp = this.tapUp.bind(this);
+    this.tapDown = this.tapDown.bind(this);
+    this.moveTo = this.moveTo.bind(this);
+    this.streamLogs = this.streamLogs.bind(this);
+    this.disconnect = this.disconnect.bind(this);
   }
 
   init() {
