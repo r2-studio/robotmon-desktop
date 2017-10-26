@@ -20,6 +20,9 @@ export default class Screen extends Component {
       syncImageSrc: '',
       posX: 0,
       posY: 0,
+      colorRecord: [],
+      lineRowXY: {},
+      lineColXY: {},
     };
     this.onSyncScreenClick = this.onSyncScreenClick.bind(this);
     this.syncScreen = this.syncScreen.bind(this);
@@ -27,6 +30,7 @@ export default class Screen extends Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onControlTypeChange = this.onControlTypeChange.bind(this);
+    this.onClearColorClick = this.onClearColorClick.bind(this);
 
     this.isSyncScreen = false;
     this.screenWidth = 0;
@@ -67,7 +71,13 @@ export default class Screen extends Component {
     }
     const posX = Math.floor((e.nativeEvent.offsetX / imgW) * this.screenWidth);
     const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
-    this.setState({ posX, posY });
+
+    this.setState({
+      posX,
+      posY,
+      lineRowXY: { width: imgW, top: e.nativeEvent.offsetY - imgH },
+      lineColXY: { height: imgH, top: -imgH, left: e.nativeEvent.offsetX - imgW },
+    });
     if (this.screenControlType === 'tap') {
       this.editorClient.client.moveTo(posX, posY, 50);
     }
@@ -96,7 +106,30 @@ export default class Screen extends Component {
     const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
     if (this.screenControlType === 'tap') {
       this.editorClient.client.tapUp(posX, posY, 50);
+    } else if (this.screenControlType === 'color') {
+      const scripts = `
+        var _screen_image = getScreenshot();
+        var _screen_color = getImageColor(_screen_image, ${posX}, ${posY});
+        releaseImage(_screen_image);
+        JSON.stringify(_screen_color);
+      `;
+      fp
+        .pipe(fp.bind(this.editorClient.client.runScript, scripts))
+        .pipe((result) => {
+          const color = JSON.parse(result.message);
+          const record = this.state.colorRecord;
+          record.push({
+            x: posX, y: posY, r: color.r, g: color.g, b: color.b,
+          });
+          this.setState({ colorRecord: record });
+        });
     }
+  }
+
+  onClearColorClick() {
+    this.setState({
+      colorRecord: [],
+    });
   }
 
   onControlTypeChange(e) {
@@ -125,6 +158,16 @@ export default class Screen extends Component {
   }
 
   render() {
+    const lineStyle = {
+      float: 'left',
+      pointerEvents: 'none',
+      backgroundColor: 'black',
+      position: 'relative',
+      width: 1,
+      height: 1,
+      left: 0,
+      top: 0,
+    };
     return (
       <div>
         <Panel header="Screen Controller">
@@ -137,19 +180,27 @@ export default class Screen extends Component {
               {this.isSyncScreen ? 'Stop sync' : 'Start sync'}
             </Button>
             {' '}
-            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="tap"> Tap </Radio> {' '}
-            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color"> Color </Radio> {' '}
+            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="tap"> Tap </Radio>
+            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color"> Color </Radio>
             <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop"> Crop </Radio>
           </FormGroup>
+
           <div>x: {this.state.posX}, y: {this.state.posY}</div>
-          <img
-            src={this.state.syncImageSrc}
-            alt="Screenshot here"
-            draggable="false"
-            onMouseMove={this.onMouseMove}
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}
-          />
+
+          {this.state.colorRecord.map((item, i) =>
+            (<div key={i} style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})`, width: 300 }}> x: {item.x}, y: {item.y}, r: {item.r}, g: {item.g}, b: {item.b}</div>))}
+          <Button onClick={this.onClearColorClick} bsSize="small">Clear Colors</Button>
+          <div>
+            <img
+              src={this.state.syncImageSrc}
+              draggable="false"
+              onMouseMove={this.onMouseMove}
+              onMouseDown={this.onMouseDown}
+              onMouseUp={this.onMouseUp}
+            />
+            <div style={Object.assign({}, lineStyle, this.state.lineRowXY)} />
+            <div style={Object.assign({}, lineStyle, this.state.lineColXY)} />
+          </div>
         </Panel>
       </div>
     );
