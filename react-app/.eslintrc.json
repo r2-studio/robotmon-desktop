@@ -18,6 +18,7 @@
         "react/prefer-stateless-function": "warn",
         "react/no-array-index-key": "warn",
         "import/extensions": "warn",
-        "jsx-a11y/mouse-events-have-key-events": "off"
+        "jsx-a11y/mouse-events-have-key-events": "off",
+        "jsx-a11y/no-noninteractive-element-interactions": "off"
     }
 }

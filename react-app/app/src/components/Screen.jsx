@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel, Col, FormGroup, FormControl, Button } from 'react-bootstrap';
+import { Panel, Col, FormGroup, FormControl, Button, Radio } from 'react-bootstrap';
 import _ from 'lodash';
 import fp from 'func-pipe';
 
@@ -14,7 +14,7 @@ export default class Screen extends Component {
     // this.props = props;
 
     this.state = {
-      syncDelay: 1000,
+      syncDelay: 800,
       syncImageSize: 600,
       syncQuality: 90,
       syncImageSrc: '',
@@ -24,7 +24,14 @@ export default class Screen extends Component {
     this.onSyncScreenClick = this.onSyncScreenClick.bind(this);
     this.syncScreen = this.syncScreen.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.onControlTypeChange = this.onControlTypeChange.bind(this);
 
+    this.isSyncScreen = false;
+    this.screenWidth = 0;
+    this.screenHeight = 0;
+    this.screenControlType = 'tap';
     this.syncScreenId = setInterval(this.syncScreen, this.state.syncDelay);
     this.editorClient = undefined;
   }
@@ -44,10 +51,10 @@ export default class Screen extends Component {
   }
 
   onSyncScreenClick() {
-    if (this.props.editorClient.isSyncScreen) {
-      this.props.editorClient.isSyncScreen = false;
+    if (this.isSyncScreen) {
+      this.isSyncScreen = false;
     } else {
-      this.props.editorClient.isSyncScreen = true;
+      this.isSyncScreen = true;
     }
     this.forceUpdate();
   }
@@ -55,21 +62,54 @@ export default class Screen extends Component {
   onMouseMove(e) {
     const imgW = e.target.width;
     const imgH = e.target.height;
-    if (imgW > 0 && imgH > 0) {
-      this.setState({
-        posX: Math.floor((e.nativeEvent.offsetX / imgW) * this.editorClient.screenWidth),
-        posY: Math.floor((e.nativeEvent.offsetY / imgH) * this.editorClient.screenHeight),
-      });
+    if (imgW <= 0 && imgH <= 0) {
+      return;
+    }
+    const posX = Math.floor((e.nativeEvent.offsetX / imgW) * this.screenWidth);
+    const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
+    this.setState({ posX, posY });
+    if (this.screenControlType === 'tap') {
+      this.editorClient.client.moveTo(posX, posY, 50);
     }
   }
 
+  onMouseDown(e) {
+    const imgW = e.target.width;
+    const imgH = e.target.height;
+    if (imgW <= 0 && imgH <= 0) {
+      return;
+    }
+    const posX = Math.floor((e.nativeEvent.offsetX / imgW) * this.screenWidth);
+    const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
+    if (this.screenControlType === 'tap') {
+      this.editorClient.client.tapDown(posX, posY, 50);
+    }
+  }
+
+  onMouseUp(e) {
+    const imgW = e.target.width;
+    const imgH = e.target.height;
+    if (imgW <= 0 && imgH <= 0) {
+      return;
+    }
+    const posX = Math.floor((e.nativeEvent.offsetX / imgW) * this.screenWidth);
+    const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
+    if (this.screenControlType === 'tap') {
+      this.editorClient.client.tapUp(posX, posY, 50);
+    }
+  }
+
+  onControlTypeChange(e) {
+    this.screenControlType = e.target.value;
+  }
+
   syncScreen() {
-    if (this.editorClient.isConnect && this.editorClient.isSyncScreen) {
+    if (this.editorClient.isConnect && this.isSyncScreen) {
       fp
         .pipe(fp.bind(this.editorClient.client.getScreenSize))
         .pipe((wh) => {
-          this.editorClient.screenWidth = wh.width;
-          this.editorClient.screenHeight = wh.height;
+          this.screenWidth = wh.width;
+          this.screenHeight = wh.height;
 
           const ratio = this.state.syncImageSize / Math.max(wh.width, wh.height);
           const rw = Math.floor(wh.width * ratio);
@@ -92,15 +132,24 @@ export default class Screen extends Component {
             <Button
               onClick={this.onSyncScreenClick}
               bsSize="small"
-              bsStyle={this.props.editorClient.isSyncScreen ? 'danger' : 'success'}
+              bsStyle={this.isSyncScreen ? 'danger' : 'success'}
             >
-              {this.props.editorClient.isSyncScreen ? 'Stop sync' : 'Start sync'}
+              {this.isSyncScreen ? 'Stop sync' : 'Start sync'}
             </Button>
-            <Button bsSize="small">Get Color</Button>
-            <Button bsSize="small">Crop Image</Button>
+            {' '}
+            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="tap"> Tap </Radio> {' '}
+            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color"> Color </Radio> {' '}
+            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop"> Crop </Radio>
           </FormGroup>
           <div>x: {this.state.posX}, y: {this.state.posY}</div>
-          <img src={this.state.syncImageSrc} alt="Screenshot here" draggable="false" onMouseMove={this.onMouseMove} />
+          <img
+            src={this.state.syncImageSrc}
+            alt="Screenshot here"
+            draggable="false"
+            onMouseMove={this.onMouseMove}
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}
+          />
         </Panel>
       </div>
     );

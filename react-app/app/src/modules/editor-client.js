@@ -12,9 +12,6 @@ export default class EditorClient {
     this.connectState = 'connecting...';
 
     // sync screen
-    this.isSyncScreen = false;
-    this.screenWidth = 0;
-    this.screenHeihgt = 0;
 
     this.client = new ServiceClient(ip);
     this.client.init();
