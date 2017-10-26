@@ -1,5 +1,5 @@
 # Robotmon Desktop
-<a href='https://sites.google.com/view/robotmon'><img alt='Robotmon Logo' style='width: 100px;' src='./images/robotmon-logo.png'/></a>
+<a href='https://sites.google.com/view/robotmon'><img alt='Robotmon Logo' width='100px' height='100px' src='./images/robotmon-logo.png'/></a>
 
 ## Installation
 
@@ -24,7 +24,7 @@ npm start
 * No need to root
 * Download on [Google Play](https://play.google.com/store/apps/details?id=com.r2studio.robotmon).
 
-<a href='https://play.google.com/store/apps/details?id=com.r2studio.robotmon'><img alt='Get Robotmon on Google Play' style='width: 200px;' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=com.r2studio.robotmon'><img alt='Get Robotmon on Google Play' width='30%' height='30%' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 ## Run Robotmon Service (Important)
 
@@ -38,7 +38,7 @@ npm start
 2. In the bin directory, open the folder that matches your operation system
 3. Double click start to enable the service. A successful start would show message as below: 
 
-<img alt='Robotmon Service' style='width: 300px;' src='./images/robotmon-service.png'/>
+<img alt='Robotmon Service' width='30%' height='30%' src='./images/robotmon-service.png'/>
 
 ### Using Robotmon Desktop
 
