@@ -1,18 +1,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel, Col, FormGroup, FormControl, Button, Radio } from 'react-bootstrap';
+import { Panel, Row, Col, FormGroup, FormControl, Button, Radio, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import fp from 'func-pipe';
+import pref from 'electron-pref';
 
 import electron from 'electron';
 
 import {} from '../styles/global.css';
 
+const defaultRBMInitSettings = `importJS('RBM-0.0.2');
+var _desktop_config = {
+  appName: 'com.my.newProject',
+  oriResizeFactor: 0.8,
+  oriScreenWidth: __replace_width__,
+  oriScreenHeight: __replace_height__,
+  resizeFactor: 0.8,
+  imageThreshold: 0.95,
+};
+var _desktop_rbm = new RBM(_desktop_config);
+_desktop_rbm.init();
+`;
+
+const settings = pref.from({
+  rbmInitSetting: defaultRBMInitSettings,
+});
+
 export default class Screen extends Component {
   constructor(props) {
     super(props);
-    // this.props = props;
-
     this.state = {
       syncDelay: 800,
       syncImageSize: 600,
@@ -23,6 +39,10 @@ export default class Screen extends Component {
       colorRecord: [],
       lineRowXY: {},
       lineColXY: {},
+      rectXY: { top: 0, left: 0 },
+      cropFilename: '',
+      rbmSettingModal: false,
+      rbmSetting: settings.get('rbmInitSetting'),
     };
     this.onSyncScreenClick = this.onSyncScreenClick.bind(this);
     this.syncScreen = this.syncScreen.bind(this);
@@ -31,11 +51,15 @@ export default class Screen extends Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onControlTypeChange = this.onControlTypeChange.bind(this);
     this.onClearColorClick = this.onClearColorClick.bind(this);
+    this.onCropClick = this.onCropClick.bind(this);
+    this.onRBMSettingChange = this.onRBMSettingChange.bind(this);
+    this.onRBMSettingSave = this.onRBMSettingSave.bind(this);
 
     this.isSyncScreen = false;
     this.screenWidth = 0;
     this.screenHeight = 0;
-    this.screenControlType = 'tap';
+    this.screenControlType = '';
+    this.isMouseDown = false;
     this.syncScreenId = setInterval(this.syncScreen, this.state.syncDelay);
     this.editorClient = undefined;
   }
@@ -71,19 +95,31 @@ export default class Screen extends Component {
     }
     const posX = Math.floor((e.nativeEvent.offsetX / imgW) * this.screenWidth);
     const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
-
     this.setState({
       posX,
       posY,
-      lineRowXY: { width: imgW, top: e.nativeEvent.offsetY - imgH },
-      lineColXY: { height: imgH, top: -imgH, left: e.nativeEvent.offsetX - imgW },
+      lineRowXY: { width: imgW, top: e.nativeEvent.offsetY },
+      lineColXY: { height: imgH, left: e.nativeEvent.offsetX },
     });
     if (this.screenControlType === 'tap') {
       this.editorClient.client.moveTo(posX, posY, 50);
+    } else if (this.screenControlType === 'crop') {
+      if (!this.isMouseDown) {
+        return;
+      }
+      this.setState({
+        rectXY: {
+          top: this.state.rectXY.top,
+          left: this.state.rectXY.left,
+          height: e.nativeEvent.offsetY - this.state.rectXY.top,
+          width: e.nativeEvent.offsetX - this.state.rectXY.left,
+        },
+      });
     }
   }
 
   onMouseDown(e) {
+    this.isMouseDown = true;
     const imgW = e.target.width;
     const imgH = e.target.height;
     if (imgW <= 0 && imgH <= 0) {
@@ -93,10 +129,20 @@ export default class Screen extends Component {
     const posY = Math.floor((e.nativeEvent.offsetY / imgH) * this.screenHeight);
     if (this.screenControlType === 'tap') {
       this.editorClient.client.tapDown(posX, posY, 50);
+    } else if (this.screenControlType === 'crop') {
+      this.setState({
+        rectXY: {
+          top: e.nativeEvent.offsetY,
+          left: e.nativeEvent.offsetX,
+          width: 0,
+          height: 0,
+        },
+      });
     }
   }
 
   onMouseUp(e) {
+    this.isMouseDown = false;
     const imgW = e.target.width;
     const imgH = e.target.height;
     if (imgW <= 0 && imgH <= 0) {
@@ -136,6 +182,43 @@ export default class Screen extends Component {
     this.screenControlType = e.target.value;
   }
 
+  onCropClick() {
+    const ratio = this.state.syncImageSize / Math.max(this.screenWidth, this.screenHeight);
+    const posX1 = Math.floor(this.state.rectXY.left / ratio);
+    const posY1 = Math.floor(this.state.rectXY.top / ratio);
+    const posX2 = Math.floor((this.state.rectXY.left + this.state.rectXY.width) / ratio);
+    const posY2 = Math.floor((this.state.rectXY.top + this.state.rectXY.height) / ratio);
+    if (posX2 - posX1 > 0 && posY2 - posY1 > 0) {
+      if (this.state.cropFilename !== '') {
+        const intiScripts = this.state.rbmSetting.replace('__replace_width__', this.screenWidth).replace('__replace_height__', this.screenHeight);
+        const scripts = `${intiScripts}_desktop_rbm.screencrop('${this.state.cropFilename}', ${posX1}, ${posY1}, ${posX2}, ${posY2});`;
+        const findAppName = intiScripts.match(/appName.*'(.*)'/);
+        let appName = '';
+        if (findAppName !== null) {
+          [_, appName] = findAppName;
+        }
+        const imagePath = `${this.editorClient.storagePath}/scripts/${appName}/images`;
+        fp
+          .pipe(fp.bind(this.editorClient.client.runScript, scripts))
+          .pipe(fp.bind(this.editorClient.client.runScript, `execute('ls ${imagePath}');`))
+          .pipe(console.log)
+          .catch(console.log);
+        // TODO: notify screen crop component to update
+      }
+    }
+  }
+
+  onRBMSettingChange(e) {
+    this.setState({
+      rbmSetting: e.target.value,
+    });
+  }
+
+  onRBMSettingSave() {
+    settings.set('rbmInitSetting', this.state.rbmSetting);
+    this.setState({ rbmSettingModal: false });
+  }
+
   syncScreen() {
     if (this.editorClient.isConnect && this.isSyncScreen) {
       fp
@@ -159,15 +242,31 @@ export default class Screen extends Component {
 
   render() {
     const lineStyle = {
-      float: 'left',
       pointerEvents: 'none',
       backgroundColor: 'black',
-      position: 'relative',
+      position: 'absolute',
       width: 1,
       height: 1,
       left: 0,
       top: 0,
     };
+    const rectStyle = {
+      pointerEvents: 'none',
+      borderStyle: 'solid',
+      borderWidth: '1px',
+      borderColor: 'red',
+      backgroundColor: 'rgba(255, 255, 255, 0.3)',
+      position: 'absolute',
+      width: 0,
+      height: 0,
+      left: 0,
+      top: 0,
+    };
+    const onRBMSettingClose = () => this.setState({ rbmSettingModal: false, rbmSetting: settings.get('rbmInitSetting') });
+    const onRBMResetDefault = () => this.setState({ rbmSetting: defaultRBMInitSettings });
+    const onCropFilenameChange = e => this.setState({ cropFilename: e.target.value });
+    const onCropSettingClick = () => this.setState({ rbmSettingModal: true });
+
     return (
       <div>
         <Panel header="Screen Controller">
@@ -184,13 +283,25 @@ export default class Screen extends Component {
             <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color"> Color </Radio>
             <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop"> Crop </Radio>
           </FormGroup>
-
+          <FormGroup>
+            <Row>
+              <Col sm={3}>
+                <Button onClick={onCropSettingClick} bsSize="small">RBM Setting</Button>
+              </Col>
+              <Col sm={5}>
+                <FormControl type="text" placeholder="imageName.png" value={this.state.cropFilename} onChange={onCropFilenameChange} />
+              </Col>
+              <Col sm={2}>
+                <Button onClick={this.onCropClick} bsSize="small">Crop</Button>
+              </Col>
+            </Row>
+          </FormGroup>
           <div>x: {this.state.posX}, y: {this.state.posY}</div>
 
           {this.state.colorRecord.map((item, i) =>
             (<div key={i} style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})`, width: 300 }}> x: {item.x}, y: {item.y}, r: {item.r}, g: {item.g}, b: {item.b}</div>))}
           <Button onClick={this.onClearColorClick} bsSize="small">Clear Colors</Button>
-          <div>
+          <div style={{ position: 'relative' }}>
             <img
               src={this.state.syncImageSrc}
               draggable="false"
@@ -200,7 +311,29 @@ export default class Screen extends Component {
             />
             <div style={Object.assign({}, lineStyle, this.state.lineRowXY)} />
             <div style={Object.assign({}, lineStyle, this.state.lineColXY)} />
+            <div style={Object.assign({}, rectStyle, this.state.rectXY)} />
           </div>
+
+          <Modal
+            show={this.state.rbmSettingModal}
+            onHide={onRBMSettingClose}
+            container={this}
+            aria-labelledby="contained-modal-title"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title">RBM Start Settings (For Crop Function)</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              Crop function will use RBM library to crop images. Using _desktop_rbm object.<br />
+              Save path: /sdcard/Robotmon/scripts/[appName]/images
+              <FormControl componentClass="textarea" value={this.state.rbmSetting} onChange={this.onRBMSettingChange} rows="12" />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={onRBMResetDefault}>Reset Default</Button>
+              <Button onClick={onRBMSettingClose}>Close</Button>
+              <Button onClick={this.onRBMSettingSave} bsStyle="primary">Change settings</Button>
+            </Modal.Footer>
+          </Modal>
         </Panel>
       </div>
     );

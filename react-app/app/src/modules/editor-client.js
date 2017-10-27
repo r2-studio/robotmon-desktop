@@ -12,6 +12,7 @@ export default class EditorClient {
     this.connectState = 'connecting...';
 
     // sync screen
+    this.storagePath = '';
 
     this.client = new ServiceClient(ip);
     this.client.init();
@@ -20,10 +21,11 @@ export default class EditorClient {
 
   testConnection() {
     fp
-      .pipe(fp.bindObj(this.client.runScript, this.client, 'console.log("Robotmon Desktop Connect");'))
-      .pipe(() => {
+      .pipe(fp.bindObj(this.client.runScript, this.client, 'console.log("Robotmon Desktop Connect");getStoragePath();'))
+      .pipe((storagePath) => {
         this.isConnect = true;
         this.connectState = 'connected';
+        this.storagePath = storagePath.message;
       })
       .catch(() => {
         this.isConnect = false;
