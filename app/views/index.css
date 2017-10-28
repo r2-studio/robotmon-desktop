@@ -42,8 +42,29 @@ nav > input[type=file] {
   left: 0; */
 }
 
-#console {
-  background-color: rgb(30, 31, 28);
+#inspector {
+  background-color: rgb(30, 31, 28);  
   width: 360px;
+  display: flex;
 }
 
+#inspector > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+#console {
+  flex: 1;
+  overflow: scroll;
+  white-space: pre-wrap;
+  background-color: transparent;
+  color: white;
+  border: none;
+}
+
+#monitor .debug-screen-position {
+  padding: 4px 8px;
+  color: white;
+  font-size: 15px;
+}

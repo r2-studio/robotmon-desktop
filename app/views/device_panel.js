@@ -81,6 +81,7 @@ class DevicePanel extends DeviceConnection {
     this.$isGetColor = this.$panel.find('.checkbox-get-color');
     this.$colorRecords = this.$panel.find('.color-records');
     this.$consolelog = this.$panel.find('.consolelog');
+    this.$console = this.$panel.find('#console');
 
     this.$btnConnect.unbind('click').bind('click', this.connect.bind(this));
     this.$btnDisconnect.unbind('click').bind('click', this.disconnect.bind(this));
@@ -107,6 +108,7 @@ class DevicePanel extends DeviceConnection {
       this.runScriptByString(cmd);
       this.onLogMsg = (log) => {
         this.$consolelog.html(log.message);
+        this.$console.append(log.message + '\n');
       };
     });
   }

@@ -65,7 +65,7 @@ const DeviceManager = require('./device_manager.js');
 
 
 $(() => {
-  deviceManager = new DeviceManager($('#deviceList'), $('#devices'));
+  deviceManager = new DeviceManager($('#deviceList'), $('#inspector'));
 });
 
 var editor;
