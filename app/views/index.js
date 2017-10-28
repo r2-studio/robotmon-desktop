@@ -67,3 +67,41 @@ const DeviceManager = require('./device_manager.js');
 $(() => {
   deviceManager = new DeviceManager($('#deviceList'), $('#devices'));
 });
+
+var editor;
+var currentFilePath;
+
+$(document).ready(() => {
+  initEditor();
+});
+
+function initEditor() {
+  editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/javascript");
+  document.getElementById("file-input").addEventListener('change', readFile, false);
+}
+
+function readFile(e) {
+  var file = e.target.files[0];
+  if (!file) {
+    return;
+  }
+  currentFilePath = file.path;
+  
+  var reader = new FileReader();
+  reader.onload = (e) => {
+    var content = e.target.result;
+    editor.setValue(content);
+  };
+  reader.readAsText(file);
+}
+
+function saveFile() {
+  var fs = require('fs');
+  try {
+    fs.writeFileSync(currentFilePath, editor.getValue(), 'utf-8');
+  } catch(e) {
+    alert('Failed to save the file!');
+  }
+}
