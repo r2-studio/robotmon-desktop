@@ -26,6 +26,29 @@ const settings = pref.from({
   rbmInitSetting: defaultRBMInitSettings,
 });
 
+const lineStyle = {
+  pointerEvents: 'none',
+  backgroundColor: 'black',
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  left: 0,
+  top: 0,
+};
+
+const rectStyle = {
+  pointerEvents: 'none',
+  borderStyle: 'solid',
+  borderWidth: '1px',
+  borderColor: 'red',
+  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  position: 'absolute',
+  width: 0,
+  height: 0,
+  left: 0,
+  top: 0,
+};
+
 export default class Screen extends Component {
   constructor(props) {
     super(props);
@@ -45,15 +68,19 @@ export default class Screen extends Component {
       rbmSetting: settings.get('rbmInitSetting'),
     };
     this.onSyncScreenClick = this.onSyncScreenClick.bind(this);
+    this.onControlTypeChange = this.onControlTypeChange.bind(this);
     this.syncScreen = this.syncScreen.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
-    this.onControlTypeChange = this.onControlTypeChange.bind(this);
-    this.onClearColorClick = this.onClearColorClick.bind(this);
     this.onCropClick = this.onCropClick.bind(this);
     this.onRBMSettingChange = this.onRBMSettingChange.bind(this);
     this.onRBMSettingSave = this.onRBMSettingSave.bind(this);
+    this.onClearColorClick = this.onClearColorClick.bind(this);
+    this.onRBMResetDefault = this.onRBMResetDefault.bind(this);
+    this.onRBMSettingClose = this.onRBMSettingClose.bind(this);
+    this.onCropFilenameChange = this.onCropFilenameChange.bind(this);
+    this.onCropSettingClick = this.onCropSettingClick.bind(this);
 
     this.isSyncScreen = false;
     this.screenWidth = 0;
@@ -85,6 +112,10 @@ export default class Screen extends Component {
       this.isSyncScreen = true;
     }
     this.forceUpdate();
+  }
+
+  onControlTypeChange(e) {
+    this.screenControlType = e.target.value;
   }
 
   onMouseMove(e) {
@@ -173,13 +204,11 @@ export default class Screen extends Component {
   }
 
   onClearColorClick() {
-    this.setState({
-      colorRecord: [],
-    });
+    this.setState({ colorRecord: [] });
   }
 
-  onControlTypeChange(e) {
-    this.screenControlType = e.target.value;
+  onCropFilenameChange(e) {
+    this.setState({ cropFilename: e.target.value });
   }
 
   onCropClick() {
@@ -208,10 +237,21 @@ export default class Screen extends Component {
     }
   }
 
+  // Modal Event
+  onCropSettingClick() {
+    this.setState({ rbmSettingModal: true });
+  }
+
   onRBMSettingChange(e) {
-    this.setState({
-      rbmSetting: e.target.value,
-    });
+    this.setState({ rbmSetting: e.target.value });
+  }
+
+  onRBMResetDefault() {
+    this.setState({ rbmSetting: defaultRBMInitSettings });
+  }
+
+  onRBMSettingClose() {
+    this.setState({ rbmSettingModal: false, rbmSetting: settings.get('rbmInitSetting') });
   }
 
   onRBMSettingSave() {
@@ -241,32 +281,6 @@ export default class Screen extends Component {
   }
 
   render() {
-    const lineStyle = {
-      pointerEvents: 'none',
-      backgroundColor: 'black',
-      position: 'absolute',
-      width: 1,
-      height: 1,
-      left: 0,
-      top: 0,
-    };
-    const rectStyle = {
-      pointerEvents: 'none',
-      borderStyle: 'solid',
-      borderWidth: '1px',
-      borderColor: 'red',
-      backgroundColor: 'rgba(255, 255, 255, 0.3)',
-      position: 'absolute',
-      width: 0,
-      height: 0,
-      left: 0,
-      top: 0,
-    };
-    const onRBMSettingClose = () => this.setState({ rbmSettingModal: false, rbmSetting: settings.get('rbmInitSetting') });
-    const onRBMResetDefault = () => this.setState({ rbmSetting: defaultRBMInitSettings });
-    const onCropFilenameChange = e => this.setState({ cropFilename: e.target.value });
-    const onCropSettingClick = () => this.setState({ rbmSettingModal: true });
-
     return (
       <div>
         <Panel header="Screen Controller">
@@ -286,10 +300,10 @@ export default class Screen extends Component {
           <FormGroup>
             <Row>
               <Col sm={3}>
-                <Button onClick={onCropSettingClick} bsSize="small">RBM Setting</Button>
+                <Button onClick={this.onCropSettingClick} bsSize="small">RBM Setting</Button>
               </Col>
               <Col sm={5}>
-                <FormControl type="text" placeholder="imageName.png" value={this.state.cropFilename} onChange={onCropFilenameChange} />
+                <FormControl type="text" placeholder="imageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
               </Col>
               <Col sm={2}>
                 <Button onClick={this.onCropClick} bsSize="small">Crop</Button>
@@ -316,7 +330,7 @@ export default class Screen extends Component {
 
           <Modal
             show={this.state.rbmSettingModal}
-            onHide={onRBMSettingClose}
+            onHide={this.onRBMSettingClose}
             container={this}
             aria-labelledby="contained-modal-title"
           >
@@ -329,8 +343,8 @@ export default class Screen extends Component {
               <FormControl componentClass="textarea" value={this.state.rbmSetting} onChange={this.onRBMSettingChange} rows="12" />
             </Modal.Body>
             <Modal.Footer>
-              <Button onClick={onRBMResetDefault}>Reset Default</Button>
-              <Button onClick={onRBMSettingClose}>Close</Button>
+              <Button onClick={this.onRBMResetDefault}>Reset Default</Button>
+              <Button onClick={this.onRBMSettingClose}>Close</Button>
               <Button onClick={this.onRBMSettingSave} bsStyle="primary">Change settings</Button>
             </Modal.Footer>
           </Modal>
