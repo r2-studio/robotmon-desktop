@@ -26,9 +26,23 @@ class CEditor extends EventEmitter {
 }
 const CEditorEB = new CEditor();
 
+class CLogs extends EventEmitter {
+  constructor() {
+    super();
+    this.EventNewLog = 'newLog';
+    this.TagDesktop = 'Desktop';
+    this.TagDebug = 'Debug';
+    this.LevelError = 'levelError';
+    this.LevelWarning = 'levelWarning';
+    this.LevelInfo = 'levelInfo';
+  }
+}
+const CLogsEB = new CLogs();
+
 export {
   GlobalEB,
   CServiceControllerEB,
   CAppEB,
   CEditorEB,
+  CLogsEB,
 };
