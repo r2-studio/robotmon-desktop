@@ -1,0 +1,10 @@
+{
+  "app_name": "Robotmon Service Launcher",
+  "icon_path_darwin": "resources/gopher.icns",
+  "icon_path_linux": "resources/gopher.png",
+  "icon_path_windows": "resources/gopher.ico",
+  "output_path": "output",
+  "environments": [
+    {"arch": "amd64", "os": "darwin"}
+  ]
+}
