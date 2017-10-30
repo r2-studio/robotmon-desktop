@@ -84,8 +84,6 @@ func (a *AdbExec) RunCommand(serial, command string) string {
 	cmd := exec.Command(a.AdbPath, "-s", serial, "shell", command)
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
-	window.Send("[RunCommand] Command: " + command)
-	window.Send("[RunCommand] Output: " + string(result))
 	if err != nil {
 		fmt.Println(nil)
 		return ""

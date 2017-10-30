@@ -41,6 +41,9 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 				window.Send("[EvnTest] -- Robotmon Service Started PID: " + pid)
 			}
 		}
+		if len(devices) == 0 {
+			window.Send("[EvnTest] -- USB Devices not found")
+		}
 	}
 	return
 }
