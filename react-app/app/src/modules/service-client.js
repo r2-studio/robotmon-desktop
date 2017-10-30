@@ -7,9 +7,9 @@ const PORT = ':8081';
 
 let protoDescriptor;
 try {
-  protoDescriptor = grpc.load(`resources/app/${__dirname}/../grpc.proto`);
+  protoDescriptor = grpc.load('resources/app/grpc.proto');
 } catch (e) {
-  protoDescriptor = grpc.load(`${__dirname}/../grpc.proto`);
+  protoDescriptor = grpc.load('grpc.proto');
 }
 const RPC = protoDescriptor.rpc;
 

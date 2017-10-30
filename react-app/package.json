@@ -40,9 +40,9 @@
     "webpack-start": "./node_modules/.bin/webpack",
     "electron-start": "./node_modules/.bin/electron .",
     "start": "./node_modules/.bin/concurrently \"npm run webpack-start\" \"npm run electron-start\"",
-    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico",
-    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico",
-    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns",
-    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png"
+    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico --ignore=app/src --out=out",
+    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico --ignore=app/src --out=out",
+    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns --ignore=app/src --out=out",
+    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png --ignore=app/src --out=out"
   }
 }
