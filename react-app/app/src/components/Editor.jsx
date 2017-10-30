@@ -1,40 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Panel } from 'react-bootstrap';
-import fp from 'func-pipe';
 import _ from 'lodash';
 
-import ServiceClient from '../modules/service-client';
+import EditorClient from '../modules/editor-client';
 import { CEditorEB } from '../modules/event-bus';
 import Scripts from './Scripts.jsx';
+import Screen from './Screen.jsx';
 
 import {} from '../styles/global.css';
-
-class EditorClient {
-  constructor(ip) {
-    this.ip = ip;
-    this.isConnect = false;
-    this.connectState = 'connecting...';
-
-    this.client = new ServiceClient(ip);
-    this.client.init();
-    this.testConnection();
-  }
-
-  testConnection() {
-    fp
-      .pipe(fp.bindObj(this.client.runScript, this.client, 'console.log("Robotmon Desktop Connect");'))
-      .pipe(() => {
-        this.isConnect = true;
-        this.connectState = 'connected';
-      })
-      .catch(() => {
-        this.isConnect = false;
-        this.connectState = 'disconnect';
-      })
-      .pipe(() => CEditorEB.emit(CEditorEB.EventClientChanged, this.ip));
-  }
-}
 
 export default class Editor extends Component {
   constructor(props) {
@@ -44,7 +18,6 @@ export default class Editor extends Component {
       currentEditor: {},
     };
     this.editorClients = {};
-    this.isConnect = false;
 
     this.onStateChange = this.onStateChange.bind(this);
 
@@ -81,6 +54,7 @@ export default class Editor extends Component {
         <div>
           <Panel header={header}>
             <Scripts ip={this.props.ip} editorClient={this.state.currentEditor} />
+            <Screen ip={this.props.ip} editorClient={this.state.currentEditor} />
           </Panel>
         </div>
       );

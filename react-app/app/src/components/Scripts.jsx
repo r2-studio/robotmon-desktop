@@ -17,7 +17,6 @@ export default class Scripts extends Component {
       scriptPath: '',
     };
 
-
     this.onBrowseClick = this.onBrowseClick.bind(this);
     this.onRunClick = this.onRunClick.bind(this);
     this.runScriptByPath = this.runScriptByPath.bind(this);
