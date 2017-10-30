@@ -39,6 +39,10 @@
   "scripts": {
     "webpack-start": "./node_modules/.bin/webpack",
     "electron-start": "./node_modules/.bin/electron .",
-    "start": "./node_modules/.bin/concurrently \"npm run webpack-start\" \"npm run electron-start\""
+    "start": "./node_modules/.bin/concurrently \"npm run webpack-start\" \"npm run electron-start\"",
+    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico",
+    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico",
+    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns",
+    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png"
   }
 }

@@ -5,7 +5,12 @@ const grpc = electron.require('grpc');
 
 const PORT = ':8081';
 
-const protoDescriptor = grpc.load(`${__dirname}/../grpc.proto`);
+let protoDescriptor;
+try {
+  protoDescriptor = grpc.load(`resources/app/${__dirname}/../grpc.proto`);
+} catch (e) {
+  protoDescriptor = grpc.load(`${__dirname}/../grpc.proto`);
+}
 const RPC = protoDescriptor.rpc;
 
 export default class ServiceClient {
