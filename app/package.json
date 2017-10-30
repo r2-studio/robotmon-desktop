@@ -5,10 +5,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --asar=true --prune",
-    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --asar=true --prune",
-    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --asar=true --prune",
-    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --asar=true --prune"
+    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico",
+    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico",
+    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns",
+    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png"
   },
   "repository": "git@github.com:poi5305/robotmon-desktop.git",
   "keywords": [],

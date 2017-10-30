@@ -5,10 +5,13 @@ const {
 const path = require('path');
 const url = require('url');
 
-// Let electron reloads by itself when webpack watches changes in ./app/
-require('electron-reload')(__dirname, {
-  electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
-});
+try {
+  require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+  });
+} catch (ex) {
+  console.log('production');
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
