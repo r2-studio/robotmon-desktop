@@ -120,7 +120,7 @@ func NewAdbExec(adbPath string) Adb {
 
 func getAdbPath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	prefixes := []string{".", "..", "bin"}
+	prefixes := []string{".", "..", "bin", "resources/app/static/bin"}
 	if err != nil {
 		fmt.Println(err)
 	}
