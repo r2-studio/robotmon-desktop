@@ -26,6 +26,14 @@ class CEditor extends EventEmitter {
 }
 const CEditorEB = new CEditor();
 
+class CScreenCrops extends EventEmitter {
+  constructor() {
+    super();
+    this.EventAppNameChanged = 'AppNameChanged';
+  }
+}
+const CScreenCropsEB = new CScreenCrops();
+
 class CLogs extends EventEmitter {
   constructor() {
     super();
@@ -45,4 +53,5 @@ export {
   CAppEB,
   CEditorEB,
   CLogsEB,
+  CScreenCropsEB,
 };
