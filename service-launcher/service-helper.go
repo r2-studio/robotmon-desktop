@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,8 +8,6 @@ import (
 	"runtime"
 	"strings"
 	"time"
-
-	adb "github.com/poi5305/go-adb"
 )
 
 const (
@@ -20,39 +17,11 @@ const (
 
 type Adb interface {
 	GetDevices() []string
-	RunCommand(string, string) string
+	RunCommand(string, string, string) string
 }
 
 var adbPath string
 var client Adb
-
-type AdbClient struct {
-	AdbPath string
-	Client  *adb.Adb
-}
-
-func (a *AdbClient) GetDevices() []string {
-	serials, err := a.Client.ListDeviceSerials()
-	if err != nil {
-		fmt.Println(err)
-		return []string{}
-	}
-	if len(serials) == 0 {
-		fmt.Println("Can not find any devicde")
-	}
-	return serials
-}
-
-func (a *AdbClient) RunCommand(serial, command string) string {
-	descriptor := adb.DeviceWithSerial(serial)
-	device := a.Client.Device(descriptor)
-	result, err := device.RunCommand(command)
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	}
-	return result
-}
 
 type AdbExec struct {
 	AdbPath string
@@ -80,8 +49,13 @@ func (a *AdbExec) GetDevices() []string {
 	return devices
 }
 
-func (a *AdbExec) RunCommand(serial, command string) string {
-	cmd := exec.Command(a.AdbPath, "-s", serial, "shell", command)
+func (a *AdbExec) RunCommand(serial, command1, command2 string) string {
+	var cmd *exec.Cmd
+	if serial == "" {
+		cmd = exec.Command(a.AdbPath, command1, command2)
+	} else {
+		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2)
+	}
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
@@ -89,27 +63,6 @@ func (a *AdbExec) RunCommand(serial, command string) string {
 		return ""
 	}
 	return string(result)
-}
-
-func NewAdbClient(adbPath string) Adb {
-	cmd := exec.Command(adbPath, "start-server")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-
-	client, err := adb.New()
-
-	if err != nil {
-		fmt.Println(err)
-		bufio.NewReader(os.Stdin).ReadBytes('\n')
-		os.Exit(0)
-	}
-
-	client.StartServer()
-	return &AdbClient{
-		AdbPath: adbPath,
-		Client:  client,
-	}
 }
 
 func NewAdbExec(adbPath string) Adb {
@@ -134,7 +87,7 @@ func getAdbPath() string {
 }
 
 func getPid(serial string) string {
-	result := client.RunCommand(serial, "ps | grep app_process")
+	result := client.RunCommand(serial, "shell", "ps | grep app_process")
 
 	line := strings.Split(result, "\n")[0]
 	tabs := strings.Split(line, " ")
@@ -147,7 +100,7 @@ func getPid(serial string) string {
 }
 
 func isExistPath(serial, path string) bool {
-	result := client.RunCommand(serial, "ls "+path)
+	result := client.RunCommand(serial, "shell", "ls "+path)
 
 	if strings.Contains(result, "No such file") {
 		return false
@@ -163,7 +116,7 @@ func getAppProcess(serial string) string {
 }
 
 func getApkPath(serial string) string {
-	result := client.RunCommand(serial, "pm path com.r2studio.robotmon")
+	result := client.RunCommand(serial, "shell", "pm path com.r2studio.robotmon")
 
 	result = strings.Trim(result, "\r\n")
 	path := strings.Split(string(result), ":")[1]
@@ -199,7 +152,7 @@ func startServices() {
 			for i := 0; i < 10; i++ {
 				cv := make(chan bool, 1)
 				go func() {
-					client.RunCommand(serial, command)
+					client.RunCommand(serial, "shell", command)
 					cv <- true
 				}()
 				select {
@@ -229,7 +182,7 @@ func stopServices() {
 		for i := 0; i < 2; i++ {
 			pid := getPid(serial)
 			if pid != "" {
-				client.RunCommand(serial, "kill "+pid)
+				client.RunCommand(serial, "shell", "kill "+pid)
 				fmt.Println("stop robotmon service", serial, pid)
 			}
 			adbDelay()

@@ -24,9 +24,14 @@
 function addLog(log) {
     $("#log").val($("#log").val() + '\n' + log);
 }
-
 function refresh() {
     location.reload();
+}
+function connectBS() {
+    astilectron.send({"name": "bs", "payload": ""});
+}
+function connectNOX() {
+    astilectron.send({"name": "nox", "payload": ""});
 }
 function start() {
     astilectron.send({"name": "start", "payload": ""});
@@ -35,11 +40,16 @@ function stop() {
     astilectron.send({"name": "stop", "payload": ""});
 }
 function report() {
-    astilectron.send({"name": "report", "payload": ""});
+    var formattedBody = $("#log").val();
+    var mailToLink = "mailto:r2studio@gmail.com?subject=ServiceManagerReport&body=" + encodeURIComponent(formattedBody);
+    window.location.href = mailToLink;
 }
 function setadb() {
     astilectron.send({"name": "setadb", "payload": $("#adb-path").val()});
 }
 function runadb() {
-    astilectron.send({"name": "runadb", "payload": $("#command").val()});
+    astilectron.send({"name": "runadb", "payload": [$("#adbtype").val(), $("#adbcommand").val()]});
+}
+function connect() {
+    astilectron.send({"name": "connect", "payload": $("#port").val()});
 }

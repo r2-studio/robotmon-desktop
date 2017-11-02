@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/asticode/go-astilectron"
-	"github.com/asticode/go-astilectron-bootstrap"
+	astilectron "github.com/asticode/go-astilectron"
+	bootstrap "github.com/asticode/go-astilectron-bootstrap"
 )
 
 // ListItem represents a list item
@@ -71,7 +71,7 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 
 			cv := make(chan bool, 1)
 			go func() {
-				client.RunCommand(serial, startCommand)
+				client.RunCommand(serial, "shell", startCommand)
 				cv <- true
 			}()
 			select {
@@ -92,7 +92,7 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 			for i := 0; i < 2; i++ {
 				pid := getPid(serial)
 				if pid != "" {
-					client.RunCommand(serial, "kill "+pid)
+					client.RunCommand(serial, "shell", "kill "+pid)
 					sendLog("[Stop] -- Try to stop Robotmon Service " + serial + " pid: " + pid + " ...")
 				}
 			}
@@ -102,14 +102,38 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		json.Unmarshal(m.Payload, &adbPath)
 		sendLog("New ADB Path: " + adbPath)
 	case "runadb":
+		var command []string
+		json.Unmarshal(m.Payload, &command)
 		serials := client.GetDevices()
-		for _, serial := range serials {
-			command := ""
-			json.Unmarshal(m.Payload, &command)
-			sendLog("[RunADB] -- Command: " + command)
-			result := client.RunCommand(serial, command)
-			sendLog("[RunADB] -- " + serial + " Result: " + result)
+		if command[0] == "shell" {
+			for _, serial := range serials {
+				sendLog("[RunADB] -- " + serial + "Command: " + command[0] + " " + command[1])
+				result := client.RunCommand(serial, command[0], command[1])
+				sendLog("[RunADB] -- " + serial + " Result: " + result)
+			}
+		} else if command[0] == "devices" {
+			sendLog("[RunADB] -- Command: " + command[0] + " -l")
+			result := client.RunCommand("", command[0], "-l")
+			sendLog("[RunADB] --  Result: " + result)
+		} else {
+			sendLog("[RunADB] -- Command: " + command[0] + " " + command[1])
+			result := client.RunCommand("", command[0], command[1])
+			sendLog("[RunADB] --  Result: " + result)
 		}
+	case "connect":
+		port := ""
+		json.Unmarshal(m.Payload, &port)
+		sendLog("[RunADB] Connect to 127.0.0.1:" + port)
+		result := client.RunCommand("", "connect", "127.0.0.1:"+port)
+		sendLog("[RunADB] Connect Result: " + result)
+	case "bs":
+		sendLog("[RunADB] Connect BS: 127.0.0.1:5555")
+		result := client.RunCommand("", "connect", "127.0.0.1:5555")
+		sendLog("[RunADB] Connect BS Result: " + result)
+	case "nox":
+		sendLog("[RunADB] Connect NOX: 127.0.0.1:5555")
+		result := client.RunCommand("", "connect", "127.0.0.1:62001")
+		sendLog("[RunADB] Connect NOX Result: " + result)
 	}
 	return
 }
