@@ -22,7 +22,7 @@
 };
 
 function addLog(log) {
-    $("#log").val($("#log").val() + '\n' + log);
+    $("#log").val($("#log").val() + log + '\n');
 }
 function refresh() {
     location.reload();
