@@ -37,7 +37,6 @@ input {
 
 button {
     min-width: 70px;
-    margin-top: 10px;
     padding: 10px;
     background-color: #2E3842;
     border: 2px solid white;
@@ -52,8 +51,13 @@ button:hover {
     color: #2E3842;
 }
 
+button:focus {
+    outline: 0 !important;
+}
+
 .button-blue {
     border-color: #2196F3;
+    margin-right: 15px;
 }
 
 .button-blue:hover {
@@ -92,4 +96,9 @@ textarea {
     color: white;
     box-sizing: border-box;
     resize: none;
+}
+
+table {
+    border: 0;
+    width: 100%;
 }

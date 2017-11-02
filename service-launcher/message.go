@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	astilectron "github.com/asticode/go-astilectron"
@@ -41,26 +42,26 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		sendLog("[EnvTest] Find Devices... Please Wait")
 		devices := client.GetDevices()
 		for _, serial := range devices {
-			sendLog("[EvnTest] Find Device: " + serial)
+			sendLog("[EnvTest] Find Device: " + serial)
 
 			apkPath := getApkPath(serial)
-			sendLog("[EvnTest] -- Robotmon APK Path: " + apkPath)
+			sendLog("[EnvTest] -- Robotmon APK Path: " + apkPath)
 
 			appProcess := getAppProcess(serial)
-			sendLog("[EvnTest] -- Robotmon App Process: " + appProcess)
+			sendLog("[EnvTest] -- Robotmon App Process: " + appProcess)
 
 			startCommand := getStartCommand(serial)
-			sendLog("[EvnTest] -- Robotmon Start Command: " + startCommand)
+			sendLog("[EnvTest] -- Robotmon Start Command: " + startCommand)
 
 			pid := getPid(serial)
 			if pid == "" {
-				sendLog("[EvnTest] -- Robotmon Service NOT Found")
+				sendLog("[EnvTest] -- Robotmon Service NOT Found")
 			} else {
-				sendLog("[EvnTest] -- Robotmon Service Started PID: " + pid)
+				sendLog("[EnvTest] -- Robotmon Service Started PID: " + pid)
 			}
 		}
 		if len(devices) == 0 {
-			sendLog("[EvnTest] -- USB Devices not found")
+			sendLog("[EnvTest] -- USB Devices not found")
 		}
 
 	case "start":
@@ -102,22 +103,22 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		json.Unmarshal(m.Payload, &adbPath)
 		sendLog("New ADB Path: " + adbPath)
 	case "runadb":
-		var command []string
+		var command string
 		json.Unmarshal(m.Payload, &command)
-		serials := client.GetDevices()
-		if command[0] == "shell" {
+		command = strings.TrimPrefix(command, "adb")
+		command = strings.TrimSpace(command)
+		if strings.Contains(command, "shell") {
+			command = strings.TrimPrefix(command, "shell")
+			command = strings.TrimSpace(command)
+			serials := client.GetDevices()
 			for _, serial := range serials {
-				sendLog("[RunADB] -- " + serial + "Command: " + command[0] + " " + command[1])
-				result := client.RunCommand(serial, command[0], command[1])
+				sendLog("[RunADB] -- " + serial + "Command: shell " + command)
+				result := client.RunCommand(serial, "shell", command)
 				sendLog("[RunADB] -- " + serial + " Result: " + result)
 			}
-		} else if command[0] == "devices" {
-			sendLog("[RunADB] -- Command: " + command[0] + " -l")
-			result := client.RunCommand("", command[0], "-l")
-			sendLog("[RunADB] --  Result: " + result)
 		} else {
-			sendLog("[RunADB] -- Command: " + command[0] + " " + command[1])
-			result := client.RunCommand("", command[0], command[1])
+			sendLog("[RunADB] -- Command: " + command)
+			result := client.RunCommand("", command, "")
 			sendLog("[RunADB] --  Result: " + result)
 		}
 	case "connect":
