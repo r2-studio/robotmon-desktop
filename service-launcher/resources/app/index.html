@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="static/css/base.css"/>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="static/js/jquery.js"></script>
+    <script src="static/js/index.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            index.init();
+        });
+    </script>
+</head>
+<body class="dark">
+    <div class="container">
+        <div>Robotmon Service Manager</div>
+        <div>
+            <button onclick="refresh()">Refresh</button>
+            <button onclick="connectBS()">Connect BS</button>
+            <button onclick="connectNOX()">Connect NOX</button>
+            <button onclick="start()">Start Service</button>
+            <button onclick="stop()">Stop Service</button>
+            <button onclick="report()">EMail Report</button>
+        </div>
+        <br />
+        <div>
+            ADB path: <br /> 
+            <input type="text" id="adb-path" />
+            <br />
+            <button onclick="setadb()">Set</button>
+        </div>
+        <br />
+        <div>
+            Connect To Emulator with adb connect port <br />
+            <input type="text" id="port" value="62001" />
+            <br />
+            <button onclick="connect()">Connect</button>
+        </div>
+        <br />
+        <div>
+            Run ADB Command: <br />
+            <input type="text" id="adbtype" value="shell" />
+            <br />
+            <input type="text" id="adbcommand" />
+            <br />
+            <button onclick="runadb()">Run</button>
+        </div>
+        <br />
+        <div>Log:</div>
+        <div><textarea id="log"></textarea></div>
+    </div>
+    
+</body>
+</html>
