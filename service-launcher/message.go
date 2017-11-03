@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	astilectron "github.com/asticode/go-astilectron"
@@ -105,22 +104,16 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 	case "runadb":
 		var command string
 		json.Unmarshal(m.Payload, &command)
-		command = strings.TrimPrefix(command, "adb")
-		command = strings.TrimSpace(command)
-		if strings.Contains(command, "shell") {
-			command = strings.TrimPrefix(command, "shell")
-			command = strings.TrimSpace(command)
-			serials := client.GetDevices()
-			for _, serial := range serials {
-				sendLog("[RunADB] -- " + serial + "Command: shell " + command)
-				result := client.RunCommand(serial, "shell", command)
-				sendLog("[RunADB] -- " + serial + " Result: " + result)
-			}
-		} else {
-			sendLog("[RunADB] -- Command: " + command)
-			result := client.RunCommand("", command, "")
-			sendLog("[RunADB] --  Result: " + result)
+		serials := client.GetDevices()
+		for _, serial := range serials {
+			sendLog("[RunADB] -- " + serial + "Command: shell " + command)
+			result := client.RunCommand(serial, "shell", command)
+			sendLog("[RunADB] -- " + serial + " Result: " + result)
 		}
+	case "printDevices":
+		sendLog("[RunADB] -- Command: devices -l")
+		result := client.RunCommand("", "devices", "-l")
+		sendLog("[RunADB] --  Result: " + result)
 	case "connect":
 		port := ""
 		json.Unmarshal(m.Payload, &port)

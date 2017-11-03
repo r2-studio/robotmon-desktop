@@ -50,6 +50,9 @@ function setadb() {
 function runadb() {
     astilectron.send({"name": "runadb", "payload": $("#adbcommand").val()});
 }
+function printDevices() {
+    astilectron.send({"name": "printDevices", "payload": ""});
+}
 function connect() {
     astilectron.send({"name": "connect", "payload": $("#port").val()});
 }
