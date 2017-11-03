@@ -22,9 +22,9 @@ func main() {
 	if err := bootstrap.Run(bootstrap.Options{
 		Asset: Asset,
 		AstilectronOptions: astilectron.Options{
-			AppName:            AppName,
+			AppName: AppName,
 		},
-		Debug:    true,
+		Debug:    false,
 		Homepage: "index.html",
 		MenuOptions: []*astilectron.MenuItemOptions{
 			{
@@ -47,8 +47,10 @@ func main() {
 		WindowOptions: &astilectron.WindowOptions{
 			BackgroundColor: astilectron.PtrStr("#333"),
 			Center:          astilectron.PtrBool(true),
-			Height:          astilectron.PtrInt(600),
-			Width:           astilectron.PtrInt(600),
+			Height:          astilectron.PtrInt(850),
+			Width:           astilectron.PtrInt(1080),
+			MinHeight:       astilectron.PtrInt(850),
+			MinWidth:        astilectron.PtrInt(1080),
 		},
 	}); err != nil {
 		astilog.Fatal(errors.Wrap(err, "running bootstrap failed"))
