@@ -13,43 +13,64 @@
     </script>
 </head>
 <body class="dark">
+    <div style="font-size:18px; margin: 20px 20px 0px 20px; padding: 0px;">Robotmon Service Manager</div>
     <div class="container">
-        <div>Robotmon Service Manager</div>
-        <div>
-            <button onclick="refresh()">Refresh</button>
-            <button onclick="connectBS()">Connect BS</button>
-            <button onclick="connectNOX()">Connect NOX</button>
-            <button onclick="start()">Start Service</button>
-            <button onclick="stop()">Stop Service</button>
-            <button onclick="report()">EMail Report</button>
-        </div>
+        <table>
+            <tr>
+                <td align=Left>
+                    <button class="button-green" onclick="start()">Start Service</button>
+                    <button class="button-red" onclick="stop()">Stop Service</button>
+                </td>
+                <td align=Right>
+                    <button onclick="connectBS()">Connect BS</button>
+                    <button onclick="connectNOX()">Connect NOX</button>
+                    <button onclick="printDevices()">Devices</button>
+                    <button onclick="refresh()">Refresh</button>
+                    <button onclick="report()">E-mail Report</button>
+                </td>
+            </tr>
+        </table>
         <br />
-        <div>
-            ADB path: <br /> 
-            <input type="text" id="adb-path" />
-            <br />
-            <button onclick="setadb()">Set</button>
-        </div>
+        <table class="panel">
+            <tr>
+                <td>
+                    <button class="button-blue" onclick="setadb()">Set</button>
+                </td>
+                <td width="100%">
+                    ADB Path<br />
+                    <input type="text" id="adb-path" />
+                </td>
+            </tr>
+        </table>
         <br />
-        <div>
-            Connect To Emulator with adb connect port <br />
-            <input type="text" id="port" value="62001" />
-            <br />
-            <button onclick="connect()">Connect</button>
-        </div>
+        <table class="panel">
+            <tr>
+                <td>
+                    <button class="button-blue" onclick="connect()">Connect</button>
+                </td>
+                <td width="100%">
+                    Connect To Emulator with adb connect port<br />
+                    <input type="text" id="port" value="62001" />
+                </td>
+            </tr>
+        </table>
         <br />
-        <div>
-            Run ADB Command: <br />
-            <input type="text" id="adbtype" value="shell" />
-            <br />
-            <input type="text" id="adbcommand" />
-            <br />
-            <button onclick="runadb()">Run</button>
-        </div>
+        <table class="panel">
+            <tr>
+                <td>
+                    <button class="button-blue" onclick="runadb()">Run</button>
+                </td>
+                <td width="100%">
+                    Run ADB Shell Command<br />
+                    <input type="text" id="adbcommand" />
+                </td>
+            </tr>
+        </table>
         <br />
-        <div>Log:</div>
-        <div><textarea id="log"></textarea></div>
+        <div class="panel">
+            Log<br />
+            <textarea id="log"></textarea>
+        </div>
     </div>
-    
 </body>
 </html>

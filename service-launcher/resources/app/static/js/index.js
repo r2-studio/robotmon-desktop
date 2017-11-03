@@ -22,7 +22,7 @@
 };
 
 function addLog(log) {
-    $("#log").val($("#log").val() + '\n' + log);
+    $("#log").val($("#log").val() + log + '\n');
 }
 function refresh() {
     location.reload();
@@ -41,14 +41,17 @@ function stop() {
 }
 function report() {
     var formattedBody = $("#log").val();
-    var mailToLink = "mailto:r2studio@gmail.com?subject=ServiceManagerReport&body=" + encodeURIComponent(formattedBody);
+    var mailToLink = "mailto:r2studio.root@gmail.com?subject=ServiceManagerReport&body=" + encodeURIComponent(formattedBody);
     window.location.href = mailToLink;
 }
 function setadb() {
     astilectron.send({"name": "setadb", "payload": $("#adb-path").val()});
 }
 function runadb() {
-    astilectron.send({"name": "runadb", "payload": [$("#adbtype").val(), $("#adbcommand").val()]});
+    astilectron.send({"name": "runadb", "payload": $("#adbcommand").val()});
+}
+function printDevices() {
+    astilectron.send({"name": "printDevices", "payload": ""});
 }
 function connect() {
     astilectron.send({"name": "connect", "payload": $("#port").val()});
