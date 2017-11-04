@@ -24,18 +24,8 @@ func main() {
 		AstilectronOptions: astilectron.Options{
 			AppName: AppName,
 		},
-		Debug:    false,
+		Debug: false,
 		Homepage: "index.html",
-		MenuOptions: []*astilectron.MenuItemOptions{
-			{
-				Label: astilectron.PtrStr(AppName),
-				SubMenu: []*astilectron.MenuItemOptions{
-					{
-						Role: astilectron.MenuItemRoleClose,
-					},
-				},
-			},
-		},
 		MessageHandler: handleMessages,
 		OnWait: func(_ *astilectron.Astilectron, w *astilectron.Window, _ *astilectron.Menu, t *astilectron.Tray, _ *astilectron.Menu) error {
 			// Store global variables

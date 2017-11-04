@@ -20,9 +20,14 @@
         });
     }
 };
+var isDebugOpened = false;
 
 function addLog(log) {
     $("#log").val($("#log").val() + log + '\n');
+}
+function debug() {
+    isDebugOpened = !isDebugOpened;
+    astilectron.send({"name": "debug", "payload": isDebugOpened});
 }
 function refresh() {
     location.reload();
