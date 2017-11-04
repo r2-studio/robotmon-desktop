@@ -110,6 +110,14 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 			result := client.RunCommand(serial, "shell", command)
 			sendLog("[RunADB] -- " + serial + " Result: " + result)
 		}
+	case "debug":
+		debug := false
+		json.Unmarshal(m.Payload, &debug)
+		if debug {
+			w.OpenDevTools()
+		} else {
+			w.CloseDevTools()
+		}
 	case "printDevices":
 		sendLog("[RunADB] -- Command: devices -l")
 		result := client.RunCommand("", "devices", "-l")
