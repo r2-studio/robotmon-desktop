@@ -11,9 +11,11 @@ GOOS=windows GOARCH=386 go build -o bin/win32/stop.exe stop.go
 GOOS=darwin go build -o bin/mac/service-manager.darwin service-manager.go
 GOOS=darwin go build -o bin/mac/start start.go
 GOOS=darwin go build -o bin/mac/stop stop.go
+GOOS=darwin go build -o bin/mac/start-vm start-vm.go
 
 GOOS=linux go build -o bin/linux/service-manager.linux service-manager.go
 GOOS=linux go build -o bin/linux/start start.go
-GOOS=linux go build -o bin/linux/stop stop.go 
+GOOS=linux go build -o bin/linux/stop stop.go
+GOOS=linux go build -o bin/linux/start-vm start-vm.go
 
 zip -r service-manager.zip bin
