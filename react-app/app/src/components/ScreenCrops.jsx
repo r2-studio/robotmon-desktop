@@ -4,7 +4,7 @@ import { Panel } from 'react-bootstrap';
 import _ from 'lodash';
 import fp from 'func-pipe';
 
-import { CScreenCropsEB } from '../modules/event-bus';
+import { CLogsEB, CScreenCropsEB } from '../modules/event-bus';
 import Scripts from './Scripts.jsx';
 import Screen from './Screen.jsx';
 
@@ -15,16 +15,22 @@ export default class ScreenCrops extends Component {
     super(props);
     this.props = props;
     this.state = {
-      deviceImages: [],
+      deviceImages: {},
     };
 
     this.refresh = this.refresh.bind(this);
+    this.pullImageBase64 = this.pullImageBase64.bind(this);
+    this.newImage = this.newImage.bind(this);
 
     CScreenCropsEB.addListener(CScreenCropsEB.EventAppNameChanged, (appName) => {
       if (this.appName !== appName) {
         this.appName = appName;
         this.refresh();
       }
+    });
+
+    CScreenCropsEB.addListener(CScreenCropsEB.EventNewImageCropped, (filename) => {
+      this.newImage(filename);
     });
 
     this.appName = '';
@@ -53,29 +59,48 @@ export default class ScreenCrops extends Component {
       releaseImage(_desktop_open_img);
       _desktop_img_base64;
     `;
-    fp
+    return fp
       .pipe(fp.bind(this.editorClient.client.runScript, scripts))
-      .pipe(console.log);
+      .pipe(result => result.message)
+      .promise();
   }
 
-  refresh() {
-    this.imagePath = `${this.editorClient.storagePath}/scripts/${this.appName}/images`;
-    fp
-      .pipe(fp.bind(this.editorClient.client.runScript, `execute('ls ${this.imagePath}');`))
-      .pipe(({ message }) => {
-        const files = _.filter(message.split('\n'), v => v !== '');
-        _.forEach(files, (file) => {
-          const filePath = `${this.imagePath}/${file}`;
-          this.pullImageBase64(filePath);
+  newImage(filename) {
+    const filePath = `${this.imagePath}/${filename}`;
+    return fp
+      .pipe(fp.bind(this.pullImageBase64, filePath))
+      .pipe((base64) => {
+        this.state.deviceImages[filename] = `data:image/png;base64,${base64}`;
+        this.setState({
+          deviceImages: this.state.deviceImages,
         });
-      });
+      })
+      .promise();
   }
 
+  // 10.116.221.150
+  refresh() {
+    CLogsEB.emit(CLogsEB.EventNewLog, CLogsEB.TagDesktop, CLogsEB.LevelInfo, 'Refresh Images...');
+    this.setState({
+      deviceImages: {},
+    });
+    this.imagePath = `${this.editorClient.storagePath}/scripts/${this.appName}/images`;
+    const fpPromise = fp.pipe(fp.bind(this.editorClient.client.runScript, `execute('ls ${this.imagePath}');`));
+    fpPromise.pipe(({ message }) => {
+      const filenames = _.filter(message.split('\n'), v => v !== '');
+      _.forEach(filenames, (filename) => {
+        fpPromise.pipe(fp.bind(this.newImage, filename));
+      });
+    });
+  }
 
   render() {
     return (
-      <Panel header="Screen Crop" />
-
+      <Panel header="Screen Crop">
+        <div>
+          {_.map(this.state.deviceImages, (base64, key) => <img key={key} src={base64} />)}
+        </div>
+      </Panel>
     );
   }
 }

@@ -30,6 +30,7 @@ class CScreenCrops extends EventEmitter {
   constructor() {
     super();
     this.EventAppNameChanged = 'AppNameChanged';
+    this.EventNewImageCropped = 'NewImageCropped';
   }
 }
 const CScreenCropsEB = new CScreenCrops();

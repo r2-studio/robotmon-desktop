@@ -239,8 +239,10 @@ export default class Screen extends Component {
         const scripts = `${intiScripts}_desktop_rbm.screencrop('${this.state.cropFilename}', ${posX1}, ${posY1}, ${posX2}, ${posY2});`;
         fp
           .pipe(fp.bind(this.editorClient.client.runScript, scripts))
+          .pipe(() => {
+            CScreenCropsEB.emit(CScreenCropsEB.EventNewImageCropped, this.state.cropFilename);
+          })
           .catch(console.log);
-        // TODO: notify screen crop component to update
       }
     }
   }
