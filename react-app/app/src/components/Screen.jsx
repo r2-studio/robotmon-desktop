@@ -7,6 +7,8 @@ import pref from 'electron-pref';
 
 import electron from 'electron';
 
+import { CScreenCropsEB } from '../modules/event-bus';
+
 import {} from '../styles/global.css';
 
 const defaultRBMInitSettings = `importJS('RBM-0.0.2');
@@ -50,6 +52,15 @@ const rectStyle = {
 };
 
 export default class Screen extends Component {
+  static findAppName(intiScripts) {
+    const findAppName = intiScripts.match(/appName.*'(.*)'/);
+    let appName = '';
+    if (findAppName !== null) {
+      [_, appName] = findAppName;
+    }
+    return appName;
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -89,6 +100,7 @@ export default class Screen extends Component {
     this.isMouseDown = false;
     this.syncScreenId = setInterval(this.syncScreen, this.state.syncDelay);
     this.editorClient = undefined;
+    this.appName = Screen.findAppName(this.state.rbmSetting);
   }
 
   static get propTypes() {
@@ -103,6 +115,10 @@ export default class Screen extends Component {
     if (this.props.editorClient.ip !== nextProps.editorClient.ip) {
       this.state.syncImageSrc = '';
     }
+  }
+
+  componentDidUpdate() {
+    CScreenCropsEB.emit(CScreenCropsEB.EventAppNameChanged, this.appName);
   }
 
   onSyncScreenClick() {
@@ -221,18 +237,12 @@ export default class Screen extends Component {
       if (this.state.cropFilename !== '') {
         const intiScripts = this.state.rbmSetting.replace('__replace_width__', this.screenWidth).replace('__replace_height__', this.screenHeight);
         const scripts = `${intiScripts}_desktop_rbm.screencrop('${this.state.cropFilename}', ${posX1}, ${posY1}, ${posX2}, ${posY2});`;
-        const findAppName = intiScripts.match(/appName.*'(.*)'/);
-        let appName = '';
-        if (findAppName !== null) {
-          [_, appName] = findAppName;
-        }
-        const imagePath = `${this.editorClient.storagePath}/scripts/${appName}/images`;
         fp
           .pipe(fp.bind(this.editorClient.client.runScript, scripts))
-          .pipe(fp.bind(this.editorClient.client.runScript, `execute('ls ${imagePath}');`))
-          .pipe(console.log)
+          .pipe(() => {
+            CScreenCropsEB.emit(CScreenCropsEB.EventNewImageCropped, this.state.cropFilename);
+          })
           .catch(console.log);
-        // TODO: notify screen crop component to update
       }
     }
   }
@@ -252,6 +262,8 @@ export default class Screen extends Component {
 
   onRBMSettingClose() {
     this.setState({ rbmSettingModal: false, rbmSetting: settings.get('rbmInitSetting') });
+    this.appName = Screen.findAppName(this.state.rbmSetting);
+    CScreenCropsEB.emit(CScreenCropsEB.EventAppNameChanged, this.appName);
   }
 
   onRBMSettingSave() {

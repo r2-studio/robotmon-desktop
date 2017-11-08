@@ -40,7 +40,7 @@ export default class App extends Component {
             <ServiceController />
             <Logs />
           </Col>
-          <Col sm={6}>
+          <Col sm={9}>
             <Editor ip={this.state.editorIP} />
           </Col>
         </Row>

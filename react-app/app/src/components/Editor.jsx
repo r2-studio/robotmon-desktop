@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel } from 'react-bootstrap';
+import { Panel, Col } from 'react-bootstrap';
 import _ from 'lodash';
 
 import EditorClient from '../modules/editor-client';
 import { CEditorEB } from '../modules/event-bus';
 import Scripts from './Scripts.jsx';
 import Screen from './Screen.jsx';
+import ScreenCrops from './ScreenCrops.jsx';
 
 import {} from '../styles/global.css';
 
@@ -53,8 +54,13 @@ export default class Editor extends Component {
       return (
         <div>
           <Panel header={header}>
-            <Scripts ip={this.props.ip} editorClient={this.state.currentEditor} />
-            <Screen ip={this.props.ip} editorClient={this.state.currentEditor} />
+            <Col sm={8}>
+              <Scripts ip={this.props.ip} editorClient={this.state.currentEditor} />
+              <Screen ip={this.props.ip} editorClient={this.state.currentEditor} />
+            </Col>
+            <Col sm={4}>
+              <ScreenCrops ip={this.props.ip} editorClient={this.state.currentEditor} />
+            </Col>
           </Panel>
         </div>
       );

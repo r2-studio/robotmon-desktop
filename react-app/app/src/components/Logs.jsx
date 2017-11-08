@@ -55,6 +55,9 @@ export default class Logs extends Component {
     if (this.state.logs[tag].length > keepLogNumber) {
       this.state.logs[tag].shift();
     }
+    this.setState({
+      logs: this.state.logs,
+    });
   }
 
   render() {

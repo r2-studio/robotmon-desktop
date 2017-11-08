@@ -1,7 +1,7 @@
 import fp from 'func-pipe';
 
 import ServiceClient from '../modules/service-client';
-import { CEditorEB } from '../modules/event-bus';
+import { CEditorEB, CLogsEB } from '../modules/event-bus';
 
 import {} from '../styles/global.css';
 
@@ -17,6 +17,12 @@ export default class EditorClient {
     this.client = new ServiceClient(ip);
     this.client.init();
     this.testConnection();
+
+    this.client.streamLogs((message) => {
+      CLogsEB.emit(CLogsEB.EventNewLog, this.ip, CLogsEB.LevelInfo, message.message);
+    }, () => {
+      CLogsEB.emit(CLogsEB.EventNewLog, this.ip, CLogsEB.LevelWarning, 'Disconnect');
+    });
   }
 
   testConnection() {
@@ -26,10 +32,12 @@ export default class EditorClient {
         this.isConnect = true;
         this.connectState = 'connected';
         this.storagePath = storagePath.message;
+        CLogsEB.emit(CLogsEB.EventNewLog, this.ip, CLogsEB.LevelWarning, 'Connected');
       })
       .catch(() => {
         this.isConnect = false;
         this.connectState = 'disconnect';
+        CLogsEB.emit(CLogsEB.EventNewLog, this.ip, CLogsEB.LevelWarning, 'Disconnected');
       })
       .pipe(() => CEditorEB.emit(CEditorEB.EventClientChanged, this.ip));
   }
