@@ -5,8 +5,7 @@ import _ from 'lodash';
 import fp from 'func-pipe';
 
 import { CLogsEB, CScreenCropsEB } from '../modules/event-bus';
-import Scripts from './Scripts.jsx';
-import Screen from './Screen.jsx';
+import CropImage from './CropImage.jsx';
 
 import {} from '../styles/global.css';
 
@@ -70,7 +69,7 @@ export default class ScreenCrops extends Component {
     return fp
       .pipe(fp.bind(this.pullImageBase64, filePath))
       .pipe((base64) => {
-        this.state.deviceImages[filename] = `data:image/png;base64,${base64}`;
+        this.state.deviceImages[filePath] = `data:image/png;base64,${base64}`;
         this.setState({
           deviceImages: this.state.deviceImages,
         });
@@ -98,7 +97,7 @@ export default class ScreenCrops extends Component {
     return (
       <Panel header="Screen Crop">
         <div>
-          {_.map(this.state.deviceImages, (base64, key) => <img key={key} src={base64} />)}
+          {_.map(this.state.deviceImages, (base64, key) => <CropImage key={key} src={base64} filepath={key} />)}
         </div>
       </Panel>
     );
