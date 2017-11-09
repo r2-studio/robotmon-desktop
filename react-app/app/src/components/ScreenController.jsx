@@ -294,73 +294,72 @@ export default class Screen extends Component {
 
   render() {
     return (
-      <div>
-        <Panel header="Screen Controller">
-          <FormGroup>
-            <Button
-              onClick={this.onSyncScreenClick}
-              bsSize="small"
-              bsStyle={this.isSyncScreen ? 'danger' : 'success'}
-            >
-              {this.isSyncScreen ? 'Stop sync' : 'Start sync'}
-            </Button>
-            {' '}
-            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="tap"> Tap </Radio>
-            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color"> Color </Radio>
-            <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop"> Crop </Radio>
-          </FormGroup>
-          <FormGroup>
-            <Row>
-              <Col sm={3}>
-                <Button onClick={this.onCropSettingClick} bsSize="small">RBM Setting</Button>
-              </Col>
-              <Col sm={5}>
-                <FormControl type="text" placeholder="imageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
-              </Col>
-              <Col sm={2}>
-                <Button onClick={this.onCropClick} bsSize="small">Crop</Button>
-              </Col>
-            </Row>
-          </FormGroup>
-          <div>x: {this.state.posX}, y: {this.state.posY}</div>
-
-          {this.state.colorRecord.map((item, i) =>
-            (<div key={i} style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})`, width: 300 }}> x: {item.x}, y: {item.y}, r: {item.r}, g: {item.g}, b: {item.b}</div>))}
-          <Button onClick={this.onClearColorClick} bsSize="small">Clear Colors</Button>
-          <div style={{ position: 'relative' }}>
-            <img
-              src={this.state.syncImageSrc}
-              draggable="false"
-              onMouseMove={this.onMouseMove}
-              onMouseDown={this.onMouseDown}
-              onMouseUp={this.onMouseUp}
-            />
-            <div style={Object.assign({}, lineStyle, this.state.lineRowXY)} />
-            <div style={Object.assign({}, lineStyle, this.state.lineColXY)} />
-            <div style={Object.assign({}, rectStyle, this.state.rectXY)} />
-          </div>
-
-          <Modal
-            show={this.state.rbmSettingModal}
-            onHide={this.onRBMSettingClose}
-            container={this}
-            aria-labelledby="contained-modal-title"
+      <div className="panel-container">
+        <div className="panel-header">
+          Screen Controller
+        </div>
+        <FormGroup>
+          <Button
+            onClick={this.onSyncScreenClick}
+            bsClass={this.isSyncScreen ? 'button-red' : 'button-green'}
           >
-            <Modal.Header closeButton>
-              <Modal.Title id="contained-modal-title">RBM Start Settings (For Crop Function)</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              Crop function will use RBM library to crop images. Using _desktop_rbm object.<br />
-              Save path: /sdcard/Robotmon/scripts/[appName]/images
-              <FormControl componentClass="textarea" value={this.state.rbmSetting} onChange={this.onRBMSettingChange} rows="12" />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={this.onRBMResetDefault}>Reset Default</Button>
-              <Button onClick={this.onRBMSettingClose}>Close</Button>
-              <Button onClick={this.onRBMSettingSave} bsStyle="primary">Change settings</Button>
-            </Modal.Footer>
-          </Modal>
-        </Panel>
+            {this.isSyncScreen ? 'Stop Sync' : 'Start Sync'}
+          </Button>
+          <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="tap">Tap</Radio>
+          <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color">Color</Radio>
+          <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop">Crop</Radio>
+        </FormGroup>
+        <FormGroup>
+          <Row>
+            <Col sm={8}>
+              <FormControl bsClass="input" type="text" placeholder="ImageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
+            </Col>
+            <Col sm={2}>
+              <Button bsClass="button" onClick={this.onCropSettingClick}>Config</Button>
+            </Col>
+            <Col sm={2}>
+              <Button bsClass="button" onClick={this.onCropClick}>Crop</Button>
+            </Col>
+          </Row>
+        </FormGroup>
+        <div>x: {this.state.posX}, y: {this.state.posY}</div>
+
+        {this.state.colorRecord.map((item, i) =>
+        (<div key={i} style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})`, width: 300 }}> x: {item.x}, y: {item.y}, r: {item.r}, g: {item.g}, b: {item.b}</div>))}
+        <Button bsClass="button" onClick={this.onClearColorClick}>Clear Colors</Button>
+        <div style={{ position: 'relative' }}>
+          <img
+            src={this.state.syncImageSrc}
+            draggable="false"
+            onMouseMove={this.onMouseMove}
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}
+          />
+          <div style={Object.assign({}, lineStyle, this.state.lineRowXY)} />
+          <div style={Object.assign({}, lineStyle, this.state.lineColXY)} />
+          <div style={Object.assign({}, rectStyle, this.state.rectXY)} />
+        </div>
+
+        <Modal
+          show={this.state.rbmSettingModal}
+          onHide={this.onRBMSettingClose}
+          container={this}
+          aria-labelledby="contained-modal-title"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title">RBM Start Settings (For Crop Function)</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+          Crop function will use RBM library to crop images. Using _desktop_rbm object.<br />
+          Save path: /sdcard/Robotmon/scripts/[appName]/images
+          <FormControl componentClass="textarea" value={this.state.rbmSetting} onChange={this.onRBMSettingChange} rows="12" />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.onRBMResetDefault}>Reset Default</Button>
+            <Button onClick={this.onRBMSettingClose}>Close</Button>
+            <Button onClick={this.onRBMSettingSave} bsStyle="primary">Change settings</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

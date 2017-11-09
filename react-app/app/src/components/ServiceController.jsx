@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { Panel, ListGroup } from 'react-bootstrap';
 import _ from 'lodash';
 import dgram from 'dgram';
 
 import { CServiceControllerEB } from '../modules/event-bus';
 import ServiceItem from './ServiceItem.jsx';
-import {} from '../styles/global.css';
 
 export default class ServiceController extends Component {
   constructor(props) {
@@ -48,10 +46,8 @@ export default class ServiceController extends Component {
         <div className="panel-header">
           Service Controller
         </div>
-        <ListGroup>
-          <ServiceItem ip="" />
-          {_.values(this.state.devices).map((ip, key) => <ServiceItem key={key} ip={ip} />)}
-        </ListGroup>
+        <ServiceItem ip="" />
+        {_.values(this.state.devices).map((ip, key) => <ServiceItem key={key} ip={ip} />)}
       </div>
     );
   }

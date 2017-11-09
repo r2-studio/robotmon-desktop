@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ListGroupItem, Button, Row, Col, FormControl } from 'react-bootstrap';
+import { Button, Row, Col, FormControl } from 'react-bootstrap';
 
 import { CAppEB, CServiceControllerEB } from '../modules/event-bus';
-import {} from '../styles/global.css';
 
 export default class ServiceItem extends Component {
   constructor(props) {
@@ -40,17 +39,17 @@ export default class ServiceItem extends Component {
   render() {
     if (this.props.ip !== '') {
       return (
-        <Row>
-          <Col className="panel-item" sm={8}>{this.props.ip}</Col>
+        <Row className="panel-item">
+          <Col className="panel-body" sm={8}>{this.props.ip}</Col>
           <Col sm={4}><Button bsClass="button-green" onClick={this.onEditorClick}>Editor</Button></Col>
         </Row>
       );
     }
     return (
-      <Row>
+      <Row className="panel-item" style={{ padding: 6 }} >
         <Col sm={8}>
           <FormControl
-            bsClass="input-ip"
+            bsClass="input"
             type="text"
             value={this.state.textIP}
             placeholder="Enter IP"

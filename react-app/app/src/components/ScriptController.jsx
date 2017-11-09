@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel, Col, FormGroup, FormControl, Button } from 'react-bootstrap';
+import { Row, Col, FormControl, Button } from 'react-bootstrap';
 import _ from 'lodash';
 import fs from 'fs';
 import electron from 'electron';
@@ -58,21 +58,21 @@ export default class Scripts extends Component {
 
   render() {
     return (
-      <div>
-        <Panel header="Scripts Controller">
-          <FormGroup>
-            <Col sm={2}>
-              <Button onClick={this.onBrowseClick}>Browse</Button>
-            </Col>
-            <Col sm={8}>
-              <FormControl type="text" placeholder="script path" value={this.state.scriptPath} />
-            </Col>
-            <Col sm={2}>
-              <Button onClick={this.onRunClick}>Run</Button>
-            </Col>
-          </FormGroup>
-
-        </Panel>
+      <div className="panel-container">
+        <div className="panel-header">
+          Script Controller
+        </div>
+        <Row className="panel-item">
+          <Col sm={8}>
+            <FormControl bsClass="input" type="text" placeholder="Script Path" value={this.state.scriptPath} />
+          </Col>
+          <Col sm={2}>
+            <Button bsClass="button" onClick={this.onBrowseClick}>Browse</Button>
+          </Col>
+          <Col sm={2}>
+            <Button bsClass="button-green" onClick={this.onRunClick}>Run</Button>
+          </Col>
+        </Row>
       </div>
     );
   }

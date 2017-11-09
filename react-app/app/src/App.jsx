@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { CAppEB } from './modules/event-bus';
 import ServiceController from './components/ServiceController.jsx';
 import Editor from './components/Editor.jsx';
-import Logs from './components/Logs.jsx';
+import LogController from './components/LogController.jsx';
 
 export default class App extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ export default class App extends Component {
         <Row className="show-grid">
           <Col sm={3}>
             <ServiceController />
-            <Logs />
+            <LogController />
           </Col>
           <Col sm={9}>
             <Editor ip={this.state.editorIP} />

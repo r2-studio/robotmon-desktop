@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import _ from 'lodash';
 
 import EditorClient from '../modules/editor-client';
 import { CEditorEB } from '../modules/event-bus';
-import Scripts from './Scripts.jsx';
-import Screen from './Screen.jsx';
+import ScriptController from './ScriptController.jsx';
+import ScreenController from './ScreenController.jsx';
 import ScreenCrops from './ScreenCrops.jsx';
 
 import {} from '../styles/global.css';
@@ -53,21 +53,24 @@ export default class Editor extends Component {
       const header = `Editor (${this.props.ip}) (${this.state.currentEditor.connectState}) `;
       return (
         <div>
-          <Panel header={header}>
+          <div className="panel-header">
+            {header}
+          </div>
+          <Row className="panel-item">
             <Col sm={8}>
-              <Scripts ip={this.props.ip} editorClient={this.state.currentEditor} />
-              <Screen ip={this.props.ip} editorClient={this.state.currentEditor} />
+              <ScriptController ip={this.props.ip} editorClient={this.state.currentEditor} />
+              <ScreenController ip={this.props.ip} editorClient={this.state.currentEditor} />
             </Col>
             <Col sm={4}>
               <ScreenCrops ip={this.props.ip} editorClient={this.state.currentEditor} />
             </Col>
-          </Panel>
+          </Row>
         </div>
       );
     }
     return (
-      <div>
-        <Panel header="Use Service Controller To Start Editor" />
+      <div className="panel-header">
+        Use Service Controller To Start Editor
       </div>
     );
   }
