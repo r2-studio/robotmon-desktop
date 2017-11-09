@@ -18,13 +18,16 @@ type ListItem struct {
 }
 
 func sendLog(msg string) {
-	window.Send(bootstrap.MessageOut{Name: "log", Payload: msg})
+	if window != nil {
+		window.Send(bootstrap.MessageOut{Name: "log", Payload: msg})
+	}
 }
 
 // handleMessages handles messages
 func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload interface{}, err error) {
 	switch m.Name {
 	case "envTest":
+		time.Sleep(500 * time.Millisecond)
 		dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 		sendLog("[EnvTest] Current Path: " + dir)
 
