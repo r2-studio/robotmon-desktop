@@ -119,8 +119,11 @@ func getApkPath(serial string) string {
 	result := client.RunCommand(serial, "shell", "pm path com.r2studio.robotmon")
 
 	result = strings.Trim(result, "\r\n")
-	path := strings.Split(string(result), ":")[1]
-	return path
+	paths := strings.Split(string(result), ":")
+	if len(paths) < 2 {
+		return ""
+	}
+	return paths[1]
 }
 
 func getStartCommand(serial string) string {
