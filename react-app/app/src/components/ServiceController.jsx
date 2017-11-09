@@ -44,13 +44,14 @@ export default class ServiceController extends Component {
 
   render() {
     return (
-      <div>
-        <Panel header="Service Controller">
-          <ListGroup>
-            <ServiceItem ip="" />
-            {_.values(this.state.devices).map((ip, key) => <ServiceItem key={key} ip={ip} />)}
-          </ListGroup>
-        </Panel>
+      <div className="panel-container">
+        <div className="panel-header">
+          Service Controller
+        </div>
+        <ListGroup>
+          <ServiceItem ip="" />
+          {_.values(this.state.devices).map((ip, key) => <ServiceItem key={key} ip={ip} />)}
+        </ListGroup>
       </div>
     );
   }

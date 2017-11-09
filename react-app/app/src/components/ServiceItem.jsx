@@ -38,31 +38,27 @@ export default class ServiceItem extends Component {
   }
 
   render() {
-    const ipStyle = { fontSize: 20 };
     if (this.props.ip !== '') {
       return (
-        <ListGroupItem>
-          <Row className="show-grid">
-            <Col sm={8} style={ipStyle}>{this.props.ip}</Col>
-            <Col sm={4}><Button bsStyle="success" bsSize="sm" onClick={this.onEditorClick}>Editor</Button></Col>
-          </Row>
-        </ListGroupItem>
+        <Row>
+          <Col className="panel-item" sm={8}>{this.props.ip}</Col>
+          <Col sm={4}><Button bsClass="button-green" onClick={this.onEditorClick}>Editor</Button></Col>
+        </Row>
       );
     }
     return (
-      <ListGroupItem>
-        <Row className="show-grid">
-          <Col sm={8} style={ipStyle}>
-            <FormControl
-              type="text"
-              value={this.state.textIP}
-              placeholder="Enter IP"
-              onChange={this.handleChange}
-            />
-          </Col>
-          <Col sm={4}><Button bsStyle="success" bsSize="sm" onClick={this.onAddClick}>Add</Button></Col>
-        </Row>
-      </ListGroupItem>
+      <Row>
+        <Col sm={8}>
+          <FormControl
+            bsClass="input-ip"
+            type="text"
+            value={this.state.textIP}
+            placeholder="Enter IP"
+            onChange={this.handleChange}
+          />
+        </Col>
+        <Col sm={4}><Button bsClass="button-green" onClick={this.onAddClick}>Add</Button></Col>
+      </Row>
     );
   }
 }
