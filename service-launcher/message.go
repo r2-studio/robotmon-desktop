@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	astilectron "github.com/asticode/go-astilectron"
@@ -28,6 +29,9 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		sendLog("[EnvTest] Current Path: " + dir)
 
 		adbPath = getAdbPath()
+		if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+			os.Chmod(adbPath, 0777)
+		}
 
 		if adbPath == "" {
 			sendLog("[EnvTest] ADB NOT Found")
