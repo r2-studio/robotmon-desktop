@@ -4,6 +4,7 @@ import _ from 'lodash';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/monokai';
+import fs from 'fs';
 
 import { CAppEB } from './modules/event-bus';
 import ServiceController from './components/ServiceController.jsx';
@@ -15,12 +16,13 @@ export default class App extends Component {
     super();
     this.props = props;
     this.state = {
+      editorValue: '',
       editorIP: '',
     };
     this.editors = {};
     this.addNewEditor = this.addNewEditor.bind(this);
-    this.readFile = this.readFile.bind(this);
-    this.saveFile = this.saveFile.bind(this);
+    this.onFileRead = this.onFileRead.bind(this);
+    this.onFileSave = this.onFileSave.bind(this);
     this.onEditorChange = this.onEditorChange.bind(this);
   }
 
@@ -38,40 +40,39 @@ export default class App extends Component {
     }
   }
 
-  readFile(e) {
+  onFileRead(e) {
     var file = e.target.files[0];
     if (!file) {
       return;
     }
-    currentFilePath = file.path;
+    this.currentFilePath = file.path;
     
     var reader = new FileReader();
     reader.onload = (e) => {
       var content = e.target.result;
-      editor.setValue(content);
+      this.setState({editorValue: content});
     };
     reader.readAsText(file);
   }
 
-  saveFile() {
-    var fs = require('fs');
+  onFileSave() {
     try {
-      fs.writeFileSync(currentFilePath, editor.getValue(), 'utf-8');
+      fs.writeFileSync(this.currentFilePath, this.state.editorValue, 'utf-8');
     } catch(e) {
       alert('Failed to save the file!');
     }
   }
 
-  onEditorChange() {
-    
+  onEditorChange(newValue) {
+    this.setState({editorValue: newValue});
   }
 
   render() {
     return (
       <div>
         <nav>
-          <input type="file" id="file-input" />
-          <button onclick="saveFile();">Save</button>
+          <input type="file" onChange={this.onFileRead} />
+          <button onClick={this.onFileSave}>Save</button>
           <button>Run</button>
           <button>Stop</button>
         </nav>
@@ -90,6 +91,7 @@ export default class App extends Component {
               theme="monokai"
               width="100%"
               height="100%"
+              value={this.state.editorValue}
               onChange={this.onEditorChange}
               name="AceEditor"
               editorProps={{$blockScrolling: true}} />
