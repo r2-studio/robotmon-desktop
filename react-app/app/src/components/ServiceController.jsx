@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { Panel, ListGroup } from 'react-bootstrap';
 import _ from 'lodash';
 import dgram from 'dgram';
 
 import { CServiceControllerEB } from '../modules/event-bus';
 import ServiceItem from './ServiceItem.jsx';
-import {} from '../styles/global.css';
 
 export default class ServiceController extends Component {
   constructor(props) {
@@ -15,12 +13,16 @@ export default class ServiceController extends Component {
     };
     this.listenBroadcast = this.listenBroadcast.bind(this);
     this.addNewItem = this.addNewItem.bind(this);
+    this.itemStatusChanged = this.itemStatusChanged.bind(this);
   }
 
   componentDidMount() {
     this.listenBroadcast();
     CServiceControllerEB.addListener(CServiceControllerEB.EventNewItem, (ip) => {
       this.addNewItem(ip);
+    });
+    CServiceControllerEB.addListener(CServiceControllerEB.EventDeviceStateChanged, (ip, connectState) => {
+      this.itemStatusChanged(ip, connectState);
     });
   }
 
@@ -37,20 +39,26 @@ export default class ServiceController extends Component {
   addNewItem(ip) {
     // test is the format of ip
     if (/^(?!0)(?!.*\.$)((1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test(ip)) {
-      this.state.devices[ip] = ip;
+      this.state.devices[ip] = { ip, connectState: CServiceControllerEB.TagStateDisconnected };
+      this.setState({ devices: this.state.devices });
+    }
+  }
+
+  itemStatusChanged(ip, connectState) {
+    if (!_.isUndefined(this.state.devices[ip])) {
+      this.state.devices[ip].connectState = connectState;
       this.setState({ devices: this.state.devices });
     }
   }
 
   render() {
     return (
-      <div>
-        <Panel header="Service Controller">
-          <ListGroup>
-            <ServiceItem ip="" />
-            {_.values(this.state.devices).map((ip, key) => <ServiceItem key={key} ip={ip} />)}
-          </ListGroup>
-        </Panel>
+      <div className="panel-container">
+        <div className="panel-header">
+          Service Controller
+        </div>
+        <ServiceItem ip="" connectState={0} />
+        {_.values(this.state.devices).map((device, key) => <ServiceItem key={key} ip={device.ip} connectState={device.connectState} />)}
       </div>
     );
   }

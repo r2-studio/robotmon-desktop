@@ -78,12 +78,13 @@ export default class Logs extends Component {
       uiTabs.push(<Tab key={tag} eventKey={tag} title={tag}>{messages.map(v => v)}</Tab>);
     });
     return (
-      <div>
-        <Panel header="Log Controller">
-          <Tabs activeKey={this.state.tabsKey} onSelect={this.onTabSelected} id="controlled-tab-example">
-            {uiTabs.map(v => v)}
-          </Tabs>
-        </Panel>
+      <div className="panel-container">
+        <div className="panel-header">
+          Log Controller
+        </div>
+        <Tabs activeKey={this.state.tabsKey} onSelect={this.onTabSelected} id="controlled-tab-example">
+          {uiTabs.map(v => v)}
+        </Tabs>
       </div>
     );
   }

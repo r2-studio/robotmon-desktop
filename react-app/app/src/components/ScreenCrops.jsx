@@ -95,11 +95,12 @@ export default class ScreenCrops extends Component {
 
   render() {
     return (
-      <Panel header="Screen Crop">
-        <div>
-          {_.map(this.state.deviceImages, (base64, key) => <CropImage key={key} src={base64} filepath={key} />)}
+      <div className="panel-container">
+        <div className="panel-header">
+          Screen Crop
         </div>
-      </Panel>
+        {_.map(this.state.deviceImages, (base64, key) => <CropImage key={key} src={base64} filepath={key} />)}
+      </div>
     );
   }
 }

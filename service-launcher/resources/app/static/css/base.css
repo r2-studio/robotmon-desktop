@@ -23,6 +23,7 @@ html, body {
 }
 
 input {
+    outline-color: #2196F3;
     margin-top: 10px;
     padding: 5px;
     width: 70%;

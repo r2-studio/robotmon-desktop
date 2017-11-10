@@ -16,10 +16,12 @@ try {
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+const minWindowWidth = 1080;
+const minWindowHeight = 768;
 
 function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600 });
+  mainWindow = new BrowserWindow({ width: minWindowWidth, height: minWindowHeight });
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -27,6 +29,9 @@ function createWindow() {
     protocol: 'file:',
     slashes: true,
   }));
+
+  // Set minimum size of the window
+  mainWindow.setMinimumSize(minWindowWidth, minWindowHeight);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
