@@ -6,6 +6,10 @@ class CServiceControllerEventBus extends EventEmitter {
   constructor() {
     super();
     this.EventNewItem = 'newItem';
+    this.EventDeviceStateChanged = 'deviceStateChanged';
+    this.TagStateConnecting = 0;
+    this.TagStateConnected = 1;
+    this.TagStateDisconnected = 2;
   }
 }
 const CServiceControllerEB = new CServiceControllerEventBus();

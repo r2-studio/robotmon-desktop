@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import _ from 'lodash';
 
 import EditorClient from '../modules/editor-client';
-import { CEditorEB } from '../modules/event-bus';
+import { CEditorEB, CServiceControllerEB } from '../modules/event-bus';
 import ScriptController from './ScriptController.jsx';
 import ScreenController from './ScreenController.jsx';
 import ScreenCrops from './ScreenCrops.jsx';
@@ -45,32 +45,37 @@ export default class Editor extends Component {
       this.setState({
         currentEditor: this.state.currentEditor,
       });
+      CServiceControllerEB.emit(CServiceControllerEB.EventDeviceStateChanged, ip, this.state.currentEditor.connectState);
     }
   }
 
   render() {
     if (this.props.ip !== '') {
-      const header = `Editor (${this.props.ip}) (${this.state.currentEditor.connectState}) `;
       return (
         <div>
-          <div className="panel-header">
-            {header}
-          </div>
-          <Row className="panel-item">
-            <Col sm={8}>
-              <ScriptController ip={this.props.ip} editorClient={this.state.currentEditor} />
-              <ScreenController ip={this.props.ip} editorClient={this.state.currentEditor} />
-            </Col>
-            <Col sm={4}>
-              <ScreenCrops ip={this.props.ip} editorClient={this.state.currentEditor} />
-            </Col>
-          </Row>
+          <Col sm={8}>
+            <ScriptController ip={this.props.ip} editorClient={this.state.currentEditor} />
+            <ScreenController ip={this.props.ip} editorClient={this.state.currentEditor} />
+          </Col>
+          <Col sm={4}>
+            <ScreenCrops ip={this.props.ip} editorClient={this.state.currentEditor} />
+          </Col>
         </div>
       );
     }
     return (
-      <div className="panel-header">
-        Use Service Controller To Start Editor
+      <div className="panel-container">
+        <div className="panel-header">
+          Start The Script Editor
+        </div>
+        <div className="panel-item">
+          <ol>
+            <li>Enter IP Address in Service Controller Panel</li>
+            <li>Click Add Button</li>
+            <li>Click Edit Button</li>
+            <li>Done!</li>
+          </ol>
+        </div>
       </div>
     );
   }

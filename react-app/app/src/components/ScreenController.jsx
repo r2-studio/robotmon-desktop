@@ -77,6 +77,7 @@ export default class Screen extends Component {
       cropFilename: '',
       rbmSettingModal: false,
       rbmSetting: settings.get('rbmInitSetting'),
+      isCropSettingShow: false,
     };
     this.onSyncScreenClick = this.onSyncScreenClick.bind(this);
     this.onControlTypeChange = this.onControlTypeChange.bind(this);
@@ -132,6 +133,9 @@ export default class Screen extends Component {
 
   onControlTypeChange(e) {
     this.screenControlType = e.target.value;
+    this.setState({
+      isCropSettingShow: this.screenControlType === 'crop',
+    });
   }
 
   onMouseMove(e) {
@@ -309,19 +313,23 @@ export default class Screen extends Component {
           <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color">Color</Radio>
           <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop">Crop</Radio>
         </FormGroup>
-        <FormGroup>
-          <Row>
-            <Col sm={8}>
-              <FormControl bsClass="input" type="text" placeholder="ImageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
-            </Col>
-            <Col sm={2}>
-              <Button bsClass="button" onClick={this.onCropSettingClick}>Config</Button>
-            </Col>
-            <Col sm={2}>
-              <Button bsClass="button" onClick={this.onCropClick}>Crop</Button>
-            </Col>
-          </Row>
-        </FormGroup>
+
+        {this.state.isCropSettingShow && (
+          <FormGroup >
+            <Row>
+              <Col sm={8}>
+                <FormControl bsClass="input" type="text" placeholder="ImageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
+              </Col>
+              <Col sm={2}>
+                <Button bsClass="button" onClick={this.onCropSettingClick}>Config</Button>
+              </Col>
+              <Col sm={2}>
+                <Button bsClass="button-green" onClick={this.onCropClick}>Crop</Button>
+              </Col>
+            </Row>
+          </FormGroup>
+        )}
+
         <div>x: {this.state.posX}, y: {this.state.posY}</div>
 
         {this.state.colorRecord.map((item, i) =>
