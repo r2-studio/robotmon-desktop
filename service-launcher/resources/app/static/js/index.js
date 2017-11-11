@@ -22,8 +22,12 @@
 };
 var isDebugOpened = false;
 
+$.fn.scrollBottom = function() {
+    return $(this).scrollTop($(this)[0].scrollHeight);
+};
+
 function addLog(log) {
-    $("#log").val($("#log").val() + log + '\n');
+    $("#log").val($("#log").val() + log + '\n').scrollBottom();
 }
 function debug() {
     isDebugOpened = !isDebugOpened;
@@ -31,6 +35,14 @@ function debug() {
 }
 function refresh() {
     location.reload();
+}
+function advanced() {
+    $("#devices").toggle();
+    $("#debug").toggle();
+    $("#refresh").toggle();
+    $("#adbPath").toggle();
+    $("#adbPort").toggle();
+    $("#adbShell").toggle();
 }
 function connectBS() {
     astilectron.send({"name": "bs", "payload": ""});

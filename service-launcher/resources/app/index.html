@@ -15,7 +15,7 @@
 <body class="dark">
     <div style="font-size:18px; margin: 20px 20px 0px 20px; padding: 0px;">Robotmon Service Manager</div>
     <div class="container">
-        <table>
+        <table style="margin-bottom:15px;">
             <tr>
                 <td align=Left>
                     <button class="button-green" onclick="start()">Start Service</button>
@@ -24,15 +24,15 @@
                 <td align=Right>
                     <button onclick="connectBS()">Connect BS</button>
                     <button onclick="connectNOX()">Connect NOX</button>
-                    <button onclick="printDevices()">Devices</button>
-                    <button onclick="debug()">Debug</button>
-                    <button onclick="refresh()">Refresh</button>
+                    <button id="devices" onclick="printDevices()" style="display:none">Devices</button>
+                    <button id="debug" onclick="debug()" style="display:none">Debug</button>
+                    <button id="refresh" onclick="refresh()" style="display:none">Refresh</button>
+                    <button onclick="advanced()">Advanced</button>
                     <button onclick="report()">E-mail Report</button>
                 </td>
             </tr>
         </table>
-        <br />
-        <table class="panel">
+        <table id="adbPath" class="panel" style="display:none; margin-bottom:15px;">
             <tr>
                 <td>
                     <button class="button-blue" onclick="setadb()">Set</button>
@@ -43,8 +43,7 @@
                 </td>
             </tr>
         </table>
-        <br />
-        <table class="panel">
+        <table id="adbPort" class="panel" style="display:none; margin-bottom:15px;">
             <tr>
                 <td>
                     <button class="button-blue" onclick="connect()">Connect</button>
@@ -55,8 +54,7 @@
                 </td>
             </tr>
         </table>
-        <br />
-        <table class="panel">
+        <table id="adbShell" class="panel" style="display:none; margin-bottom:15px;">
             <tr>
                 <td>
                     <button class="button-blue" onclick="runadb()">Run</button>
@@ -67,7 +65,6 @@
                 </td>
             </tr>
         </table>
-        <br />
         <div class="panel">
             Log<br />
             <textarea id="log"></textarea>
