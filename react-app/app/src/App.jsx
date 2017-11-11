@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
 import _ from 'lodash';
+import AceEditor from 'react-ace';
+import 'brace/mode/javascript';
+import 'brace/theme/monokai';
+import fs from 'fs';
 
 import { CAppEB } from './modules/event-bus';
 import ServiceController from './components/ServiceController.jsx';
@@ -12,10 +16,14 @@ export default class App extends Component {
     super();
     this.props = props;
     this.state = {
+      editorValue: '',
       editorIP: '',
     };
     this.editors = {};
     this.addNewEditor = this.addNewEditor.bind(this);
+    this.onFileRead = this.onFileRead.bind(this);
+    this.onFileSave = this.onFileSave.bind(this);
+    this.onEditorChange = this.onEditorChange.bind(this);
   }
 
   componentDidMount() {
@@ -32,19 +40,83 @@ export default class App extends Component {
     }
   }
 
+  onFileRead(e) {
+    var file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    this.currentFilePath = file.path;
+    
+    var reader = new FileReader();
+    reader.onload = (e) => {
+      var content = e.target.result;
+      this.setState({editorValue: content});
+    };
+    reader.readAsText(file);
+  }
+
+  onFileSave() {
+    try {
+      fs.writeFileSync(this.currentFilePath, this.state.editorValue, 'utf-8');
+    } catch(e) {
+      alert('Failed to save the file!');
+    }
+  }
+
+  onEditorChange(newValue) {
+    this.setState({editorValue: newValue});
+  }
+
   render() {
     return (
-      <Grid fluid>
-        <Row className="show-grid">
-          <Col sm={3}>
+      <div>
+        <nav>
+          <input type="file" onChange={this.onFileRead} />
+          <button onClick={this.onFileSave}>Save</button>
+          <button>Run</button>
+          <button>Stop</button>
+        </nav>
+        <div id="container">
+          <div id="menu">
+            <button>D</button>
+            <button>F</button>
+            <button>A</button>
+          </div>
+          <div id="browser">
             <ServiceController />
-            <LogController />
-          </Col>
-          <Col sm={9}>
-            <Editor ip={this.state.editorIP} />
-          </Col>
-        </Row>
-      </Grid>
+          </div>
+          <div id="editor">
+            <AceEditor
+              mode="javascript"
+              theme="monokai"
+              width="100%"
+              height="100%"
+              value={this.state.editorValue}
+              onChange={this.onEditorChange}
+              name="AceEditor"
+              editorProps={{$blockScrolling: true}} />
+          </div>
+          <div id="inspector">
+            <div id="monitor">
+              <Editor ip={this.state.editorIP} />
+            </div>
+            <div id="console">
+              <LogController />
+            </div>
+          </div>
+        </div>
+      </div>
+      // <Grid fluid>
+      //   <Row className="show-grid">
+      //     <Col sm={3}>
+      //       <ServiceController />
+      //       <LogController />
+      //     </Col>
+      //     <Col sm={9}>
+      //       <Editor ip={this.state.editorIP} />
+      //     </Col>
+      //   </Row>
+      // </Grid>
     );
   }
 }
