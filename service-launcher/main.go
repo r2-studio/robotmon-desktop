@@ -38,9 +38,9 @@ func main() {
 			BackgroundColor: astilectron.PtrStr("#333"),
 			Center:          astilectron.PtrBool(true),
 			Height:          astilectron.PtrInt(600),
-			Width:           astilectron.PtrInt(900),
+			Width:           astilectron.PtrInt(950),
 			MinHeight:       astilectron.PtrInt(600),
-			MinWidth:        astilectron.PtrInt(900),
+			MinWidth:        astilectron.PtrInt(950),
 		},
 	}); err != nil {
 		astilog.Fatal(errors.Wrap(err, "running bootstrap failed"))
