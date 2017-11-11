@@ -32,6 +32,14 @@ function debug() {
 function refresh() {
     location.reload();
 }
+function advanced() {
+    $("#devices").toggle();
+    $("#debug").toggle();
+    $("#refresh").toggle();
+    $("#adbPath").toggle();
+    $("#adbPort").toggle();
+    $("#adbShell").toggle();
+}
 function connectBS() {
     astilectron.send({"name": "bs", "payload": ""});
 }
