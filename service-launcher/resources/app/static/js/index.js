@@ -22,8 +22,12 @@
 };
 var isDebugOpened = false;
 
+$.fn.scrollBottom = function() {
+    return $(this).scrollTop($(this)[0].scrollHeight);
+};
+
 function addLog(log) {
-    $("#log").val($("#log").val() + log + '\n');
+    $("#log").val($("#log").val() + log + '\n').scrollBottom();
 }
 function debug() {
     isDebugOpened = !isDebugOpened;
