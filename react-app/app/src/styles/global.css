@@ -5,12 +5,8 @@
 }
 
 html, body {
-  font-family: consloas, sans-serif, monospace;
+  font-family: consloas, sans-serif, monospace, 微軟正黑體;
 }
-
-/* .container {
-  padding: 20px;
-} */
 
 .dark {
   background-color: #202A33;
@@ -18,38 +14,40 @@ html, body {
 }
 
 .panel-container {
-  background-color: #2E3842;
-  border-radius: 10px;
   padding-bottom: 5px;
   margin-bottom: 20px;
 }
 
 .panel-header {
-  background-color: #29303A;
-  border-radius: 10px 10px 0px 0px;
   color: white;
-  font-size: 18px;
+  font-size: 16px;
+  margin-left: 5px;
   padding: 10px;
 }
 
 .panel-item {
+  align-items: center;
   color: white;
-  font-size: 16px;
-  margin: 10px 10px 0px 10px;
+  display: flex;
+  font-size: 15px;
+  margin: 3px;
+  padding: 3px;
 }
 
 input {
-  background-color: #202A33;
+  background-color: rgb(39, 40, 34);
   border: none;
   border-radius: 5px;
   color: white;
-  margin-top: 10px;
   outline-color: var(--blue);
-  padding: 5px;
 }
 
 input:focus {
   outline: 0 !important;
+}
+
+.input-text {
+  width: 120%;
 }
 
 input[type="radio"] {
@@ -70,12 +68,12 @@ input[type="radio"]:checked {
 }
 
 button {
-  min-width: 100px;
+  min-width: 70px;
   background-color: #2E3842;
   border: 2px solid white;
   border-radius: 25px;
   color: white;
-  padding: 10px;
+  padding: 7px;
   transition-duration: 0.4s;
   -webkit-transition-duration: 0.4s;
 }
@@ -165,7 +163,7 @@ nav > input[type=file] {
   
 #browser {
   background-color: rgb(30, 31, 28);
-  width: 240px;
+  width: 260px;
 }
   
 #editor {

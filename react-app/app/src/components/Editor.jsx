@@ -5,7 +5,6 @@ import _ from 'lodash';
 
 import EditorClient from '../modules/editor-client';
 import { CEditorEB, CServiceControllerEB } from '../modules/event-bus';
-import ScriptController from './ScriptController.jsx';
 import ScreenController from './ScreenController.jsx';
 import ScreenCrops from './ScreenCrops.jsx';
 
@@ -54,7 +53,6 @@ export default class Editor extends Component {
       return (
         <div>
           <Col sm={8}>
-            <ScriptController ip={this.props.ip} editorClient={this.state.currentEditor} />
             <ScreenController ip={this.props.ip} editorClient={this.state.currentEditor} />
           </Col>
           <Col sm={4}>
@@ -64,19 +62,7 @@ export default class Editor extends Component {
       );
     }
     return (
-      <div className="panel-container">
-        <div className="panel-header">
-          Start The Script Editor
-        </div>
-        <div className="panel-item">
-          <ol>
-            <li>Enter IP Address in Service Controller Panel</li>
-            <li>Click Add Button</li>
-            <li>Click Edit Button</li>
-            <li>Done!</li>
-          </ol>
-        </div>
-      </div>
+      <div />
     );
   }
 }

@@ -62,23 +62,23 @@ export default class ServiceItem extends Component {
     if (this.props.ip !== '') {
       return (
         <Row className="panel-item">
-          <Col className="panel-body" sm={8}>{this.props.ip}</Col>
-          <Col sm={4}><Button bsClass={buttonColor} onClick={this.onEditorClick}>{buttonText}</Button></Col>
+          <Col sm={7}>{this.props.ip}</Col>
+          <Col sm={5}><Button bsClass={buttonColor} onClick={this.onEditorClick}>{buttonText}</Button></Col>
         </Row>
       );
     }
     return (
-      <Row className="panel-item" style={{ padding: 6 }} >
-        <Col sm={8}>
+      <Row className="panel-item">
+        <Col sm={7}>
           <FormControl
-            bsClass="input"
+            bsClass="input-text"
             type="text"
             value={this.state.textIP}
             placeholder="Enter IP"
             onChange={this.handleChange}
           />
         </Col>
-        <Col sm={4}><Button bsClass="button-green" onClick={this.onAddClick}>Add</Button></Col>
+        <Col sm={5}><Button bsClass="button-green" onClick={this.onAddClick}>Add</Button></Col>
       </Row>
     );
   }

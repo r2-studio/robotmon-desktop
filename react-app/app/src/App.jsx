@@ -41,16 +41,16 @@ export default class App extends Component {
   }
 
   onFileRead(e) {
-    var file = e.target.files[0];
+    const file = e.target.files[0];
     if (!file) {
       return;
     }
     this.currentFilePath = file.path;
-    
-    var reader = new FileReader();
+
+    const reader = new FileReader();
     reader.onload = (e) => {
-      var content = e.target.result;
-      this.setState({editorValue: content});
+      const content = e.target.result;
+      this.setState({ editorValue: content });
     };
     reader.readAsText(file);
   }
@@ -58,13 +58,13 @@ export default class App extends Component {
   onFileSave() {
     try {
       fs.writeFileSync(this.currentFilePath, this.state.editorValue, 'utf-8');
-    } catch(e) {
+    } catch (e) {
       alert('Failed to save the file!');
     }
   }
 
   onEditorChange(newValue) {
-    this.setState({editorValue: newValue});
+    this.setState({ editorValue: newValue });
   }
 
   render() {
@@ -73,8 +73,8 @@ export default class App extends Component {
         <nav>
           <input type="file" onChange={this.onFileRead} />
           <button onClick={this.onFileSave}>Save</button>
-          <button>Run</button>
-          <button>Stop</button>
+          <button className="button-green">Run</button>
+          <button className="button-red">Stop</button>
         </nav>
         <div id="container">
           <div id="menu">
@@ -94,7 +94,8 @@ export default class App extends Component {
               value={this.state.editorValue}
               onChange={this.onEditorChange}
               name="AceEditor"
-              editorProps={{$blockScrolling: true}} />
+              editorProps={{ $blockScrolling: true }}
+            />
           </div>
           <div id="inspector">
             <div id="monitor">
@@ -106,17 +107,6 @@ export default class App extends Component {
           </div>
         </div>
       </div>
-      // <Grid fluid>
-      //   <Row className="show-grid">
-      //     <Col sm={3}>
-      //       <ServiceController />
-      //       <LogController />
-      //     </Col>
-      //     <Col sm={9}>
-      //       <Editor ip={this.state.editorIP} />
-      //     </Col>
-      //   </Row>
-      // </Grid>
     );
   }
 }
