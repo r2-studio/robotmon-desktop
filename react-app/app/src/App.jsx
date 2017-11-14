@@ -7,6 +7,7 @@ import 'brace/theme/monokai';
 import fs from 'fs';
 
 import { CAppEB } from './modules/event-bus';
+import EditorClient from './modules/editor-client';
 import ServiceController from './components/ServiceController.jsx';
 import Editor from './components/Editor.jsx';
 import LogController from './components/LogController.jsx';
@@ -16,36 +17,36 @@ export default class App extends Component {
     super();
     this.props = props;
     this.state = {
+      ipAddr: '',
+      scriptPath: '',
       editorValue: '',
-      editorIP: '',
     };
-    this.editors = {};
-    this.addNewEditor = this.addNewEditor.bind(this);
+    this.editorClient = new EditorClient(this.state.ipAddr);
+    this.onEditorChange = this.onEditorChange.bind(this);
     this.onFileRead = this.onFileRead.bind(this);
     this.onFileSave = this.onFileSave.bind(this);
-    this.onEditorChange = this.onEditorChange.bind(this);
+    this.onFileRun = this.onFileRun.bind(this);
   }
 
   componentDidMount() {
     CAppEB.addListener(CAppEB.EventNewEditor, (ip) => {
-      this.addNewEditor(ip);
+      console.log('Device is connected');
+      this.setState({
+        ipAddr: ip,
+      });
     });
   }
 
-  addNewEditor(ip) {
-    if (ip !== '') {
-      this.setState({
-        editorIP: ip,
-      });
-    }
+  onEditorChange(newValue) {
+    this.setState({ editorValue: newValue });
   }
 
   onFileRead(e) {
     const file = e.target.files[0];
     if (!file) {
-      return;
+      return; onFileRun;
     }
-    this.currentFilePath = file.path;
+    this.setState({ scriptPath: file.path });
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -57,14 +58,27 @@ export default class App extends Component {
 
   onFileSave() {
     try {
-      fs.writeFileSync(this.currentFilePath, this.state.editorValue, 'utf-8');
+      fs.writeFileSync(this.state.scriptPath, this.state.editorValue, 'utf-8');
     } catch (e) {
       alert('Failed to save the file!');
     }
   }
 
-  onEditorChange(newValue) {
-    this.setState({ editorValue: newValue });
+  onFileRun() {
+    if (this.state.scriptPath !== '') {
+      this.runScriptByPath(this.state.scriptPath);
+    }
+  }
+
+  runScriptByPath(scriptPath) {
+    const js = fs.readFileSync(scriptPath);
+    this.editorClient.client.runScript(js.toString())
+      .then(() => {
+        console.log('run script success', scriptPath);
+      })
+      .catch(() => {
+        console.log('run script failed', scriptPath);
+      });
   }
 
   render() {
@@ -73,7 +87,7 @@ export default class App extends Component {
         <nav>
           <input type="file" onChange={this.onFileRead} />
           <button onClick={this.onFileSave}>Save</button>
-          <button className="button-green">Run</button>
+          <button className="button-green" onClick={this.onFileRun}>Run</button>
           <button className="button-red">Stop</button>
         </nav>
         <div id="container">
@@ -100,9 +114,7 @@ export default class App extends Component {
                 />
               </div>
               <div id="inspector">
-                <div id="monitor">
-                  <Editor ip={this.state.editorIP} />
-                </div>
+                <div id="monitor" />
               </div>
             </div>
             <div id="console">
