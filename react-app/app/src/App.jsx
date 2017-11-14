@@ -85,23 +85,28 @@ export default class App extends Component {
           <div id="browser">
             <ServiceController />
           </div>
-          <div id="editor">
-            <AceEditor
-              mode="javascript"
-              theme="monokai"
-              width="100%"
-              height="100%"
-              value={this.state.editorValue}
-              onChange={this.onEditorChange}
-              name="AceEditor"
-              editorProps={{ $blockScrolling: true }}
-            />
-          </div>
-          <div id="inspector">
-            <div id="monitor">
-              <Editor ip={this.state.editorIP} />
+          <div id="main">
+            <div id="panel">
+              <div id="editor">
+                <AceEditor
+                  mode="javascript"
+                  theme="monokai"
+                  width="100%"
+                  height="100%"
+                  value={this.state.editorValue}
+                  onChange={this.onEditorChange}
+                  name="AceEditor"
+                  editorProps={{ $blockScrolling: true }}
+                />
+              </div>
+              <div id="inspector">
+                <div id="monitor">
+                  <Editor ip={this.state.editorIP} />
+                </div>
+              </div>
             </div>
             <div id="console">
+              <div className="toolbar" />
               <LogController />
             </div>
           </div>
