@@ -21,7 +21,6 @@ html, body {
 .panel-header {
   color: white;
   font-size: 16px;
-  margin-left: 5px;
   padding: 10px;
 }
 
@@ -30,8 +29,7 @@ html, body {
   color: white;
   display: flex;
   font-size: 15px;
-  margin: 3px;
-  padding: 3px;
+  padding: 5px 10px 5px 10px;
 }
 
 input {
@@ -68,12 +66,13 @@ input[type="radio"]:checked {
 }
 
 button {
-  min-width: 70px;
+  min-width: 60px;
   background-color: #2E3842;
   border: 2px solid white;
   border-radius: 25px;
   color: white;
-  padding: 7px;
+  font-family : inherit;
+  padding: 6px;
   transition-duration: 0.4s;
   -webkit-transition-duration: 0.4s;
 }
@@ -163,7 +162,7 @@ nav > input[type=file] {
   
 #browser {
   background-color: rgb(30, 31, 28);
-  width: 260px;
+  width: 200px;
 }
 
 #main {

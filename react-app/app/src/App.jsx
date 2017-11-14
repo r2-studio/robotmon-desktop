@@ -6,10 +6,12 @@ import 'brace/mode/javascript';
 import 'brace/theme/monokai';
 import fs from 'fs';
 
-import { CAppEB } from './modules/event-bus';
+import { CAppEB, CEditorEB, CServiceControllerEB } from './modules/event-bus';
 import EditorClient from './modules/editor-client';
 import ServiceController from './components/ServiceController';
 import LogController from './components/LogController';
+import ScreenController from './components/ScreenController';
+import ScreenCrops from './components/ScreenCrops';
 
 export default class App extends Component {
   constructor(props) {
@@ -20,15 +22,20 @@ export default class App extends Component {
       scriptPath: '',
       editorValue: '',
     };
-    this.editorClient = new EditorClient(this.state.ipAddr);
+    this.editorClient = {};
     this.onEditorChange = this.onEditorChange.bind(this);
     this.onFileRead = this.onFileRead.bind(this);
     this.onFileSave = this.onFileSave.bind(this);
     this.onFileRun = this.onFileRun.bind(this);
+    this.onStateChange = this.onStateChange.bind(this);
+    CEditorEB.addListener(CEditorEB.EventClientChanged, this.onStateChange);
   }
 
   componentDidMount() {
     CAppEB.addListener(CAppEB.EventNewEditor, (ip) => {
+      if (ip !== '') {
+        this.editorClient = new EditorClient(ip);
+      }
       this.setState({
         ipAddr: ip,
       });
@@ -37,6 +44,12 @@ export default class App extends Component {
 
   onEditorChange(newValue) {
     this.setState({ editorValue: newValue });
+  }
+
+  onStateChange(ip) {
+    if (this.editorClient.ip === ip) {
+      CServiceControllerEB.emit(CServiceControllerEB.EventDeviceStateChanged, ip, this.editorClient.connectState);
+    }
   }
 
   onFileRead(e) {
@@ -96,6 +109,7 @@ export default class App extends Component {
           </div>
           <div id="browser">
             <ServiceController />
+            <ScreenCrops ip={this.state.ipAddr} editorClient={this.editorClient} />
           </div>
           <div id="main">
             <div id="panel">
@@ -112,7 +126,9 @@ export default class App extends Component {
                 />
               </div>
               <div id="inspector">
-                <div id="monitor" />
+                <div id="monitor">
+                  <ScreenController ip={this.state.ipAddr} editorClient={this.editorClient} />
+                </div>
               </div>
             </div>
             <div id="console">

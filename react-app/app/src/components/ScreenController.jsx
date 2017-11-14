@@ -276,7 +276,7 @@ export default class Screen extends Component {
   }
 
   syncScreen() {
-    if (this.editorClient.isConnect && this.isSyncScreen) {
+    if (!_.isUndefined(this.editorClient) && this.editorClient.isConnect && this.isSyncScreen) {
       fp
         .pipe(fp.bind(this.editorClient.client.getScreenSize))
         .pipe((wh) => {
