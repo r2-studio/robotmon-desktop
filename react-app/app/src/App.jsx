@@ -8,9 +8,8 @@ import fs from 'fs';
 
 import { CAppEB } from './modules/event-bus';
 import EditorClient from './modules/editor-client';
-import ServiceController from './components/ServiceController.jsx';
-import Editor from './components/Editor.jsx';
-import LogController from './components/LogController.jsx';
+import ServiceController from './components/ServiceController';
+import LogController from './components/LogController';
 
 export default class App extends Component {
   constructor(props) {
@@ -30,7 +29,6 @@ export default class App extends Component {
 
   componentDidMount() {
     CAppEB.addListener(CAppEB.EventNewEditor, (ip) => {
-      console.log('Device is connected');
       this.setState({
         ipAddr: ip,
       });
@@ -44,13 +42,13 @@ export default class App extends Component {
   onFileRead(e) {
     const file = e.target.files[0];
     if (!file) {
-      return; onFileRun;
+      return;
     }
     this.setState({ scriptPath: file.path });
 
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target.result;
+    reader.onload = (event) => {
+      const content = event.target.result;
       this.setState({ editorValue: content });
     };
     reader.readAsText(file);
