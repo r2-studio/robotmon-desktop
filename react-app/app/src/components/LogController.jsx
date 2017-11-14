@@ -1,20 +1,14 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Panel, Tabs, Tab, Col, FormGroup, FormControl, Button } from 'react-bootstrap';
+import { Tab, Nav, NavItem } from 'react-bootstrap';
 import _ from 'lodash';
-import fs from 'fs';
-import electron from 'electron';
 
 import { CLogsEB } from '../modules/event-bus';
-import {} from '../styles/global.css';
 
 const keepLogNumber = 100;
-const styleMsg = {
-  fontFamily: 'Menlo,Monaco,Consolas,"Courier New",monospace',
-};
-const styleMsgError = { color: 'red' };
-const styleMsgWarning = { color: 'orange' };
-const styleMsgInfo = { color: '#666' };
+const styleMsg = { fontFamily: 'consloas, sans-serif, monospace, 微軟正黑體' };
+const styleMsgError = { color: '#FB4343' };
+const styleMsgWarning = { color: '#F8D532' };
+const styleMsgInfo = { color: 'white' };
 
 export default class Logs extends Component {
   constructor(props) {
@@ -30,11 +24,6 @@ export default class Logs extends Component {
 
     this.newLog = this.newLog.bind(this);
     this.onTabSelected = this.onTabSelected.bind(this);
-  }
-
-  static get propTypes() {
-    return {
-    };
   }
 
   componentDidMount() {
@@ -61,7 +50,8 @@ export default class Logs extends Component {
   }
 
   render() {
-    const uiTabs = [];
+    const tabContainers = [];
+    const tabContents = [];
     _.forEach(this.state.logs, (msgs, tag) => {
       const messages = [];
       if (this.state.tabsKey === tag) {
@@ -75,16 +65,24 @@ export default class Logs extends Component {
           }
         });
       }
-      uiTabs.push(<Tab key={tag} eventKey={tag} title={tag}>{messages.map(v => v)}</Tab>);
+      tabContainers.push(<NavItem key={tag} eventKey={tag}>{tag}</NavItem>);
+      tabContents.push(<Tab.Pane key={tag} eventKey={tag}>{messages.map(v => v)}</Tab.Pane>);
     });
     return (
       <div className="panel-container">
         <div className="panel-header">
           Log Controller
         </div>
-        <Tabs activeKey={this.state.tabsKey} onSelect={this.onTabSelected} id="controlled-tab-example">
-          {uiTabs.map(v => v)}
-        </Tabs>
+        <Tab.Container activeKey={this.state.tabsKey} onSelect={this.onTabSelected} id="controlled-tab-example">
+          <div>
+            <Nav bsStyle="pills">
+              {tabContainers.map(v => v)}
+            </Nav>
+            <Tab.Content animation>
+              {tabContents.map(v => v)}
+            </Tab.Content>
+          </div>
+        </Tab.Container>
       </div>
     );
   }
