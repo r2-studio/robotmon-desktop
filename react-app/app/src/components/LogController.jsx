@@ -70,12 +70,9 @@ export default class Logs extends Component {
     });
     return (
       <div className="panel-container">
-        <div className="panel-header">
-          Log Controller
-        </div>
         <Tab.Container activeKey={this.state.tabsKey} onSelect={this.onTabSelected} id="controlled-tab-example">
           <div>
-            <Nav bsStyle="pills">
+            <Nav bsStyle="pills" className="toolbar">
               {tabContainers.map(v => v)}
             </Nav>
             <Tab.Content animation>

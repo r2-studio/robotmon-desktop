@@ -14,11 +14,6 @@ html, body {
   color: white;
 }
 
-.panel-container {
-  padding-bottom: 5px;
-  margin-bottom: 20px;
-}
-
 .panel-header {
   color: white;
   font-size: 16px;
@@ -197,16 +192,52 @@ nav > input[type=file] {
 
 #console {
   height: 240px;
+  display: flex;
   flex-direction: column;
   background-color: rgb(39, 40, 34);
-  overflow: scroll;
   white-space: pre-wrap;
   color: white;
   border: none;
 }
 
-.toolbar {
+#console > div, #console > div > div {
   flex: 1;
-  height: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+#console .tab-content {
+  flex: 1;
+  padding: 4px;
+  overflow: auto;
+}
+
+.toolbar {
   background-color: rgb(30, 31, 28);
+  padding-top: 4px;
+}
+
+.toolbar::before, .toolbar::after {
+  content: "";
+}
+
+.toolbar > li {
+  padding: 0 0 0 4px;
+}
+
+.toolbar > li > a {
+  font-size: 12px;
+  padding: 4px;
+  border-radius: 4px 4px 0 0;
+  background-color: #333;
+  color: white;
+}
+
+.toolbar > li.active > a {
+  background-color: var(--blue);
+}
+
+.toolbar > li > a:focus,
+.toolbar > li > a:hover {
+  background-color: #292929;
 }

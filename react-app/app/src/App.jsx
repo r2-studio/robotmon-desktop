@@ -17,7 +17,6 @@ export default class App extends Component {
     super();
     this.props = props;
     this.state = {
-      ipAddr: '',
       scriptPath: '',
       editorValue: '',
       editorClient: undefined,
@@ -34,7 +33,6 @@ export default class App extends Component {
     CAppEB.addListener(CAppEB.EventNewEditor, (ip) => {
       if (ip !== '') {
         this.setState({
-          ipAddr: ip,
           editorClient: new EditorClient(ip),
         });
       }
@@ -127,7 +125,6 @@ export default class App extends Component {
               />
             </div>
             <div id="console">
-              <div className="toolbar" />
               <LogController />
             </div>
           </div>
