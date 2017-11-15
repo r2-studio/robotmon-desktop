@@ -21,6 +21,7 @@ export default class App extends Component {
       editorValue: '',
       editorClient: undefined,
     };
+    this.onMenuChange = this.onMenuChange.bind(this);
     this.onEditorChange = this.onEditorChange.bind(this);
     this.onFileRead = this.onFileRead.bind(this);
     this.onFileSave = this.onFileSave.bind(this);
@@ -36,6 +37,31 @@ export default class App extends Component {
           editorClient: new EditorClient(ip),
         });
       }
+    });
+  }
+
+  onMenuChange(buttonType) {
+    let isMenuService = false;
+    let isMenuFiles = false;
+    let isMenuAssets = false;
+
+    switch (buttonType) {
+      case 'service':
+        isMenuService = true;
+        break;
+      case 'assets':
+        isMenuAssets = true;
+        break;
+      case 'files':
+        isMenuFiles = true;
+        break;
+      default:
+        break;
+    }
+    this.setState({
+      isMenuService,
+      isMenuFiles,
+      isMenuAssets,
     });
   }
 
@@ -103,13 +129,13 @@ export default class App extends Component {
         </nav>
         <div id="container">
           <div id="menu">
-            <button>D</button>
-            <button>F</button>
-            <button>A</button>
+            <button onClick={() => this.onMenuChange('service')}>D</button>
+            <button onClick={() => this.onMenuChange('files')}>F</button>
+            <button onClick={() => this.onMenuChange('assets')}>A</button>
           </div>
           <div id="browser">
-            <ServiceController />
-            <ScreenCrops editorClient={this.state.editorClient} />
+            <ServiceController style={{ display: this.state.isMenuService }} />
+            { !_.isUndefined(this.state.editorClient) && <ScreenCrops editorClient={this.state.editorClient} style={{ display: this.state.isMenuAssets }} /> }
           </div>
           <div id="main">
             <div id="editor">
@@ -130,7 +156,7 @@ export default class App extends Component {
           </div>
           <div id="inspector">
             <div id="monitor">
-              <ScreenController editorClient={this.state.editorClient} />
+              { !_.isUndefined(this.state.editorClient) && <ScreenController editorClient={this.state.editorClient} /> }
             </div>
           </div>
         </div>
