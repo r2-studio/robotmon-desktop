@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import _ from 'lodash';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
@@ -21,8 +20,8 @@ export default class App extends Component {
       ipAddr: '',
       scriptPath: '',
       editorValue: '',
+      editorClient: undefined,
     };
-    this.editorClient = {};
     this.onEditorChange = this.onEditorChange.bind(this);
     this.onFileRead = this.onFileRead.bind(this);
     this.onFileSave = this.onFileSave.bind(this);
@@ -34,11 +33,11 @@ export default class App extends Component {
   componentDidMount() {
     CAppEB.addListener(CAppEB.EventNewEditor, (ip) => {
       if (ip !== '') {
-        this.editorClient = new EditorClient(ip);
+        this.setState({
+          ipAddr: ip,
+          editorClient: new EditorClient(ip),
+        });
       }
-      this.setState({
-        ipAddr: ip,
-      });
     });
   }
 
@@ -47,8 +46,8 @@ export default class App extends Component {
   }
 
   onStateChange(ip) {
-    if (this.editorClient.ip === ip) {
-      CServiceControllerEB.emit(CServiceControllerEB.EventDeviceStateChanged, ip, this.editorClient.connectState);
+    if (this.state.editorClient.ip === ip) {
+      CServiceControllerEB.emit(CServiceControllerEB.EventDeviceStateChanged, ip, this.state.editorClient.connectState);
     }
   }
 
@@ -82,6 +81,9 @@ export default class App extends Component {
   }
 
   runScriptByPath(scriptPath) {
+    if (_.isUndefined(this.state.editorClient)) {
+      return;
+    }
     const js = fs.readFileSync(scriptPath);
     this.editorClient.client.runScript(js.toString())
       .then(() => {
@@ -109,31 +111,29 @@ export default class App extends Component {
           </div>
           <div id="browser">
             <ServiceController />
-            <ScreenCrops ip={this.state.ipAddr} editorClient={this.editorClient} />
+            <ScreenCrops editorClient={this.state.editorClient} />
           </div>
           <div id="main">
-            <div id="panel">
-              <div id="editor">
-                <AceEditor
-                  mode="javascript"
-                  theme="monokai"
-                  width="100%"
-                  height="100%"
-                  value={this.state.editorValue}
-                  onChange={this.onEditorChange}
-                  name="AceEditor"
-                  editorProps={{ $blockScrolling: true }}
-                />
-              </div>
-              <div id="inspector">
-                <div id="monitor">
-                  <ScreenController ip={this.state.ipAddr} editorClient={this.editorClient} />
-                </div>
-              </div>
+            <div id="editor">
+              <AceEditor
+                mode="javascript"
+                theme="monokai"
+                width="100%"
+                height="100%"
+                value={this.state.editorValue}
+                onChange={this.onEditorChange}
+                name="AceEditor"
+                editorProps={{ $blockScrolling: true }}
+              />
             </div>
             <div id="console">
               <div className="toolbar" />
               <LogController />
+            </div>
+          </div>
+          <div id="inspector">
+            <div id="monitor">
+              <ScreenController editorClient={this.state.editorClient} />
             </div>
           </div>
         </div>

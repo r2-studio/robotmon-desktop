@@ -104,16 +104,21 @@ export default class Screen extends Component {
     this.appName = Screen.findAppName(this.state.rbmSetting);
   }
 
-  static get propTypes() {
+  static get defaultProps() {
     return {
-      ip: PropTypes.string.isRequired,
-      editorClient: PropTypes.object.isRequired,
+      editorClient: undefined,
     };
   }
 
-  componentWillUpdate(nextProps) {
+  static get propTypes() {
+    return {
+      editorClient: PropTypes.object,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    if (this.props.editorClient.ip !== nextProps.editorClient.ip) {
+    if (!this.editorClient && this.props.editorClient.ip !== nextProps.editorClient.ip) {
       this.state.syncImageSrc = '';
     }
   }

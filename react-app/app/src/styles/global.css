@@ -6,6 +6,7 @@
 
 html, body {
   font-family: consloas, sans-serif, monospace, 微軟正黑體;
+  color: white;
 }
 
 .dark {
@@ -169,12 +170,6 @@ nav > input[type=file] {
   display: flex;
   flex: 1;
   flex-direction: column;
-}
-
-#panel {
-  display: flex;
-  flex: 1;
-  flex-direction: row;
 }
   
 #editor {

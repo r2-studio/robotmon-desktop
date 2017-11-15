@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel } from 'react-bootstrap';
 import _ from 'lodash';
 import fp from 'func-pipe';
 
 import { CLogsEB, CScreenCropsEB } from '../modules/event-bus';
-import CropImage from './CropImage.jsx';
-
-import {} from '../styles/global.css';
+import CropImage from './CropImage';
 
 export default class ScreenCrops extends Component {
   constructor(props) {
@@ -37,16 +34,21 @@ export default class ScreenCrops extends Component {
     this.editorClient = undefined;
   }
 
-  static get propTypes() {
+  static get defaultProps() {
     return {
-      ip: PropTypes.string.isRequired,
-      editorClient: PropTypes.object.isRequired,
+      editorClient: undefined,
     };
   }
 
-  componentWillUpdate(nextProps) {
+  static get propTypes() {
+    return {
+      editorClient: PropTypes.object,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    if (this.props.editorClient.ip !== nextProps.editorClient.ip) {
+    if (!this.editorClient && this.props.editorClient.ip !== nextProps.editorClient.ip) {
       this.refresh();
     }
   }
