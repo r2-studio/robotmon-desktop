@@ -114,7 +114,7 @@ export default class Screen extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    if (!this.editorClient && this.props.editorClient.ip !== nextProps.editorClient.ip) {
+    if (!_.isUndefined(this.editorClient)) {
       this.state.syncImageSrc = '';
     }
   }

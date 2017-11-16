@@ -140,7 +140,7 @@ export default class App extends Component {
           </div>
           <div id="browser">
             <ServiceController display={this.state.isMenuService} />
-            {!_.isUndefined(this.state.editorClient) && <ScreenCrops editorClient={this.state.editorClient} display={this.state.isMenuAssets} />}
+            <ScreenCrops editorClient={this.state.editorClient} display={this.state.isMenuAssets} />
           </div>
           <div id="main">
             <div id="editor">
@@ -161,7 +161,7 @@ export default class App extends Component {
           </div>
           <div id="inspector">
             <div id="monitor">
-              { !_.isUndefined(this.state.editorClient) && <ScreenController editorClient={this.state.editorClient} /> }
+              <ScreenController editorClient={this.state.editorClient} />
             </div>
           </div>
         </div>
