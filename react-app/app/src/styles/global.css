@@ -185,7 +185,8 @@ nav > input[type=file] {
   width: 300px;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
   
 #monitor .debug-screen-position {

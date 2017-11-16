@@ -324,7 +324,7 @@ export default class Screen extends Component {
         </Row>
         )}
 
-        <div>x: {this.state.posX}, y: {this.state.posY}</div>
+        <div style={{ margin: '0 0 5px 13px' }}>x: {this.state.posX}, y: {this.state.posY}</div>
         <div style={{ position: 'relative' }}>
           <img
             style={{ maxWidth: 300 }}
