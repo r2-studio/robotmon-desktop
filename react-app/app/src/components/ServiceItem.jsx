@@ -22,7 +22,7 @@ export default class ServiceItem extends Component {
   static get propTypes() {
     return {
       ip: PropTypes.string.isRequired,
-      connectState: PropTypes.number.isRequired,
+      connectState: PropTypes.string.isRequired,
     };
   }
 
@@ -36,17 +36,17 @@ export default class ServiceItem extends Component {
   }
 
   getButtonColor() {
-    if (this.props.connectState === CServiceControllerEB.TagStateConnecting || this.props.connectState === CServiceControllerEB.TagStateConnected) {
+    if (this.props.connectState === CServiceControllerEB.TagStateConnecting
+      || this.props.connectState === CServiceControllerEB.TagStateConnected) {
       return 'button-blue';
     }
     return 'button-green';
   }
 
   getButtonText() {
-    if (this.props.connectState === CServiceControllerEB.TagStateConnecting) {
-      return 'Connecting';
-    } else if (this.props.connectState === CServiceControllerEB.TagStateConnected) {
-      return 'Connected';
+    if (this.props.connectState === CServiceControllerEB.TagStateConnecting
+      || this.props.connectState === CServiceControllerEB.TagStateConnected) {
+      return this.props.connectState;
     }
     return 'Edit';
   }

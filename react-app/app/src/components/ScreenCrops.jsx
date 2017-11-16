@@ -35,7 +35,14 @@ export default class ScreenCrops extends Component {
     };
   }
 
-  componentDidMount() {
+  componentWillReceiveProps(nextProps) {
+    this.editorClient = nextProps.editorClient;
+    if (!_.isUndefined(this.editorClient) && this.props.editorClient.ip !== nextProps.editorClient.ip) {
+      this.refresh();
+    }
+  }
+
+  componentWillUpdate() {
     CScreenCropsEB.addListener(CScreenCropsEB.EventAppNameChanged, (appName) => {
       if (this.appName !== appName) {
         this.appName = appName;
@@ -46,13 +53,6 @@ export default class ScreenCrops extends Component {
     CScreenCropsEB.addListener(CScreenCropsEB.EventNewImageCropped, (filename) => {
       this.newImage(filename);
     });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.editorClient = nextProps.editorClient;
-    if (!_.isUndefined(this.editorClient) && this.props.editorClient.ip !== nextProps.editorClient.ip) {
-      this.refresh();
-    }
   }
 
   pullImageBase64(filePath) {

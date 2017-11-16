@@ -27,8 +27,8 @@ export default class Logs extends Component {
   }
 
   componentDidMount() {
-    CLogsEB.addListener(CLogsEB.EventNewLog, (tag, level, message) => {
-      this.newLog(tag, level, message);
+    CLogsEB.addListener(CLogsEB.EventNewLog, (tag, level, message, style = undefined) => {
+      this.newLog(tag, level, message, style);
     });
   }
 
@@ -36,11 +36,11 @@ export default class Logs extends Component {
     this.setState({ tabsKey: key });
   }
 
-  newLog(tag, level, message) {
+  newLog(tag, level, message, style) {
     if (_.isUndefined(this.state.logs[tag])) {
       this.state.logs[tag] = [];
     }
-    this.state.logs[tag].push({ level, message });
+    this.state.logs[tag].push({ level, message, style });
     if (this.state.logs[tag].length > keepLogNumber) {
       this.state.logs[tag].shift();
     }
@@ -61,7 +61,7 @@ export default class Logs extends Component {
           } else if (msg.level === CLogsEB.LevelWarning) {
             messages.push(<div key={i} style={Object.assign({}, styleMsg, styleMsgWarning)}>{msg.message}</div>);
           } else {
-            messages.push(<div key={i} style={Object.assign({}, styleMsg, styleMsgInfo)}>{msg.message}</div>);
+            messages.push(<div key={i} style={Object.assign({}, styleMsg, styleMsgInfo, msg.style)}>{msg.message}</div>);
           }
         });
       }

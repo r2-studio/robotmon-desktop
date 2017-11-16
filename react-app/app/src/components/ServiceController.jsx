@@ -68,7 +68,7 @@ export default class ServiceController extends Component {
         <div className="panel-header">
           Service Controller
         </div>
-        <ServiceItem ip="" connectState={0} />
+        <ServiceItem ip="" connectState="" />
         {_.values(this.state.devices).map((device, key) => <ServiceItem key={key} ip={device.ip} connectState={device.connectState} />)}
       </div>
     );

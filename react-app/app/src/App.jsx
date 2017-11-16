@@ -12,6 +12,8 @@ import LogController from './components/LogController';
 import ScreenController from './components/ScreenController';
 import ScreenCrops from './components/ScreenCrops';
 
+import './styles/global.css';
+
 export default class App extends Component {
   constructor(props) {
     super();

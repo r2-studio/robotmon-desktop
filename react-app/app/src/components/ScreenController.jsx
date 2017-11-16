@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel, Row, Col, FormGroup, FormControl, Button, Radio, Modal } from 'react-bootstrap';
+import { Row, Col, FormControl, Button, Radio, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import fp from 'func-pipe';
 import pref from 'electron-pref';
 
 import electron from 'electron';
 
-import { CScreenCropsEB } from '../modules/event-bus';
-
-import {} from '../styles/global.css';
+import { CScreenCropsEB, CLogsEB } from '../modules/event-bus';
 
 const defaultRBMInitSettings = `importJS('RBM-0.0.2');
 var _desktop_config = {
@@ -70,7 +68,6 @@ export default class Screen extends Component {
       syncImageSrc: '',
       posX: 0,
       posY: 0,
-      colorRecord: [],
       lineRowXY: {},
       lineColXY: {},
       rectXY: { top: 0, left: 0 },
@@ -88,7 +85,6 @@ export default class Screen extends Component {
     this.onCropClick = this.onCropClick.bind(this);
     this.onRBMSettingChange = this.onRBMSettingChange.bind(this);
     this.onRBMSettingSave = this.onRBMSettingSave.bind(this);
-    this.onClearColorClick = this.onClearColorClick.bind(this);
     this.onRBMResetDefault = this.onRBMResetDefault.bind(this);
     this.onRBMSettingClose = this.onRBMSettingClose.bind(this);
     this.onCropFilenameChange = this.onCropFilenameChange.bind(this);
@@ -219,17 +215,11 @@ export default class Screen extends Component {
         .pipe(fp.bind(this.editorClient.client.runScript, scripts))
         .pipe((result) => {
           const color = JSON.parse(result.message);
-          const record = this.state.colorRecord;
-          record.push({
-            x: posX, y: posY, r: color.r, g: color.g, b: color.b,
-          });
-          this.setState({ colorRecord: record });
+          const message = `x: ${posX}, y: ${posY}, r: ${color.r}, g: ${color.g}, b: ${color.b}`;
+          const style = { backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})` };
+          CLogsEB.emit(CLogsEB.EventNewLog, this.editorClient.ip, CLogsEB.LevelInfo, message, style);
         });
     }
-  }
-
-  onClearColorClick() {
-    this.setState({ colorRecord: [] });
   }
 
   onCropFilenameChange(e) {
@@ -307,41 +297,37 @@ export default class Screen extends Component {
         <div className="panel-header">
           Screen Controller
         </div>
-        <FormGroup>
+        <div className="vertical-container" style={{ margin: '10px 5px 0px 5px' }}>
+          <Radio className="vertical-content" name="screenControlType" inline onChange={this.onControlTypeChange} value="tap">Tap</Radio>
+          <Radio className="vertical-content" name="screenControlType" inline onChange={this.onControlTypeChange} value="color">Color</Radio>
+          <Radio className="vertical-content" name="screenControlType" inline onChange={this.onControlTypeChange} value="crop">Crop</Radio>
           <Button
+            className="vertical-content pull-right"
             onClick={this.onSyncScreenClick}
             bsClass={this.isSyncScreen ? 'button-red' : 'button-green'}
           >
             {this.isSyncScreen ? 'Stop Sync' : 'Start Sync'}
           </Button>
-          <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="tap">Tap</Radio>
-          <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="color">Color</Radio>
-          <Radio name="screenControlType" inline onChange={this.onControlTypeChange} value="crop">Crop</Radio>
-        </FormGroup>
+        </div>
 
         {this.state.isCropSettingShow && (
-          <FormGroup >
-            <Row>
-              <Col sm={8}>
-                <FormControl bsClass="input" type="text" placeholder="ImageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
-              </Col>
-              <Col sm={2}>
-                <Button bsClass="button" onClick={this.onCropSettingClick}>Config</Button>
-              </Col>
-              <Col sm={2}>
-                <Button bsClass="button-green" onClick={this.onCropClick}>Crop</Button>
-              </Col>
-            </Row>
-          </FormGroup>
+        <Row className="vertical-container" style={{ margin: '10px 5px -10px -10px' }}>
+          <Col sm={6} className="vertical-content">
+            <FormControl bsClass="input" style={{ width: '115%', padding: '5px' }} type="text" placeholder="ImageName.png" value={this.state.cropFilename} onChange={this.onCropFilenameChange} />
+          </Col>
+          <Col sm={3} className="vertical-content">
+            <Button bsClass="button" onClick={this.onCropSettingClick}>Config</Button>
+          </Col>
+          <Col sm={3} className="vertical-content">
+            <Button bsClass="button-green" onClick={this.onCropClick}>Crop</Button>
+          </Col>
+        </Row>
         )}
 
         <div>x: {this.state.posX}, y: {this.state.posY}</div>
-
-        {this.state.colorRecord.map((item, i) =>
-        (<div key={i} style={{ backgroundColor: `rgb(${item.r}, ${item.g}, ${item.b})`, width: 300 }}> x: {item.x}, y: {item.y}, r: {item.r}, g: {item.g}, b: {item.b}</div>))}
-        <Button bsClass="button" onClick={this.onClearColorClick}>Clear Colors</Button>
         <div style={{ position: 'relative' }}>
           <img
+            style={{ maxWidth: 300 }}
             src={this.state.syncImageSrc}
             draggable="false"
             onMouseMove={this.onMouseMove}

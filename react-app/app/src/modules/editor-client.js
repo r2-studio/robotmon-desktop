@@ -3,8 +3,6 @@ import fp from 'func-pipe';
 import ServiceClient from '../modules/service-client';
 import { CEditorEB, CLogsEB, CServiceControllerEB } from '../modules/event-bus';
 
-import {} from '../styles/global.css';
-
 export default class EditorClient {
   constructor(ip) {
     this.ip = ip;
@@ -27,7 +25,7 @@ export default class EditorClient {
 
   testConnection() {
     fp
-      .pipe(fp.bindObj(this.client.runScript, this.client, 'console.log("Robotmon Desktop Connect");getStoragePath();'))
+      .pipe(fp.bindObj(this.client.runScript, this.client, `console.log('Connect to ${this.ip}');getStoragePath();`))
       .pipe((storagePath) => {
         this.isConnect = true;
         this.connectState = CServiceControllerEB.TagStateConnected;
