@@ -17,18 +17,6 @@ export default class ScreenCrops extends Component {
     this.refresh = this.refresh.bind(this);
     this.pullImageBase64 = this.pullImageBase64.bind(this);
     this.newImage = this.newImage.bind(this);
-
-    CScreenCropsEB.addListener(CScreenCropsEB.EventAppNameChanged, (appName) => {
-      if (this.appName !== appName) {
-        this.appName = appName;
-        this.refresh();
-      }
-    });
-
-    CScreenCropsEB.addListener(CScreenCropsEB.EventNewImageCropped, (filename) => {
-      this.newImage(filename);
-    });
-
     this.appName = '';
     this.imagePath = '';
     this.editorClient = undefined;
@@ -43,12 +31,26 @@ export default class ScreenCrops extends Component {
   static get propTypes() {
     return {
       editorClient: PropTypes.object,
+      display: PropTypes.bool.isRequired,
     };
+  }
+
+  componentDidMount() {
+    CScreenCropsEB.addListener(CScreenCropsEB.EventAppNameChanged, (appName) => {
+      if (this.appName !== appName) {
+        this.appName = appName;
+        this.refresh();
+      }
+    });
+
+    CScreenCropsEB.addListener(CScreenCropsEB.EventNewImageCropped, (filename) => {
+      this.newImage(filename);
+    });
   }
 
   componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    if (!this.editorClient && this.props.editorClient.ip !== nextProps.editorClient.ip) {
+    if (!_.isUndefined(this.editorClient) && this.props.editorClient.ip !== nextProps.editorClient.ip) {
       this.refresh();
     }
   }
@@ -96,8 +98,12 @@ export default class ScreenCrops extends Component {
   }
 
   render() {
+    let className = 'panel-container display-none';
+    if (this.props.display) {
+      className = 'panel-container display-block';
+    }
     return (
-      <div className="panel-container">
+      <div className={className}>
         <div className="panel-header">
           Screen Crop
         </div>

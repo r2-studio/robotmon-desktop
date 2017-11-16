@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import dgram from 'dgram';
 
 import { CServiceControllerEB } from '../modules/event-bus';
-import ServiceItem from './ServiceItem.jsx';
+import ServiceItem from './ServiceItem';
 
 export default class ServiceController extends Component {
   constructor(props) {
@@ -14,6 +15,12 @@ export default class ServiceController extends Component {
     this.listenBroadcast = this.listenBroadcast.bind(this);
     this.addNewItem = this.addNewItem.bind(this);
     this.itemStatusChanged = this.itemStatusChanged.bind(this);
+  }
+
+  static get propTypes() {
+    return {
+      display: PropTypes.bool.isRequired,
+    };
   }
 
   componentDidMount() {
@@ -52,8 +59,12 @@ export default class ServiceController extends Component {
   }
 
   render() {
+    let className = 'panel-container display-none';
+    if (this.props.display) {
+      className = 'panel-container display-block';
+    }
     return (
-      <div className="panel-container">
+      <div className={className}>
         <div className="panel-header">
           Service Controller
         </div>

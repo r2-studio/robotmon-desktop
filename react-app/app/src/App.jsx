@@ -20,6 +20,9 @@ export default class App extends Component {
       scriptPath: '',
       editorValue: '',
       editorClient: undefined,
+      isMenuService: true,
+      isMenuFiles: false,
+      isMenuAssets: false,
     };
     this.onMenuChange = this.onMenuChange.bind(this);
     this.onEditorChange = this.onEditorChange.bind(this);
@@ -49,11 +52,11 @@ export default class App extends Component {
       case 'service':
         isMenuService = true;
         break;
-      case 'assets':
-        isMenuAssets = true;
-        break;
       case 'files':
         isMenuFiles = true;
+        break;
+      case 'assets':
+        isMenuAssets = true;
         break;
       default:
         break;
@@ -129,13 +132,13 @@ export default class App extends Component {
         </nav>
         <div id="container">
           <div id="menu">
-            <button onClick={() => this.onMenuChange('service')}>D</button>
-            <button onClick={() => this.onMenuChange('files')}>F</button>
+            <button onClick={() => this.onMenuChange('service')}>S</button>
+            {/* <button onClick={() => this.onMenuChange('files')}>F</button> */}
             <button onClick={() => this.onMenuChange('assets')}>A</button>
           </div>
           <div id="browser">
-            <ServiceController style={{ display: this.state.isMenuService }} />
-            { !_.isUndefined(this.state.editorClient) && <ScreenCrops editorClient={this.state.editorClient} style={{ display: this.state.isMenuAssets }} /> }
+            <ServiceController display={this.state.isMenuService} />
+            {!_.isUndefined(this.state.editorClient) && <ScreenCrops editorClient={this.state.editorClient} display={this.state.isMenuAssets} />}
           </div>
           <div id="main">
             <div id="editor">
