@@ -132,9 +132,9 @@ export default class App extends Component {
         </nav>
         <div id="container">
           <div id="menu">
-            <button onClick={() => this.onMenuChange('service')}>S</button>
-            {/* <button onClick={() => this.onMenuChange('files')}>F</button> */}
-            <button onClick={() => this.onMenuChange('assets')}>A</button>
+            <button className={this.state.isMenuService ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('service')}><img src="./src/images/ic_phone.png" /></button>
+            {/* <button className={this.state.isMenuFiles ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('files')}><img src="./src/images/ic_files.png" /></button> */}
+            <button className={this.state.isMenuAssets ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('assets')}><img src="./src/images/ic_photo.png" /></button>
           </div>
           <div id="browser">
             <ServiceController display={this.state.isMenuService} />

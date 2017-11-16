@@ -63,7 +63,7 @@ input[type="radio"]:checked {
 
 button {
   min-width: 60px;
-  background-color: #2E3842;
+  background-color: rgb(39, 40, 34);
   border: 2px solid white;
   border-radius: 25px;
   color: white;
@@ -110,6 +110,11 @@ button:focus {
   color: white;
 }
 
+.button-menu:hover {
+  background-color: var(--blue);
+  border-color: var(--blue);
+}
+
 li {
   color: white;
   font-size: 16px;
@@ -154,7 +159,7 @@ nav > input[type=file] {
 #menu > button {
   min-width: 42px;
   height: 42px;
-  margin: 8px 2px 0;
+  margin: 6px 3px 3px 3px;
 }
   
 #browser {
