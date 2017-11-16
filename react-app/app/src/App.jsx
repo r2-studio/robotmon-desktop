@@ -31,6 +31,7 @@ export default class App extends Component {
     this.onFileRead = this.onFileRead.bind(this);
     this.onFileSave = this.onFileSave.bind(this);
     this.onFileRun = this.onFileRun.bind(this);
+    this.onStop = this.onStop.bind(this);
     this.onStateChange = this.onStateChange.bind(this);
     CEditorEB.addListener(CEditorEB.EventClientChanged, this.onStateChange);
   }
@@ -109,6 +110,19 @@ export default class App extends Component {
     }
   }
 
+  onStop() {
+    if (_.isUndefined(this.state.editorClient)) {
+      return;
+    }
+    this.editorClient.client.runScript('stop();')
+      .then(() => {
+        console.log('stop script success');
+      })
+      .catch(() => {
+        console.log('stop script failed');
+      });
+  }
+
   runScriptByPath(scriptPath) {
     if (_.isUndefined(this.state.editorClient)) {
       return;
@@ -130,7 +144,7 @@ export default class App extends Component {
           <input type="file" onChange={this.onFileRead} />
           <button onClick={this.onFileSave}>Save</button>
           <button className="button-green" onClick={this.onFileRun}>Run</button>
-          <button className="button-red">Stop</button>
+          <button className="button-red" onClick={this.onStop}>Stop</button>
         </nav>
         <div id="container">
           <div id="menu">
