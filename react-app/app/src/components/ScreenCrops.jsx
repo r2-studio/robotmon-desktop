@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panel } from 'react-bootstrap';
 import _ from 'lodash';
 import fp from 'func-pipe';
 
 import { CLogsEB, CScreenCropsEB } from '../modules/event-bus';
-import CropImage from './CropImage.jsx';
-
-import {} from '../styles/global.css';
+import CropImage from './CropImage';
 
 export default class ScreenCrops extends Component {
   constructor(props) {
@@ -20,7 +17,25 @@ export default class ScreenCrops extends Component {
     this.refresh = this.refresh.bind(this);
     this.pullImageBase64 = this.pullImageBase64.bind(this);
     this.newImage = this.newImage.bind(this);
+    this.appName = '';
+    this.imagePath = '';
+    this.editorClient = undefined;
+  }
 
+  static get defaultProps() {
+    return {
+      editorClient: undefined,
+    };
+  }
+
+  static get propTypes() {
+    return {
+      editorClient: PropTypes.object,
+      display: PropTypes.bool.isRequired,
+    };
+  }
+
+  componentDidMount() {
     CScreenCropsEB.addListener(CScreenCropsEB.EventAppNameChanged, (appName) => {
       if (this.appName !== appName) {
         this.appName = appName;
@@ -31,24 +46,11 @@ export default class ScreenCrops extends Component {
     CScreenCropsEB.addListener(CScreenCropsEB.EventNewImageCropped, (filename) => {
       this.newImage(filename);
     });
-
-    this.appName = '';
-    this.imagePath = '';
-    this.editorClient = undefined;
   }
 
-  static get propTypes() {
-    return {
-      ip: PropTypes.string.isRequired,
-      editorClient: PropTypes.object.isRequired,
-    };
-  }
-
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    if (this.props.editorClient.ip !== nextProps.editorClient.ip) {
-      this.refresh();
-    }
+    this.refresh();
   }
 
   pullImageBase64(filePath) {
@@ -79,6 +81,10 @@ export default class ScreenCrops extends Component {
 
   // 10.116.221.150
   refresh() {
+    if (_.isUndefined(this.editorClient)) {
+      return;
+    }
+
     CLogsEB.emit(CLogsEB.EventNewLog, CLogsEB.TagDesktop, CLogsEB.LevelInfo, 'Refresh Images...');
     this.setState({
       deviceImages: {},
@@ -94,8 +100,12 @@ export default class ScreenCrops extends Component {
   }
 
   render() {
+    let className = 'panel-container display-none';
+    if (this.props.display) {
+      className = 'panel-container display-block';
+    }
     return (
-      <div className="panel-container">
+      <div className={className}>
         <div className="panel-header">
           Screen Crop
         </div>

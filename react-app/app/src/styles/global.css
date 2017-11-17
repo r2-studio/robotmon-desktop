@@ -5,57 +5,49 @@
 }
 
 html, body {
-  font-family: consloas, sans-serif, monospace;
+  font-family: consloas, sans-serif, monospace, 微軟正黑體;
+  color: white;
 }
-
-/* .container {
-  padding: 20px;
-} */
 
 .dark {
   background-color: #202A33;
   color: white;
 }
 
-.panel-container {
-  background-color: #2E3842;
-  border-radius: 10px;
-  padding-bottom: 5px;
-  margin-bottom: 20px;
-}
-
 .panel-header {
-  background-color: #29303A;
-  border-radius: 10px 10px 0px 0px;
   color: white;
-  font-size: 18px;
+  font-size: 14px;
   padding: 10px;
 }
 
 .panel-item {
+  align-items: center;
   color: white;
-  font-size: 16px;
-  margin: 10px 10px 0px 10px;
+  display: flex;
+  font-size: 14px;
+  padding: 5px 10px 5px 10px;
 }
 
 input {
-  background-color: #202A33;
+  background-color: rgb(39, 40, 34);
   border: none;
   border-radius: 5px;
   color: white;
-  margin-top: 10px;
   outline-color: var(--blue);
-  padding: 5px;
 }
 
 input:focus {
   outline: 0 !important;
 }
 
+.input-text {
+  width: 130%;
+}
+
 input[type="radio"] {
   width: 18px;
   height: 18px;
-  background-color: #2E3842;
+  background-color: rgb(39, 40, 34);
   border: 2px solid white;
   border-radius: 50%;
   bottom: 2px;
@@ -70,12 +62,14 @@ input[type="radio"]:checked {
 }
 
 button {
-  min-width: 100px;
-  background-color: #2E3842;
+  min-width: 60px;
+  background-color: rgb(39, 40, 34);
   border: 2px solid white;
   border-radius: 25px;
   color: white;
-  padding: 10px;
+  font-family : inherit;
+  font-size: 14px;
+  padding: 6px;
   transition-duration: 0.4s;
   -webkit-transition-duration: 0.4s;
 }
@@ -114,6 +108,11 @@ button:focus {
 .button-red:hover {
   background-color: var(--red);
   color: white;
+}
+
+.button-menu:hover {
+  background-color: var(--blue);
+  border-color: var(--blue);
 }
 
 li {
@@ -160,29 +159,34 @@ nav > input[type=file] {
 #menu > button {
   min-width: 42px;
   height: 42px;
-  margin: 8px 2px 0;
+  margin: 6px 3px 3px 3px;
 }
   
 #browser {
   background-color: rgb(30, 31, 28);
-  width: 240px;
+  width: 220px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
   
 #editor {
   background-color: rgb(39, 40, 34);
   flex: 1;
-  /* position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0; */
 }
   
 #inspector {
-  background-color: rgb(30, 31, 28);  
-  width: 360px;
+  background-color: rgb(30, 31, 28);
+  width: 300px;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
   
 #monitor .debug-screen-position {
@@ -192,10 +196,72 @@ nav > input[type=file] {
 }
 
 #console {
-  flex: 1;
-  overflow: scroll;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(39, 40, 34);
   white-space: pre-wrap;
-  background-color: transparent;
   color: white;
   border: none;
+}
+
+#console > div, #console > div > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#console .tab-content {
+  flex: 1;
+  padding: 4px;
+  overflow: auto;
+}
+
+.toolbar {
+  background-color: rgb(30, 31, 28);
+  padding-top: 4px;
+}
+
+.toolbar::before, .toolbar::after {
+  content: "";
+}
+
+.toolbar > li {
+  padding: 0 0 0 4px;
+}
+
+.toolbar > li > a {
+  font-size: 12px;
+  padding: 4px;
+  border-radius: 4px 4px 0 0;
+  background-color: #333;
+  color: white;
+}
+
+.toolbar > li.active > a {
+  background-color: var(--blue);
+}
+
+.toolbar > li > a:focus,
+.toolbar > li > a:hover {
+  background-color: #292929;
+}
+
+.display-none {
+  display: none;
+}
+
+.display-block {
+  display: block;
+}
+
+.vertical-container {
+  position: relative;
+  padding: 10px 5px 10px 5px;
+}
+
+.vertical-content {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }

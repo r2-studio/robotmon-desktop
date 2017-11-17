@@ -22,7 +22,7 @@ export default class ServiceItem extends Component {
   static get propTypes() {
     return {
       ip: PropTypes.string.isRequired,
-      connectState: PropTypes.number.isRequired,
+      connectState: PropTypes.string.isRequired,
     };
   }
 
@@ -36,17 +36,17 @@ export default class ServiceItem extends Component {
   }
 
   getButtonColor() {
-    if (this.props.connectState === CServiceControllerEB.TagStateConnecting || this.props.connectState === CServiceControllerEB.TagStateConnected) {
+    if (this.props.connectState === CServiceControllerEB.TagStateConnecting
+      || this.props.connectState === CServiceControllerEB.TagStateConnected) {
       return 'button-blue';
     }
     return 'button-green';
   }
 
   getButtonText() {
-    if (this.props.connectState === CServiceControllerEB.TagStateConnecting) {
-      return 'Connecting';
-    } else if (this.props.connectState === CServiceControllerEB.TagStateConnected) {
-      return 'Connected';
+    if (this.props.connectState === CServiceControllerEB.TagStateConnecting
+      || this.props.connectState === CServiceControllerEB.TagStateConnected) {
+      return this.props.connectState;
     }
     return 'Edit';
   }
@@ -62,23 +62,23 @@ export default class ServiceItem extends Component {
     if (this.props.ip !== '') {
       return (
         <Row className="panel-item">
-          <Col className="panel-body" sm={8}>{this.props.ip}</Col>
-          <Col sm={4}><Button bsClass={buttonColor} onClick={this.onEditorClick}>{buttonText}</Button></Col>
+          <Col sm={6}>{this.props.ip}</Col>
+          <Col sm={6}><Button bsClass={buttonColor} onClick={this.onEditorClick}>{buttonText}</Button></Col>
         </Row>
       );
     }
     return (
-      <Row className="panel-item" style={{ padding: 6 }} >
-        <Col sm={8}>
+      <Row className="panel-item">
+        <Col sm={6}>
           <FormControl
-            bsClass="input"
+            bsClass="input-text"
             type="text"
             value={this.state.textIP}
             placeholder="Enter IP"
             onChange={this.handleChange}
           />
         </Col>
-        <Col sm={4}><Button bsClass="button-green" onClick={this.onAddClick}>Add</Button></Col>
+        <Col sm={6}><Button bsClass="button-green" onClick={this.onAddClick}>Add</Button></Col>
       </Row>
     );
   }
