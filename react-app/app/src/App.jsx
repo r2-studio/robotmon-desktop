@@ -5,7 +5,7 @@ import 'brace/mode/javascript';
 import 'brace/theme/monokai';
 import fs from 'fs';
 
-import { CAppEB, CEditorEB, CServiceControllerEB } from './modules/event-bus';
+import { CAppEB, CEditorEB, CServiceControllerEB, CLogsEB } from './modules/event-bus';
 import EditorClient from './modules/editor-client';
 import ServiceController from './components/ServiceController';
 import LogController from './components/LogController';
@@ -28,11 +28,12 @@ export default class App extends Component {
     };
     this.onMenuChange = this.onMenuChange.bind(this);
     this.onEditorChange = this.onEditorChange.bind(this);
+    this.onStateChange = this.onStateChange.bind(this);
     this.onFileRead = this.onFileRead.bind(this);
     this.onFileSave = this.onFileSave.bind(this);
     this.onFileRun = this.onFileRun.bind(this);
     this.onStop = this.onStop.bind(this);
-    this.onStateChange = this.onStateChange.bind(this);
+    this.runScriptByPath = this.runScriptByPath.bind(this);
     CEditorEB.addListener(CEditorEB.EventClientChanged, this.onStateChange);
   }
 
@@ -114,12 +115,12 @@ export default class App extends Component {
     if (_.isUndefined(this.state.editorClient)) {
       return;
     }
-    this.editorClient.client.runScript('stop();')
+    this.state.editorClient.client.runScript('stop();')
       .then(() => {
-        console.log('stop script success');
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelInfo, 'stop script success');
       })
       .catch(() => {
-        console.log('stop script failed');
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelError, 'stop script failed');
       });
   }
 
@@ -127,13 +128,14 @@ export default class App extends Component {
     if (_.isUndefined(this.state.editorClient)) {
       return;
     }
+    CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelInfo, `run script > ${scriptPath}`);
     const js = fs.readFileSync(scriptPath);
-    this.editorClient.client.runScript(js.toString())
+    this.state.editorClient.client.runScript(js.toString())
       .then(() => {
-        console.log('run script success', scriptPath);
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelInfo, 'run script success');
       })
       .catch(() => {
-        console.log('run script failed', scriptPath);
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelError, 'run script failed');
       });
   }
 
