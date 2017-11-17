@@ -24,7 +24,7 @@ export default class App extends Component {
       editorValue: '',
       editorClient: undefined,
       isMenuService: true,
-      isMenuFiles: false,
+      // isMenuFiles: false,
       isMenuAssets: false,
     };
     this.onMenuChange = this.onMenuChange.bind(this);
@@ -35,6 +35,7 @@ export default class App extends Component {
     this.onFileRun = this.onFileRun.bind(this);
     this.onStop = this.onStop.bind(this);
     this.runScriptByPath = this.runScriptByPath.bind(this);
+    this.runScript = this.runScript.bind(this);
     CEditorEB.addListener(CEditorEB.EventClientChanged, this.onStateChange);
   }
 
@@ -50,16 +51,16 @@ export default class App extends Component {
 
   onMenuChange(buttonType) {
     let isMenuService = false;
-    let isMenuFiles = false;
+    // let isMenuFiles = false;
     let isMenuAssets = false;
 
     switch (buttonType) {
       case 'service':
         isMenuService = true;
         break;
-      case 'files':
-        isMenuFiles = true;
-        break;
+      // case 'files':
+      //   isMenuFiles = true;
+      //   break;
       case 'assets':
         isMenuAssets = true;
         break;
@@ -68,13 +69,13 @@ export default class App extends Component {
     }
     this.setState({
       isMenuService,
-      isMenuFiles,
+      // isMenuFiles,
       isMenuAssets,
     });
   }
 
   onEditorChange(newValue) {
-    this.setState({ editorValue: newValue });
+    this.state.editorValue = newValue;
   }
 
   onStateChange(ip) {
@@ -107,8 +108,9 @@ export default class App extends Component {
   }
 
   onFileRun() {
-    if (this.state.scriptPath !== '') {
-      this.runScriptByPath(this.state.scriptPath);
+    if (this.state.editorValue !== '') {
+      this.onFileSave();
+      this.runScript(this.state.editorValue);
     }
   }
 
@@ -122,6 +124,16 @@ export default class App extends Component {
       })
       .catch(() => {
         CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelError, 'stop script failed');
+      });
+  }
+
+  runScript(script) {
+    this.state.editorClient.client.runScript(script)
+      .then(() => {
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelInfo, 'run script success');
+      })
+      .catch(() => {
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelError, 'run script failed');
       });
   }
 

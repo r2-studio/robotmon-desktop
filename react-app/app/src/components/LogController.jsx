@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { CLogsEB } from '../modules/event-bus';
 
 const keepLogNumber = 100;
-const styleMsg = { fontFamily: 'consloas, sans-serif, monospace, 微軟正黑體' };
+const styleMsg = { fontFamily: 'consloas, sans-serif, monospace, 微軟正黑體', whiteSpace: 'nowrap', width: 0 };
 const styleMsgError = { color: '#FB4343' };
 const styleMsgWarning = { color: '#F8D532' };
 const styleMsgInfo = { color: 'white' };
