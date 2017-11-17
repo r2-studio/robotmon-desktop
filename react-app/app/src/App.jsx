@@ -3,6 +3,7 @@ import _ from 'lodash';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/monokai';
+import 'brace/ext/language_tools';
 import fs from 'fs';
 
 import { CAppEB, CEditorEB, CServiceControllerEB, CLogsEB } from './modules/event-bus';
@@ -169,6 +170,17 @@ export default class App extends Component {
                 onChange={this.onEditorChange}
                 name="AceEditor"
                 editorProps={{ $blockScrolling: true }}
+                fontSize={17}
+                showPrintMargin
+                showGutter
+                highlightActiveLine
+                setOptions={{
+                  enableBasicAutocompletion: true,
+                  enableLiveAutocompletion: true,
+                  enableSnippets: false,
+                  showLineNumbers: true,
+                  tabSize: 2,
+                }}
               />
             </div>
             <div id="console">
