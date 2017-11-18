@@ -9,7 +9,7 @@ import electron from 'electron';
 
 import { CScreenCropsEB, CLogsEB } from '../modules/event-bus';
 
-const defaultRBMInitSettings = `importJS('RBM-0.0.2');
+const defaultRBMInitSettings = `importJS('RBM-0.0.3');
 var _desktop_config = {
   appName: 'com.my.newProject',
   oriResizeFactor: 0.8,
@@ -63,7 +63,7 @@ export default class Screen extends Component {
     super(props);
     this.state = {
       syncDelay: 800,
-      syncImageSize: 600,
+      syncImageSize: 300,
       syncQuality: 90,
       syncImageSrc: '',
       posX: 0,
@@ -216,7 +216,7 @@ export default class Screen extends Component {
         .pipe((result) => {
           const color = JSON.parse(result.message);
           const message = `x: ${posX}, y: ${posY}, r: ${color.r}, g: ${color.g}, b: ${color.b}`;
-          const style = { backgroundColor: `rgb(${color.r}, ${color.g}, ${color.b})` };
+          const style = { color: `rgb(${color.r}, ${color.g}, ${color.b})` };
           CLogsEB.emit(CLogsEB.EventNewLog, this.editorClient.ip, CLogsEB.LevelInfo, message, style);
         });
     }
@@ -227,7 +227,7 @@ export default class Screen extends Component {
   }
 
   onCropClick() {
-    const ratio = this.state.syncImageSize / Math.max(this.screenWidth, this.screenHeight);
+    const ratio = this.state.syncImageSize / this.screenWidth;
     const posX1 = Math.floor(this.state.rectXY.left / ratio);
     const posY1 = Math.floor(this.state.rectXY.top / ratio);
     const posX2 = Math.floor((this.state.rectXY.left + this.state.rectXY.width) / ratio);
@@ -278,7 +278,7 @@ export default class Screen extends Component {
           this.screenWidth = wh.width;
           this.screenHeight = wh.height;
 
-          const ratio = this.state.syncImageSize / Math.max(wh.width, wh.height);
+          const ratio = this.state.syncImageSize / wh.width;
           const rw = Math.floor(wh.width * ratio);
           const rh = Math.floor(wh.height * ratio);
           return this.editorClient.client.getScreenshot(0, 0, 0, 0, rw, rh, this.state.syncQuality);
@@ -327,7 +327,7 @@ export default class Screen extends Component {
         <div style={{ margin: '0 0 5px 13px' }}>x: {this.state.posX}, y: {this.state.posY}</div>
         <div style={{ position: 'relative' }}>
           <img
-            style={{ maxWidth: 300 }}
+            // style={{ maxWidth: 300 }}
             src={this.state.syncImageSrc}
             draggable="false"
             onMouseMove={this.onMouseMove}
