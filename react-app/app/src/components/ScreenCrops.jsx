@@ -50,14 +50,17 @@ export default class ScreenCrops extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    this.refresh();
   }
 
   pullImageBase64(filePath) {
+    CLogsEB.emit(CLogsEB.EventNewLog, CLogsEB.TagDesktop, CLogsEB.LevelInfo, `Pull Image ${filePath}`);
     const scripts = `
       var _desktop_open_img = openImage("${filePath}");
-      var _desktop_img_base64 = getBase64FromImage(_desktop_open_img);
-      releaseImage(_desktop_open_img);
+      var _desktop_img_base64 = '';
+      if (_desktop_open_img != 0) {
+        _desktop_img_base64 = getBase64FromImage(_desktop_open_img);
+        releaseImage(_desktop_open_img);
+      }
       _desktop_img_base64;
     `;
     return fp
@@ -79,24 +82,28 @@ export default class ScreenCrops extends Component {
       .promise();
   }
 
-  // 10.116.221.150
   refresh() {
     if (_.isUndefined(this.editorClient)) {
       return;
     }
-
     CLogsEB.emit(CLogsEB.EventNewLog, CLogsEB.TagDesktop, CLogsEB.LevelInfo, 'Refresh Images...');
     this.setState({
       deviceImages: {},
     });
-    this.imagePath = `${this.editorClient.storagePath}/scripts/${this.appName}/images`;
-    const fpPromise = fp.pipe(fp.bind(this.editorClient.client.runScript, `execute('ls ${this.imagePath}');`));
-    fpPromise.pipe(({ message }) => {
-      const filenames = _.filter(message.split('\n'), v => v !== '');
-      _.forEach(filenames, (filename) => {
-        fpPromise.pipe(fp.bind(this.newImage, filename));
+    setTimeout(() => {
+      if (!this.editorClient.isConnect) {
+        CLogsEB.emit(CLogsEB.EventNewLog, CLogsEB.TagDesktop, CLogsEB.LevelWarning, `Device not connected ${this.editorClient.ip}`);
+        return;
+      }
+      this.imagePath = `${this.editorClient.storagePath}/scripts/${this.appName}/images`;
+      const fpPromise = fp.pipe(fp.bind(this.editorClient.client.runScript, `execute('ls ${this.imagePath}');`));
+      fpPromise.pipe(({ message }) => {
+        const filenames = _.filter(message.split('\n'), v => v !== '');
+        _.forEach(filenames, (filename) => {
+          fpPromise.pipe(fp.bind(this.newImage, filename));
+        });
       });
-    });
+    }, 200);
   }
 
   render() {

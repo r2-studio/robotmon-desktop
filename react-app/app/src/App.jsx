@@ -27,6 +27,7 @@ export default class App extends Component {
       // isMenuFiles: false,
       isMenuAssets: false,
     };
+    this.editorClients = {};
     this.onMenuChange = this.onMenuChange.bind(this);
     this.onEditorChange = this.onEditorChange.bind(this);
     this.onStateChange = this.onStateChange.bind(this);
@@ -42,8 +43,11 @@ export default class App extends Component {
   componentDidMount() {
     CAppEB.addListener(CAppEB.EventNewEditor, (ip) => {
       if (ip !== '') {
+        if (_.isUndefined(this.editorClients[ip])) {
+          this.editorClients[ip] = new EditorClient(ip);
+        }
         this.setState({
-          editorClient: new EditorClient(ip),
+          editorClient: this.editorClients[ip],
         });
       }
     });
@@ -103,13 +107,14 @@ export default class App extends Component {
     try {
       fs.writeFileSync(this.state.scriptPath, this.state.editorValue, 'utf-8');
     } catch (e) {
-      alert('Failed to save the file!');
+      CLogsEB.emit(CLogsEB.EventNewLog, CLogsEB.TagDesktop, CLogsEB.LevelWarning, 'Unable save the file');
     }
   }
 
   onFileRun() {
     if (this.state.editorValue !== '') {
       this.onFileSave();
+      console.log(this.state.editorValue);
       this.runScript(this.state.editorValue);
     }
   }
@@ -130,10 +135,10 @@ export default class App extends Component {
   runScript(script) {
     this.state.editorClient.client.runScript(script)
       .then(() => {
-        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelInfo, 'run script success');
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelWarning, 'run script success');
       })
-      .catch(() => {
-        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelError, 'run script failed');
+      .catch((e) => {
+        CLogsEB.emit(CLogsEB.EventNewLog, this.state.editorClient.ip, CLogsEB.LevelError, `run script failed: ${e.message}`);
       });
   }
 
@@ -182,7 +187,7 @@ export default class App extends Component {
                 onChange={this.onEditorChange}
                 name="AceEditor"
                 editorProps={{ $blockScrolling: true }}
-                fontSize={17}
+                fontSize={13}
                 showPrintMargin
                 showGutter
                 highlightActiveLine
