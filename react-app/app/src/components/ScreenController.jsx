@@ -235,7 +235,7 @@ export default class Screen extends Component {
     if (posX2 - posX1 > 0 && posY2 - posY1 > 0) {
       if (this.state.cropFilename !== '') {
         const intiScripts = this.state.rbmSetting.replace('__replace_width__', this.screenWidth).replace('__replace_height__', this.screenHeight);
-        const scripts = `${intiScripts}_desktop_rbm.screencrop('${this.state.cropFilename}', ${posX1}, ${posY1}, ${posX2}, ${posY2});`;
+        const scripts = `${intiScripts}_desktop_rbm.oriScreencrop('${this.state.cropFilename}', ${posX1}, ${posY1}, ${posX2}, ${posY2});`;
         fp
           .pipe(fp.bind(this.editorClient.client.runScript, scripts))
           .pipe(() => {

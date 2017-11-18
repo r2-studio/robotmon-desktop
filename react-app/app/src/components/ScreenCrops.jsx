@@ -50,7 +50,6 @@ export default class ScreenCrops extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.editorClient = nextProps.editorClient;
-    // this.refresh();
   }
 
   pullImageBase64(filePath) {
