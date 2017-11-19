@@ -1,19 +1,15 @@
 {
   "name": "robotmon-desktop",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Robotmon desktop",
   "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico",
-    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico",
-    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns",
-    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png"
+  "private": true,
+  "author": "R2 Studio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r2-studio/robotmon-desktop.git"
   },
-  "repository": "git@github.com:poi5305/robotmon-desktop.git",
-  "keywords": [],
-  "author": "Robotmon",
-  "license": "CC0-1.0",
   "devDependencies": {
     "electron-packager": "^9.0.1",
     "electron-rebuild": "^1.6.0",
@@ -32,5 +28,12 @@
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "punt": "^2.3.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build-win32": "electron-packager . Robotmon --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico",
+    "build-win64": "electron-packager . Robotmon --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico",
+    "build-mac": "electron-packager . Robotmon --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns",
+    "build-linux": "electron-packager . Robotmon --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png"
   }
 }
