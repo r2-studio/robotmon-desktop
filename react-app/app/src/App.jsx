@@ -14,6 +14,9 @@ import ScreenController from './components/ScreenController';
 import ScreenCrops from './components/ScreenCrops';
 
 import './styles/global.css';
+import menuPhoneIcon from './images/ic_phone.png';
+import menuPhotoIcon from './images/ic_photo.png';
+// import menuFilesIcon from './images/ic_files.png';
 
 export default class App extends Component {
   constructor(props) {
@@ -168,9 +171,9 @@ export default class App extends Component {
         </nav>
         <div id="container">
           <div id="menu">
-            <button className={this.state.isMenuService ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('service')}><img src="./src/images/ic_phone.png" /></button>
-            {/* <button className={this.state.isMenuFiles ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('files')}><img src="./src/images/ic_files.png" /></button> */}
-            <button className={this.state.isMenuAssets ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('assets')}><img src="./src/images/ic_photo.png" /></button>
+            <button className={this.state.isMenuService ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('service')}><img src={menuPhoneIcon} /></button>
+            {/* <button className={this.state.isMenuFiles ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('files')}><img src={menuFilesIcon} /></button> */}
+            <button className={this.state.isMenuAssets ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('assets')}><img src={menuPhotoIcon} /></button>
           </div>
           <div id="browser">
             <ServiceController display={this.state.isMenuService} />
