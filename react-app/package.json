@@ -1,10 +1,16 @@
 {
   "name": "robotmon-react-desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Robotmon react desktop",
   "homepage": "./",
   "main": "main.js",
   "private": true,
+  "author": "R2 Studio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/r2-studio/robotmon-desktop.git"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
