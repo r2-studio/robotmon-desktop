@@ -140,9 +140,17 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		result := client.RunCommand("", "connect", "127.0.0.1:5555")
 		sendLog("[RunADB] Connect BS Result: " + result)
 	case "nox":
-		sendLog("[RunADB] Connect NOX: 127.0.0.1:5555")
+		sendLog("[RunADB] Connect NOX: 127.0.0.1:62001")
 		result := client.RunCommand("", "connect", "127.0.0.1:62001")
 		sendLog("[RunADB] Connect NOX Result: " + result)
+
+		sendLog("[RunADB] Connect NOX: 127.0.0.1:62025")
+		result = client.RunCommand("", "connect", "127.0.0.1:62025")
+		sendLog("[RunADB] Connect NOX Result: " + result)
+	case "forward":
+		sendLog("[RunADB] Forward Post tcp:8081 tcp:8081")
+		result := client.RunCommand3("", "forward", "tcp:8081", "tcp:8081")
+		sendLog("[RunADB] Frorward Result: " + result)
 	}
 	return
 }
