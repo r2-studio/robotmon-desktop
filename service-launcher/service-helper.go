@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -12,12 +13,13 @@ import (
 
 const (
 	// StartCommand launch service command
-	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:/data/app/com.r2studio.robotmon-1/lib/arm:/data/app/com.r2studio.robotmon-2/lib/arm CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null && sleep 1 &"
+	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:%s CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null && sleep 1 &"
 )
 
 type Adb interface {
 	GetDevices() []string
 	RunCommand(string, string, string) string
+	RunCommand3(string, string, string, string) string
 }
 
 var adbPath string
@@ -55,6 +57,22 @@ func (a *AdbExec) RunCommand(serial, command1, command2 string) string {
 		cmd = exec.Command(a.AdbPath, command1, command2)
 	} else {
 		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2)
+	}
+	cmd.Stderr = os.Stderr
+	result, err := cmd.Output()
+	if err != nil {
+		fmt.Println(nil)
+		return ""
+	}
+	return string(result)
+}
+
+func (a *AdbExec) RunCommand3(serial, command1, command2, command3 string) string {
+	var cmd *exec.Cmd
+	if serial == "" {
+		cmd = exec.Command(a.AdbPath, command1, command2, command3)
+	} else {
+		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2, command3)
 	}
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
@@ -134,8 +152,9 @@ func getStartCommand(serial string) string {
 		nohup = "daemonize"
 	}
 	apk := getApkPath(serial)
+	lib8 := path.Dir(apk) + "/lib:" + path.Dir(apk) + "/lib/arm"
 	process := getAppProcess(serial)
-	command := fmt.Sprintf(StartCommand, nohup, apk, process)
+	command := fmt.Sprintf(StartCommand, nohup, lib8, apk, process)
 	return command
 }
 

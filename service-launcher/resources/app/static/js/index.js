@@ -73,3 +73,6 @@ function printDevices() {
 function connect() {
     astilectron.send({"name": "connect", "payload": $("#port").val()});
 }
+function forward() {
+    astilectron.send({"name": "forward", "payload": ""});
+}
