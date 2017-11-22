@@ -2,6 +2,7 @@
 // ./node_modules/.bin/electron-rebuild
 const electron = window.require('electron').remote;
 const grpc = electron.require('grpc');
+const path = require('path');
 
 const PORT = ':8081';
 
@@ -9,7 +10,12 @@ let protoDescriptor;
 try {
   protoDescriptor = grpc.load('resources/app/grpc.proto');
 } catch (e) {
-  protoDescriptor = grpc.load('grpc.proto');
+  try {
+    protoDescriptor = grpc.load('grpc.proto');
+  } catch(e) {
+    const macpath = path.dirname(process.argv[0]);
+    protoDescriptor = grpc.load(macpath + '/../../../../Resources/app/grpc.proto');
+  }
 }
 const RPC = protoDescriptor.rpc;
 
