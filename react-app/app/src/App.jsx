@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
+import 'brace/snippets/javascript';
 import 'brace/theme/monokai';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
@@ -192,15 +193,16 @@ export default class App extends Component {
                 value={this.state.editorValue}
                 onChange={this.onEditorChange}
                 name="AceEditor"
-                editorProps={{ $blockScrolling: true }}
+                editorProps={{ $blockScrolling: Infinity }}
                 fontSize={13}
                 showPrintMargin
                 showGutter
                 highlightActiveLine
                 setOptions={{
+                  useWorker: true,
                   enableBasicAutocompletion: true,
                   enableLiveAutocompletion: true,
-                  enableSnippets: false,
+                  enableSnippets: true,
                   showLineNumbers: true,
                   tabSize: 2,
                 }}
