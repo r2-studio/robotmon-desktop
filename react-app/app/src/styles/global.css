@@ -261,6 +261,11 @@ nav > input[type=file] {
   transform: translateY(-50%);
 }
 
+.horizontal-content {
+  display: block;
+  margin: 0 auto;
+}
+
 .ace_search_form > button[title="Alt-Enter"] {
   color: black;
   width: 35px;
