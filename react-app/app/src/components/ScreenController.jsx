@@ -304,7 +304,7 @@ export default class Screen extends Component {
           <Button
             className="vertical-content pull-right"
             onClick={this.onSyncScreenClick}
-            bsClass={this.isSyncScreen ? 'button-red' : 'button-green'}
+            bsClass={this.isSyncScreen ? 'button button-red' : 'button button-green'}
           >
             {this.isSyncScreen ? 'Stop Sync' : 'Start Sync'}
           </Button>
@@ -319,7 +319,7 @@ export default class Screen extends Component {
             <Button bsClass="button" onClick={this.onCropSettingClick}>Config</Button>
           </Col>
           <Col sm={3} className="vertical-content">
-            <Button bsClass="button-green" onClick={this.onCropClick}>Crop</Button>
+            <Button bsClass="button button-green" onClick={this.onCropClick}>Crop</Button>
           </Col>
         </Row>
         )}
