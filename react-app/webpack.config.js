@@ -57,5 +57,6 @@ module.exports = {
 
   resolve: {
     extensions: ['.js', '.jsx'],
+    mainFields: ['browser', 'module', 'main'],
   },
 };

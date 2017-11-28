@@ -9,11 +9,6 @@ html, body {
   color: white;
 }
 
-.dark {
-  background-color: #202A33;
-  color: white;
-}
-
 .panel-header {
   color: white;
   font-size: 14px;
@@ -61,7 +56,7 @@ input[type="radio"]:checked {
   border-color: white;
 }
 
-button {
+.button {
   min-width: 60px;
   background-color: rgb(39, 40, 34);
   border: 2px solid white;
@@ -74,12 +69,12 @@ button {
   -webkit-transition-duration: 0.4s;
 }
 
-button:hover {
+.button:hover {
   background-color: white;
   color: #2E3842;
 }
 
-button:focus {
+.button:focus {
   outline: 0 !important;
 }
 
@@ -264,4 +259,18 @@ nav > input[type=file] {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.horizontal-content {
+  display: block;
+  margin: 0 auto;
+}
+
+.ace_search_form > button[title="Alt-Enter"] {
+  color: black;
+  width: 35px;
+}
+
+.ace_replace_form > button {
+  color: black;
 }

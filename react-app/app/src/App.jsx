@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
+import 'brace/snippets/javascript';
 import 'brace/theme/monokai';
 import 'brace/ext/language_tools';
+import 'brace/ext/searchbox';
 import fs from 'fs';
 
 import { CAppEB, CEditorEB, CServiceControllerEB, CLogsEB } from './modules/event-bus';
@@ -161,19 +163,21 @@ export default class App extends Component {
   }
 
   render() {
+    const menuSelectedStyle = 'button button-blue';
+    const menuDefaultStyle = 'button button-menu';
     return (
       <div>
         <nav>
           <input type="file" onChange={this.onFileRead} />
-          <button onClick={this.onFileSave}>Save</button>
-          <button className="button-green" onClick={this.onFileRun}>Run</button>
-          <button className="button-red" onClick={this.onStop}>Stop</button>
+          <button className="button" onClick={this.onFileSave}>Save</button>
+          <button className="button button-green" onClick={this.onFileRun}>Run</button>
+          <button className="button button-red" onClick={this.onStop}>Stop</button>
         </nav>
         <div id="container">
           <div id="menu">
-            <button className={this.state.isMenuService ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('service')}><img src={menuPhoneIcon} /></button>
-            {/* <button className={this.state.isMenuFiles ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('files')}><img src={menuFilesIcon} /></button> */}
-            <button className={this.state.isMenuAssets ? 'button-blue' : 'button-menu'} onClick={() => this.onMenuChange('assets')}><img src={menuPhotoIcon} /></button>
+            <button className={this.state.isMenuService ? menuSelectedStyle : menuDefaultStyle} onClick={() => this.onMenuChange('service')}><img src={menuPhoneIcon} /></button>
+            {/* <button className={this.state.isMenuFiles ? menuSelectedStyle : menuDefaultStyle} onClick={() => this.onMenuChange('files')}><img src={menuFilesIcon} /></button> */}
+            <button className={this.state.isMenuAssets ? menuSelectedStyle : menuDefaultStyle} onClick={() => this.onMenuChange('assets')}><img src={menuPhotoIcon} /></button>
           </div>
           <div id="browser">
             <ServiceController display={this.state.isMenuService} />
@@ -189,15 +193,16 @@ export default class App extends Component {
                 value={this.state.editorValue}
                 onChange={this.onEditorChange}
                 name="AceEditor"
-                editorProps={{ $blockScrolling: true }}
+                editorProps={{ $blockScrolling: Infinity }}
                 fontSize={13}
                 showPrintMargin
                 showGutter
                 highlightActiveLine
                 setOptions={{
+                  useWorker: true,
                   enableBasicAutocompletion: true,
                   enableLiveAutocompletion: true,
-                  enableSnippets: false,
+                  enableSnippets: true,
                   showLineNumbers: true,
                   tabSize: 2,
                 }}

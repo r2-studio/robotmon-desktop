@@ -38,9 +38,9 @@ export default class ServiceItem extends Component {
   getButtonColor() {
     if (this.props.connectState === CServiceControllerEB.TagStateConnecting
       || this.props.connectState === CServiceControllerEB.TagStateConnected) {
-      return 'button-blue';
+      return 'button button-blue horizontal-content';
     }
-    return 'button-green';
+    return 'button button-green horizontal-content';
   }
 
   getButtonText() {
@@ -48,7 +48,7 @@ export default class ServiceItem extends Component {
       || this.props.connectState === CServiceControllerEB.TagStateConnected) {
       return this.props.connectState;
     }
-    return 'Edit';
+    return 'Connect';
   }
 
   handleChange(e) {
@@ -78,7 +78,7 @@ export default class ServiceItem extends Component {
             onChange={this.handleChange}
           />
         </Col>
-        <Col sm={6}><Button bsClass="button-green" onClick={this.onAddClick}>Add</Button></Col>
+        <Col sm={6}><Button bsClass="button button-green horizontal-content" onClick={this.onAddClick}>Add</Button></Col>
       </Row>
     );
   }
