@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Tab, Nav, NavItem } from 'react-bootstrap';
 import _ from 'lodash';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { CLogsEB } from '../modules/event-bus';
 
@@ -30,6 +31,10 @@ export default class Logs extends Component {
     CLogsEB.addListener(CLogsEB.EventNewLog, (tag, level, message, style = undefined) => {
       this.newLog(tag, level, message, style);
     });
+  }
+
+  componentDidUpdate() {
+    this.scrollbars.scrollTop(this.scrollbars.getScrollHeight());
   }
 
   onTabSelected(key) {
@@ -76,7 +81,9 @@ export default class Logs extends Component {
               {tabContainers.map(v => v)}
             </Nav>
             <Tab.Content animation>
-              {tabContents.map(v => v)}
+              <Scrollbars ref={(scrollbars) => { this.scrollbars = scrollbars; }}>
+                {tabContents.map(v => v)}
+              </Scrollbars>
             </Tab.Content>
           </div>
         </Tab.Container>
