@@ -3,11 +3,11 @@
         // Wait for astilectron to be ready
         document.addEventListener('astilectron-ready', function() {
             index.listen();
-            astilectron.send({"name": "envTest"});
+            astilectron.sendMessage({"name": "envTest"});
         })
     },
     listen: function() {
-        astilectron.listen(function(message) {
+        astilectron.onMessage(function(message) {
             // console.log(message);
             switch (message.name) {
                 case "log":
@@ -31,7 +31,7 @@ function addLog(log) {
 }
 function debug() {
     isDebugOpened = !isDebugOpened;
-    astilectron.send({"name": "debug", "payload": isDebugOpened});
+    astilectron.sendMessage({"name": "debug", "payload": isDebugOpened});
 }
 function refresh() {
     location.reload();
@@ -45,16 +45,16 @@ function advanced() {
     $("#adbShell").toggle();
 }
 function connectBS() {
-    astilectron.send({"name": "bs", "payload": ""});
+    astilectron.sendMessage({"name": "bs", "payload": ""});
 }
 function connectNOX() {
-    astilectron.send({"name": "nox", "payload": ""});
+    astilectron.sendMessage({"name": "nox", "payload": ""});
 }
 function start() {
-    astilectron.send({"name": "start", "payload": ""});
+    astilectron.sendMessage({"name": "start", "payload": ""});
 }
 function stop() {
-    astilectron.send({"name": "stop", "payload": ""});
+    astilectron.sendMessage({"name": "stop", "payload": ""});
 }
 function report() {
     var formattedBody = $("#log").val();
@@ -62,17 +62,17 @@ function report() {
     window.location.href = mailToLink;
 }
 function setadb() {
-    astilectron.send({"name": "setadb", "payload": $("#adb-path").val()});
+    astilectron.sendMessage({"name": "setadb", "payload": $("#adb-path").val()});
 }
 function runadb() {
-    astilectron.send({"name": "runadb", "payload": $("#adbcommand").val()});
+    astilectron.sendMessage({"name": "runadb", "payload": $("#adbcommand").val()});
 }
 function printDevices() {
-    astilectron.send({"name": "printDevices", "payload": ""});
+    astilectron.sendMessage({"name": "printDevices", "payload": ""});
 }
 function connect() {
-    astilectron.send({"name": "connect", "payload": $("#port").val()});
+    astilectron.sendMessage({"name": "connect", "payload": $("#port").val()});
 }
 function forward() {
-    astilectron.send({"name": "forward", "payload": ""});
+    astilectron.sendMessage({"name": "forward", "payload": ""});
 }

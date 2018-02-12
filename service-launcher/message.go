@@ -19,7 +19,7 @@ type ListItem struct {
 
 func sendLog(msg string) {
 	if window != nil {
-		window.Send(bootstrap.MessageOut{Name: "log", Payload: msg})
+		window.SendMessage(bootstrap.MessageOut{Name: "log", Payload: msg})
 	}
 }
 
@@ -38,11 +38,11 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 
 		if adbPath == "" {
 			sendLog("[EnvTest] ADB NOT Found")
-			window.Send(bootstrap.MessageOut{Name: "adbPath", Payload: "ADB NOT Found, You can set ADB Path yourself"})
+			window.SendMessage(bootstrap.MessageOut{Name: "adbPath", Payload: "ADB NOT Found, You can set ADB Path yourself"})
 			return
 		}
 
-		window.Send(bootstrap.MessageOut{Name: "adbPath", Payload: adbPath})
+		window.SendMessage(bootstrap.MessageOut{Name: "adbPath", Payload: adbPath})
 		client = NewAdbExec(adbPath)
 		sendLog("[EnvTest] ADB path: " + adbPath)
 		sendLog("[EnvTest] Find Devices... Please Wait")
