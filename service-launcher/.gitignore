@@ -1,4 +1,7 @@
-bind.go
-vendor
+.DS_Store
+Thumbs.db
+.idea/
+bind*
 output
+vendor*
 windows.syso

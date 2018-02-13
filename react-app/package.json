@@ -58,7 +58,7 @@
     "start": "./node_modules/.bin/concurrently \"npm run webpack-start\" \"npm run electron-start\"",
     "build-win32": "electron-packager . --platform=win32 --arch=ia32 --overwrite --prune --icon=icons/icon.ico --ignore=app/src --out=out",
     "build-win64": "electron-packager . --platform=win32 --arch=x64 --overwrite --prune --icon=icons/icon.ico --ignore=app/src --out=out",
-    "build-mac": "electron-packager . --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns --ignore=app/src --out=out",
+    "build-mac": "electron-packager . --platform=darwin --arch=x64 --overwrite --prune --icon=icons/icon.icns --ignore=app/src --out=out && electron-installer-dmg ./out/Robotmon\\ Developer-darwin-x64/Robotmon\\ Developer.app Robotmon\\ Developer --out=out --overwrite --icon=icons/icon.icns",
     "build-linux": "electron-packager . --platform=linux --arch=x64 --overwrite --prune --icon=icons/icon.png --ignore=app/src --out=out"
   }
 }
