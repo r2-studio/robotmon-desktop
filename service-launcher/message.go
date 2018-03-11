@@ -23,6 +23,28 @@ func sendLog(msg string) {
 	}
 }
 
+func runStartCommand(serial string, startCommand string, tag string) string {
+	sendLog("[" + tag + "] -- Robotmon Start Command: " + startCommand)
+
+	cv := make(chan bool, 1)
+	go func() {
+		client.RunCommand(serial, "shell", startCommand)
+		cv <- true
+	}()
+	select {
+	case <-cv:
+	case <-time.After(3 * time.Second):
+	}
+
+	pid := getPid(serial)
+	if pid == "" {
+		sendLog("[" + tag + "] -- Robotmon Service Start Failed")
+	} else {
+		sendLog("[" + tag + "] -- Robotmon Service Started PID: " + pid)
+	}
+	return pid
+}
+
 // handleMessages handles messages
 func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload interface{}, err error) {
 	switch m.Name {
@@ -50,6 +72,12 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		for _, serial := range devices {
 			sendLog("[EnvTest] Find Device: " + serial)
 
+			deviceAndroidVersion := getDeviceAndroidVersion(serial)
+			sendLog("[EnvTest] -- Android Version: " + deviceAndroidVersion)
+
+			deviceModel := getDeviceModel(serial)
+			sendLog("[EnvTest] -- Model: " + deviceModel)
+
 			apkPath := getApkPath(serial)
 			sendLog("[EnvTest] -- Robotmon APK Path: " + apkPath)
 
@@ -74,23 +102,10 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		devices := client.GetDevices()
 		for _, serial := range devices {
 			startCommand := getStartCommand(serial)
-			sendLog("[Start] -- Robotmon Start Command: " + startCommand)
-
-			cv := make(chan bool, 1)
-			go func() {
-				client.RunCommand(serial, "shell", startCommand)
-				cv <- true
-			}()
-			select {
-			case <-cv:
-			case <-time.After(3 * time.Second):
-			}
-
-			pid := getPid(serial)
+			pid := runStartCommand(serial, startCommand, "Start")
 			if pid == "" {
-				sendLog("[Start] -- Robotmon Service Start Failed")
-			} else {
-				sendLog("[Start] -- Robotmon Service Started PID: " + pid)
+				startCommand = getBaseStartCommand(serial)
+				runStartCommand(serial, startCommand, "Retry")
 			}
 		}
 	case "stop":

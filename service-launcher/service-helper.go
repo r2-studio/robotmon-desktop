@@ -14,7 +14,8 @@ import (
 
 const (
 	// StartCommand launch service command
-	StartCommand = "%s sh -c \"LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:%s CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@\" > /dev/null 2> /dev/null && sleep 1 &"
+	BaseStartCommand = "LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:%s CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@"
+	StartCommand = "%s sh -c \"" + BaseStartCommand + "\" > /dev/null 2> /dev/null && sleep 1 &"
 )
 
 type Adb interface {
@@ -162,6 +163,14 @@ func getStartCommand(serial string) string {
 	return command
 }
 
+func getBaseStartCommand(serial string) string {
+	apk := getApkPath(serial)
+	lib8 := path.Dir(apk) + "/lib:" + path.Dir(apk) + "/lib/arm"
+	process := getAppProcess(serial)
+	command := fmt.Sprintf(BaseStartCommand, lib8, apk, process)
+	return command
+}
+
 func adbDelay() {
 	time.Sleep(200 * time.Millisecond)
 }
@@ -227,6 +236,29 @@ func listServices() {
 			fmt.Println("Device", serial, "service is running", pid)
 		}
 	}
+}
+
+func getDeviceAndroidVersion(serial string) string {
+	result := client.RunCommand(serial, "shell", "getprop ro.build.version.release")
+	result = strings.Trim(result, "\r\n")
+	if result == "" {
+		return "unknown"
+	}
+	return result
+}
+
+func getDeviceModel(serial string) string {
+	manufacturer := client.RunCommand(serial, "shell", "getprop ro.product.manufacturer")
+	manufacturer = strings.Trim(manufacturer, "\r\n")
+	model := client.RunCommand(serial, "shell", "getprop ro.product.model")
+	model = strings.Trim(model, "\r\n")
+	if manufacturer == "" {
+		return "unknown"
+	}
+	if model == "" {
+		return "unknown"
+	}
+	return manufacturer + " " + model
 }
 
 // func main() {
