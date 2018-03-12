@@ -9,7 +9,6 @@ import (
 	"runtime"
 	"strings"
 	"time"
-	"syscall"
 )
 
 const (
@@ -34,7 +33,7 @@ type AdbExec struct {
 func (a *AdbExec) GetDevices() []string {
 	devices := []string{}
 	cmd := exec.Command(a.AdbPath, "devices")
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	hideWindow(cmd);
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
@@ -61,7 +60,7 @@ func (a *AdbExec) RunCommand(serial, command1, command2 string) string {
 	} else {
 		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2)
 	}
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	hideWindow(cmd);
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
@@ -78,7 +77,7 @@ func (a *AdbExec) RunCommand3(serial, command1, command2, command3 string) strin
 	} else {
 		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2, command3)
 	}
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	hideWindow(cmd);
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
