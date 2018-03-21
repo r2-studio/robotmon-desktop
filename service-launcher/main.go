@@ -23,6 +23,8 @@ func main() {
 		Asset: Asset,
 		AstilectronOptions: astilectron.Options{
 			AppName: AppName,
+			AppIconDarwinPath:  "resources/icon.icns",
+			AppIconDefaultPath: "resources/icon.png",
 		},
 		Debug: false,
 		Homepage: "index.html",

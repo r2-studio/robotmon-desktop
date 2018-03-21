@@ -80,9 +80,11 @@ adb shell kill <pid>
 
 |Brand|Model|
 |---|---|
-|HTC|U11, 10, X9, A9, E9+, M9, Eye, Butterfly 2, Butterfly|
+|HTC|U11, 10, X9, A9, E9+, M9, Eye, Butterfly 3, Butterfly 2, Butterfly|
 |Samsung|Note 8, S7|
-|Asus|ZenFone 2|
+|Asus|ZenFone 2, ZenFone 3|
+|Sony|Xperia XZ|
+|Xiaomi|Redmi|
 |OnePlus|3T|
 |Emulator|Nox App Player, BlueStacks|
 
