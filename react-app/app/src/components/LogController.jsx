@@ -80,7 +80,7 @@ export default class Logs extends Component {
             <Nav bsStyle="pills" className="toolbar">
               {tabContainers.map(v => v)}
             </Nav>
-            <Tab.Content animation>
+            <Tab.Content animation={false}>
               <Scrollbars ref={(scrollbars) => { this.scrollbars = scrollbars; }}>
                 {tabContents.map(v => v)}
               </Scrollbars>
