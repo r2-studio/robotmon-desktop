@@ -6,17 +6,25 @@ const path = require('path');
 
 const PORT = ':8081';
 
+const runpath = path.dirname(process.argv[0]);
+const possibleGrpcPath = [
+  'resources/app/grpc.proto',
+  'grpc.proto',
+  runpath + '/../../../../Resources/app/grpc.proto',
+  runpath + '/resources/app/grpc.proto',
+  runpath + '/grcp.proto',
+];
+
 let protoDescriptor;
-try {
-  protoDescriptor = grpc.load('resources/app/grpc.proto');
-} catch (e) {
+for (const path of possibleGrpcPath) {
   try {
-    protoDescriptor = grpc.load('grpc.proto');
-  } catch(e) {
-    const macpath = path.dirname(process.argv[0]);
-    protoDescriptor = grpc.load(macpath + '/../../../../Resources/app/grpc.proto');
+    protoDescriptor = grpc.load(path);
+    break;
+  } catch (e) {
+    console.log(`Can not load ${path}, try next`);
   }
 }
+
 const RPC = protoDescriptor.rpc;
 
 export default class ServiceClient {
