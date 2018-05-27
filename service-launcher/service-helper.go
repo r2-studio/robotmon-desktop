@@ -156,7 +156,8 @@ func getStartCommand(serial string) string {
 		nohup = "daemonize"
 	}
 	apk := getApkPath(serial)
-	lib8 := path.Dir(apk) + "/lib:" + path.Dir(apk) + "/lib/arm"
+	apkDir := path.Dir(apk)
+	lib8 := apkDir + "/lib:" + apkDir + "/lib/arm:" + apkDir + "/lib/x86"
 	process := getAppProcess(serial)
 	command := fmt.Sprintf(StartCommand, nohup, lib8, apk, process)
 	return command
