@@ -1,0 +1,28 @@
+{
+    "name": "Robotmon Messenger",
+    "version": "1.1",
+    "description": "For receiving Robotmon message",
+    "icons": {
+      "128": "robotmon.png"
+    },
+    "permissions": [
+      "identity"
+    ],
+    "background": {
+      "page": "background.html"
+    },
+    "browser_action": {
+      "default_icon": "robotmon.png",
+      "default_popup": "message.html"
+    },
+    "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://ajax.googleapis.com https://apis.google.com; object-src 'self'",
+    "oauth2": {
+      "client_id": "640484500823-goeeg1mg1ab5t0llo310hk08vtjedkkq.apps.googleusercontent.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile"
+      ]
+    },
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAolR+7hTleRYfsYh1e61R1DIPxBUg5qBx1cl1MgP71sWkti6Es7ltemDcW6kp+yKv3LIi3k+ye3uHtzeQR0fvItAFr1unezRAbOyhobP0sA9hgBVpZSxE/YkLa1GeXjLGEUO5f4f2M5ucxqwwbIf+OZi0Nw/bqHZCNff1gMMe3W0pkoMyicA957S4geU6A+s1urgvpEDkSH/ZcddW/LaZ0uvMkVcJ6HnrU2VVBAjDkDiFcGHUDjm5tEQUP+StEstdopbN6qKLH3wgeasGrOpuVOec9KkRihIFYpVayCYIplfvQD28MiYKA8eOG0ncT6Ei12qrcrd/DE2cVP7dGFnvmQIDAQAB",
+    "manifest_version": 2
+  }

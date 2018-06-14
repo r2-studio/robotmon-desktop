@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2016 Google Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+<head>
+  <meta charset=utf-8 />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robotmon Messenger</title>
+
+  <link rel="stylesheet" href="main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+  <script src="message.js"></script>
+</head>
+<body>
+  <h3>Robotmon Messenger</h3>
+
+  <div class="quickstart-user-details-container">
+    <button id="login-google" class="user-login">Login With Google</button>
+    <button id="login-facebook" class="user-login">Login With Facebook</button>
+    <button id="logout" class="user-logout" style="display: none;">Logout</button>
+    <button id="read-more">Read More</button>
+  </div>
+  <div id="topMsg"></div>
+  <div id="messages">
+  </div>
+</body>
+</html>
