@@ -1,16 +1,4 @@
 <!DOCTYPE html>
-<!--
-Copyright (c) 2016 Google Inc.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
 <html>
 <head>
   <meta charset=utf-8 />
@@ -18,6 +6,9 @@ limitations under the License.
   <title>Robotmon Messenger</title>
 
   <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.0.0/firebaseui.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-auth.js"></script>
@@ -25,16 +16,47 @@ limitations under the License.
   <script src="message.js"></script>
 </head>
 <body>
-  <h3>Robotmon Messenger</h3>
+  <nav class="navbar navbar-custom" role="navigation">
+    <i id="logout" class="user-logout material-icons pull-left" style="display: none;">exit_to_app</i>
+    <a class="navbar-brand">Robotmon Messenger</a>
+    <i id="read-more" class="material-icons pull-right">refresh</i>
+  </nav>
+  
+  <img id="logo" class="center" src="icon.png" alt="Robotmon">
 
-  <div class="quickstart-user-details-container">
-    <button id="login-google" class="user-login">Login With Google</button>
-    <button id="login-facebook" class="user-login">Login With Facebook</button>
-    <button id="logout" class="user-logout" style="display: none;">Logout</button>
-    <button id="read-more">Read More</button>
+  <ul id="login-container" class="firebaseui-idp-list">
+    <li class="firebaseui-list-item">
+      <button id="login-google" class="user-login firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-google firebaseui-id-idp-button" data-provider-id="google.com" data-upgraded=",MaterialButton">
+        <span class="firebaseui-idp-icon-wrapper">
+          <img class="firebaseui-idp-icon" alt="" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+        </span>
+        <span class="firebaseui-idp-text firebaseui-idp-text-long">
+          Sign in with Google</span>
+        <span class="firebaseui-idp-text firebaseui-idp-text-short">
+          Google
+        </span>
+      </button>
+    </li>
+    <li class="firebaseui-list-item">
+      <button id="login-facebook" class="user-login firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-facebook firebaseui-id-idp-button" data-provider-id="facebook.com" data-upgraded=",MaterialButton">
+        <span class="firebaseui-idp-icon-wrapper">
+          <img class="firebaseui-idp-icon" alt="" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg">
+        </span>
+        <span class="firebaseui-idp-text firebaseui-idp-text-long">
+          Sign in with Facebook
+        </span>
+        <span class="firebaseui-idp-text firebaseui-idp-text-short">
+          Facebook
+        </span>
+      </button>
+    </li>
+  </ul>
+
+  <div id="topMsg-container" style="display: none;">
+    <i class="material-icons white">outlined_flag</i>
+    <div id="topMsg"></div>
   </div>
-  <div id="topMsg"></div>
-  <div id="messages">
-  </div>
+  <div id="messages" style="display: none;"></div>
+  <div id="snackbar"></div>
 </body>
 </html>

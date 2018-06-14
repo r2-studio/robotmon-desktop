@@ -1,9 +1,9 @@
 {
     "name": "Robotmon Messenger",
     "version": "1.1",
-    "description": "For receiving Robotmon message",
+    "description": "For receiving Robotmon messages",
     "icons": {
-      "128": "robotmon.png"
+      "512": "icon.png"
     },
     "permissions": [
       "identity"
@@ -12,7 +12,7 @@
       "page": "background.html"
     },
     "browser_action": {
-      "default_icon": "robotmon.png",
+      "default_icon": "icon.png",
       "default_popup": "message.html"
     },
     "content_security_policy":"script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://ajax.googleapis.com https://apis.google.com; object-src 'self'",

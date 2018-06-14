@@ -1,64 +1,129 @@
-/**
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
- html, body {
-    font-family: 'Roboto', 'Helvetica', sans-serif;
-  }
-  body {
-    width: 400px;
-    min-height: 400px;
-    margin: 0;
-    padding: 5px;
-  }
-  a {
-    text-decoration: none;
-  }
-  li a {
-    text-decoration: underline;
-    color: #0288d1;
-  }
-  .mdl-grid {
-    max-width: 1024px;
-    margin: auto;
-  }
-  .mdl-layout__header-row {
-    padding: 0;
-  }
-  .quickstart-user-details-container {
-    margin-top: 20px;
-    line-height: 25px;
-  }
-  #quickstart-sign-in-status {
-    font-weight: bold;
-  }
-  pre {
-    overflow-x: scroll;
-    line-height: 18px;
-  }
-  code {
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-  h3 {
-    background: url('firebase-logo.png') no-repeat;
-    background-size: 40px;
-    padding-left: 50px;
-    line-height: 40px;
-  }
-  #messages {
-    height: 400px;
-    width: 400px;
-  }
+html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+body {
+  width: 320px;
+  height: 482px;
+  max-height: 482px;
+  margin: 0 auto !important;
+  padding: 0 2px;
+}
+#topMsg-container {
+  height: 30px;
+  width: 100%;
+  background-color: #2196F3;
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+}
+#topMsg-container > i, #topMsg-container > div {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+}
+#topMsg {
+  font-size: 15px;
+}
+#messages {
+  overflow-y: auto;
+  height: 400px;
+  max-height: 400px;
+  width: 100%;
+  color: black;
+}
+.navbar {
+  margin-bottom: 0 !important;
+}
+.navbar-custom {
+  border-radius: 0 !important;
+  background-color: #2196F3;
+  color: white;
+}
+.navbar-custom > a {
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+.navbar-custom > a:hover {
+  color: white;
+  text-align: center;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.pull-left {
+  position: absolute; 
+  left: 15px;
+  top: 25%;
+}
+.pull-right {
+  position: absolute; 
+  right: 15px;
+  top: 25%;
+}
+.center {
+  display: block;
+  margin: 60px auto;
+  width: 50%;
+}
+.material-icons.white { 
+  color: white;
+}
+.msg_obj {
+  margin: 10px 5px 0 5px;
+}
+.msg_logo {
+  width: 35px;
+  height: 35px;
+  margin-right: 8px;
+  outline: none !important;
+  border : none !important;
+}
+.msg_text {
+  display: inline-block;
+  border-radius: 10px;
+  background: #f2f2f2;
+  padding: 6px;
+  color: #373737;
+}
+.msg_time {
+  display: block;
+  margin-left: 45px;
+  max-width: 100px;
+}
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+}
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}

@@ -1,4 +1,3 @@
-// TODO(DEVELOPER): Change the values below using values from the initialization snippet: Firebase Console > Overview > Add Firebase to your web app.
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyBdoy4YKI6GNkpMygh15CvgA9j7X57Jv-4",
@@ -27,6 +26,15 @@ function initApp() {
       var uid = user.uid;
       var providerData = user.providerData;
       readMessages();
+      $("#logo").hide();
+      $("#login-container").hide();
+      $("#topMsg-container").show();
+      $("#messages").show();
+    } else {
+      $("#logo").show();
+      $("#login-container").show();
+      $("#topMsg-container").hide();
+      $("#messages").hide();
     }
     updateSignButton();
     $(".user-login").attr("disabled", false);
@@ -54,25 +62,60 @@ function handleError(msg) {
   console.log(msg);
 }
 
+Date.prototype.Format = function (fmt) { 
+  var o = {
+    "M+": this.getMonth() + 1,
+    "d+": this.getDate(),
+    "h+": this.getHours(),
+    "m+": this.getMinutes(),
+    "s+": this.getSeconds(),
+    "q+": Math.floor((this.getMonth() + 3) / 3),
+    "S": this.getMilliseconds()
+  };
+  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+  for (var k in o)
+  if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+  return fmt;
+}
+
+function toast(date) {
+  $("#snackbar").text(date.Format("yyyy-MM-dd hh:mm:ss"));
+  $("#snackbar").toggleClass("show");
+  setTimeout(function() { 
+    $("#snackbar").toggleClass("show");
+  }, 1500);
+}
+
 function handleMessage(msgObj) {
   $("#topMsg").html(msgObj.topMsg);
-  var html = "<div class='msg_group'>";
+  var html = $("<div class='msg_group'></div>");
   for(var i in msgObj.messages) {
     var msg = msgObj.messages[i];
-    html += "<div class='msg_obj'>";
-    html += "  <div class='msg_time'>";
-    html += new Date(msg.t).toString();
-    html += "  </div>"
-    html += "  <div class='msg_content'>";
-    if (msg.m.length > 90) {
-      html += "<img src='data:image/png;base64, " + msg.m + "' />";
+
+    var msgDate = new Date(msg.t);
+    var time = msgDate.getTime();
+    if (Date.now() - time < 86400000) {
+      time = msgDate.Format("hh:mm");
     } else {
-      html += msg.m;
+      time = msgDate.Format("MM-dd hh:mm");
     }
-    html += "  </div>"
-    html += "</div>"
+
+    var msgTime = $("<div class='msg_time'>" + time + "</div>");
+    msgTime.mouseenter(function() {
+      toast(msgDate);
+    });
+
+    var msgObject = $("<div class='msg_obj'></div>");
+    var msgIcon = $("<img class='msg_logo' src='icon.png'/>");
+    msgObject.append(msgIcon);
+    if (msg.m.length > 90) {
+      msgObject.append("<img src='data:image/png;base64, " + msg.m + "' />");
+    } else {
+      msgObject.append("<div class='msg_text'>" + msg.m + "</div>");
+    }
+    msgObject.append(msgTime);
+    html.append(msgObject);
   }
-  html += "</div>";
   $("#messages").prepend(html);
 }
 
@@ -102,7 +145,6 @@ function readMessages() {
 }
 
 function updateSignButton() {
-  console.log('updateSignButton')
   if (firebase.auth().currentUser) {
     $(".user-login").hide();
     $(".user-logout").show();
