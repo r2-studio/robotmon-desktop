@@ -1,10 +1,9 @@
 {
-  "author": "r2studio",
+  "author": "R2 Studio",
   "name": "Robotmon Messenger",
-  "short_name": "RbmMsg",
+  "short_name": "Robotmon",
   "version": "1.2",
   "description": "For receiving Robotmon messages",
-  "default_locale": "en",
   "icons": {
     "512": "icon.png"
   },
