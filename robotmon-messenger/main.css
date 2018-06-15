@@ -1,0 +1,134 @@
+html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+body {
+  width: 320px;
+  height: 482px;
+  max-height: 482px;
+  margin: 0 auto !important;
+  padding: 0 2px;
+}
+#topMsg-container {
+  height: 30px;
+  width: 100%;
+  background-color: #2196F3;
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+}
+#topMsg-container > i, #topMsg-container > div {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+}
+#topMsg {
+  font-size: 15px;
+}
+#messages {
+  overflow-y: auto;
+  height: 400px;
+  max-height: 400px;
+  width: 100%;
+  color: black;
+}
+.navbar {
+  margin-bottom: 0 !important;
+}
+.navbar-custom {
+  border-radius: 0 !important;
+  background-color: #2196F3;
+  color: white;
+}
+.navbar-custom > a {
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+.navbar-custom > a:hover {
+  color: white;
+  text-align: center;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.pull-left {
+  position: absolute; 
+  left: 15px;
+  top: 25%;
+}
+.pull-right {
+  position: absolute; 
+  right: 15px;
+  top: 25%;
+}
+.center {
+  display: block;
+  margin: 60px auto;
+  width: 50%;
+}
+.material-icons.white { 
+  color: white;
+}
+.msg_obj {
+  margin: 10px 5px 0 5px;
+}
+.msg_logo {
+  width: 35px;
+  height: 35px;
+  margin-right: 8px;
+  outline: none !important;
+  border : none !important;
+}
+.msg_text {
+  display: inline-block;
+  border-radius: 10px;
+  background: #f2f2f2;
+  padding: 6px;
+  color: #373737;
+}
+.msg_time {
+  margin-left: 45px;
+  cursor: help;
+}
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+}
+.msg_obj img {
+  min-height: 35px;
+}
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+#read-more, #logout {
+  cursor: pointer;
+}
