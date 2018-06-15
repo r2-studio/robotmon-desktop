@@ -100,11 +100,10 @@ function handleMessage(msgObj) {
       time = msgDate.Format("MM-dd hh:mm");
     }
 
-    var msgTime = $("<div class='msg_time'>" + time + "</div>");
+    var msgTime = $("<span class='msg_time'>" + time + "</span>");
     msgTime.mouseenter(function() {
       toast(msgDate);
     });
-
     var msgObject = $("<div class='msg_obj'></div>");
     var msgIcon = $("<img class='msg_logo' src='icon.png'/>");
     msgObject.append(msgIcon);
@@ -113,7 +112,7 @@ function handleMessage(msgObj) {
     } else {
       msgObject.append("<div class='msg_text'>" + msg.m + "</div>");
     }
-    msgObject.append(msgTime);
+    msgObject.append($("<div></div>").append(msgTime));
     html.append(msgObject);
   }
   $("#messages").prepend(html);

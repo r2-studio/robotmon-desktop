@@ -87,9 +87,8 @@ body {
   color: #373737;
 }
 .msg_time {
-  display: block;
   margin-left: 45px;
-  max-width: 100px;
+  cursor: help;
 }
 #snackbar {
   visibility: hidden;
@@ -105,6 +104,9 @@ body {
   left: 50%;
   bottom: 30px;
   font-size: 17px;
+}
+.msg_obj img {
+  min-height: 35px;
 }
 #snackbar.show {
   visibility: visible;
@@ -126,4 +128,7 @@ body {
 @keyframes fadeout {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
+}
+#read-more, #logout {
+  cursor: pointer;
 }
