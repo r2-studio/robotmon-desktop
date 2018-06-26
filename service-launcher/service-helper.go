@@ -14,7 +14,7 @@ import (
 const (
 	// StartCommand launch service command
 	BaseStartCommand = "LD_LIBRARY_PATH=/system/lib:/data/data/com.r2studio.robotmon/lib:%s CLASSPATH=%s %s /system/bin com.r2studio.robotmon.Main $@"
-	StartCommand = "%s sh -c \"" + BaseStartCommand + "\" > /dev/null 2> /dev/null && sleep 1 &"
+	StartCommand     = "%s sh -c \"" + BaseStartCommand + "\" > /dev/null 2> /dev/null && sleep 1 &"
 )
 
 type Adb interface {
@@ -33,7 +33,7 @@ type AdbExec struct {
 func (a *AdbExec) GetDevices() []string {
 	devices := []string{}
 	cmd := exec.Command(a.AdbPath, "devices")
-	hideWindow(cmd);
+	hideWindow(cmd)
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
@@ -60,7 +60,7 @@ func (a *AdbExec) RunCommand(serial, command1, command2 string) string {
 	} else {
 		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2)
 	}
-	hideWindow(cmd);
+	hideWindow(cmd)
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
@@ -77,7 +77,7 @@ func (a *AdbExec) RunCommand3(serial, command1, command2, command3 string) strin
 	} else {
 		cmd = exec.Command(a.AdbPath, "-s", serial, command1, command2, command3)
 	}
-	hideWindow(cmd);
+	hideWindow(cmd)
 	cmd.Stderr = os.Stderr
 	result, err := cmd.Output()
 	if err != nil {
@@ -150,9 +150,9 @@ func getApkPath(serial string) string {
 
 func getStartCommand(serial string) string {
 	nohup := "" // some device not exist nohup
-	if isExistPath(serial, "/system/bin/nohup") {
+	if isExistPath(serial, "/system/bin/nohup") && isExistPath(serial, "/system/xbin/nohup") {
 		nohup = "nohup"
-	} else if isExistPath(serial, "/system/bin/daemonize") {
+	} else if isExistPath(serial, "/system/bin/daemonize") && isExistPath(serial, "/system/xbin/daemonize") {
 		nohup = "daemonize"
 	}
 	apk := getApkPath(serial)
