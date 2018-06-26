@@ -1,4 +1,4 @@
-VERSION="v0.6"
+VERSION="v0.7"
 astilectron-bundler -v
 
 cd output/darwin-amd64

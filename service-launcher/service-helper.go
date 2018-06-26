@@ -150,9 +150,9 @@ func getApkPath(serial string) string {
 
 func getStartCommand(serial string) string {
 	nohup := "" // some device not exist nohup
-	if isExistPath(serial, "/system/bin/nohup") && isExistPath(serial, "/system/xbin/nohup") {
+	if isExistPath(serial, "/system/bin/nohup") || isExistPath(serial, "/system/xbin/nohup") {
 		nohup = "nohup"
-	} else if isExistPath(serial, "/system/bin/daemonize") && isExistPath(serial, "/system/xbin/daemonize") {
+	} else if isExistPath(serial, "/system/bin/daemonize") || isExistPath(serial, "/system/xbin/daemonize") {
 		nohup = "daemonize"
 	}
 	apk := getApkPath(serial)
