@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	astilectron "github.com/asticode/go-astilectron"
@@ -102,10 +103,14 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 		devices := client.GetDevices()
 		for _, serial := range devices {
 			startCommand := getStartCommand(serial)
-			pid := runStartCommand(serial, startCommand, "Start")
+			pid := runStartCommand(serial, startCommand, "Start (sh)")
 			if pid == "" {
-				startCommand = getBaseStartCommand(serial)
-				runStartCommand(serial, startCommand, "Retry")
+				startCommand = strings.Replace(startCommand, "sh", "su", -1)
+				pid = runStartCommand(serial, startCommand, "Retry (su)")
+				if pid == "" {
+					startCommand = getBaseStartCommand(serial)
+					runStartCommand(serial, startCommand, "Retry (without nohup)")
+				}
 			}
 		}
 	case "stop":
