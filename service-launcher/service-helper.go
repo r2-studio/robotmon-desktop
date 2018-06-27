@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -94,18 +93,7 @@ func NewAdbExec(adbPath string) Adb {
 }
 
 func getAdbPath() string {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	prefixes := []string{".", "..", "bin", "resources/app/static/bin"}
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, prefix := range prefixes {
-		adbPath := dir + string(os.PathSeparator) + prefix + string(os.PathSeparator) + "adb." + runtime.GOOS
-		if _, err := os.Stat(adbPath); !os.IsNotExist(err) {
-			return adbPath
-		}
-	}
-	return ""
+	return Astilectron.Paths().DataDirectory() + "/resources/app/static/bin/adb." + runtime.GOOS
 }
 
 func getPid(serial string) string {
