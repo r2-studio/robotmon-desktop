@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -51,8 +50,6 @@ func handleMessages(w *astilectron.Window, m bootstrap.MessageIn) (payload inter
 	switch m.Name {
 	case "envTest":
 		time.Sleep(500 * time.Millisecond)
-		dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-		sendLog("[EnvTest] Current Path: " + dir)
 
 		adbPath = getAdbPath()
 		if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {

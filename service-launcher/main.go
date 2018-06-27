@@ -9,9 +9,10 @@ import (
 
 // Vars
 var (
-	AppName string
-	BuiltAt string
-	window  *astilectron.Window
+	AppName 		string
+	BuiltAt 		string
+	Astilectron *astilectron.Astilectron
+	window  		*astilectron.Window
 )
 
 func main() {
@@ -27,23 +28,24 @@ func main() {
 			AppIconDefaultPath: "resources/icon.png",
 		},
 		Debug: false,
-		Homepage: "index.html",
-		MessageHandler: handleMessages,
-		OnWait: func(_ *astilectron.Astilectron, w *astilectron.Window, _ *astilectron.Menu, t *astilectron.Tray, _ *astilectron.Menu) error {
-			// Store global variables
-			window = w
-
+		OnWait: func(a *astilectron.Astilectron, ws []*astilectron.Window, _ *astilectron.Menu, t *astilectron.Tray, _ *astilectron.Menu) error {
+			Astilectron = a
+			window = ws[0]
 			return nil
 		},
 		RestoreAssets: RestoreAssets,
-		WindowOptions: &astilectron.WindowOptions{
-			BackgroundColor: astilectron.PtrStr("#333"),
-			Center:          astilectron.PtrBool(true),
-			Height:          astilectron.PtrInt(600),
-			Width:           astilectron.PtrInt(950),
-			MinHeight:       astilectron.PtrInt(600),
-			MinWidth:        astilectron.PtrInt(950),
-		},
+		Windows: []*bootstrap.Window{{
+			Homepage:       "index.html",
+			MessageHandler: handleMessages,
+			Options: &astilectron.WindowOptions{
+				BackgroundColor: astilectron.PtrStr("#333"),
+				Center:          astilectron.PtrBool(true),
+				Height:          astilectron.PtrInt(600),
+				Width:           astilectron.PtrInt(950),
+				MinHeight:       astilectron.PtrInt(600),
+				MinWidth:        astilectron.PtrInt(950),
+			},
+		}},
 	}); err != nil {
 		astilog.Fatal(errors.Wrap(err, "running bootstrap failed"))
 	}
