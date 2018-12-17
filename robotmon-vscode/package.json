@@ -1,0 +1,215 @@
+{
+    "name": "robotmon-vscode",
+    "displayName": "Robotmon VSCode",
+    "description": "Robotmon developing tool with VSCode",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.30.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.sayHello",
+        "onView:adbDevicesMenu",
+        "onView:remoteDevicesMenu",
+        "onView:assetManager",
+        "onView:functionHints"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "adbDevicesMenu.scan",
+                "title": "scan",
+                "icon": {
+                    "light": "res/light_scan.svg",
+                    "dark": "res/dark_scan.svg"
+                }
+            },
+            {
+                "command": "adbDevicesMenu.startService",
+                "title": "start service",
+                "icon": {
+                    "light": "res/light_start.svg",
+                    "dark": "res/dark_start.svg"
+                }
+            },
+            {
+                "command": "adbDevicesMenu.stopService",
+                "title": "stop service",
+                "icon": {
+                    "light": "res/light_stop.svg",
+                    "dark": "res/dark_stop.svg"
+                }
+            },
+            {
+                "command": "adbDevicesMenu.forwardPort",
+                "title": "forward port of emulator for development",
+                "icon": {
+                    "light": "res/light_forward.svg",
+                    "dark": "res/dark_forward.svg"
+                }
+            },
+            {
+                "command": "remoteDevicesMenu.addDevice",
+                "title": "add device by ip",
+                "icon": {
+                    "light": "res/light_add.svg",
+                    "dark": "res/dark_add.svg"
+                }
+            },
+            {
+                "command": "remoteDevicesMenu.refresh",
+                "title": "clean devices and rescan",
+                "icon": {
+                    "light": "res/light_refresh.svg",
+                    "dark": "res/dark_refresh.svg"
+                }
+            },
+            {
+                "command": "remoteDevicesMenu.connect",
+                "title": "connect to device for debugging",
+                "icon": {
+                    "light": "res/light_connect.svg",
+                    "dark": "res/dark_connect.svg"
+                }
+            },
+            {
+                "command": "remoteDevicesMenu.disconnect",
+                "title": "disconnect",
+                "icon": {
+                    "light": "res/light_disconnect.svg",
+                    "dark": "res/dark_disconnect.svg"
+                }
+            },
+            {
+                "command": "remoteDevicesMenu.runScript",
+                "title": "run current script on device",
+                "icon": {
+                    "light": "res/light_play.svg",
+                    "dark": "res/dark_play.svg"
+                }
+            },
+            {
+                "command": "remoteDevicesMenu.install",
+                "title": "install to device",
+                "icon": {
+                    "light": "res/light_install.svg",
+                    "dark": "res/dark_install.svg"
+                }
+            },
+            {
+                "command": "assetManager.refresh",
+                "title": "refresh assets",
+                "icon": {
+                    "light": "res/light_refresh.svg",
+                    "dark": "res/dark_refresh.svg"
+                }
+            },
+            {
+                "command": "functionHints.inject",
+                "title": "inject function into code",
+                "icon": {
+                    "light": "res/light_install.svg",
+                    "dark": "res/dark_install.svg"
+                }
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "robotmon",
+                    "title": "Robotmon",
+                    "icon": "res/robotmon.svg"
+                }
+            ]
+        },
+        "views": {
+            "robotmon": [
+                {
+                    "id": "remoteDevicesMenu",
+                    "name": "Remote Devices"
+                }
+            ],
+            "explorer": []
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "adbDevicesMenu.scan",
+                    "when": "view == adbDevicesMenu",
+                    "group": "navigation"
+                },
+                {
+                    "command": "remoteDevicesMenu.addDevice",
+                    "when": "view == remoteDevicesMenu",
+                    "group": "navigation"
+                },
+                {
+                    "command": "remoteDevicesMenu.refresh",
+                    "when": "view == remoteDevicesMenu",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "adbDevicesMenu.startService",
+                    "when": "view == adbDevicesMenu",
+                    "group": "inline"
+                },
+                {
+                    "command": "adbDevicesMenu.stopService",
+                    "when": "view == adbDevicesMenu",
+                    "group": "inline"
+                },
+                {
+                    "command": "adbDevicesMenu.forwardPort",
+                    "when": "view == adbDevicesMenu",
+                    "group": "inline"
+                },
+                {
+                    "command": "remoteDevicesMenu.connect",
+                    "when": "view == remoteDevicesMenu",
+                    "group": "inline"
+                },
+                {
+                    "command": "remoteDevicesMenu.disconnect",
+                    "when": "view == remoteDevicesMenu",
+                    "group": "inline"
+                },
+                {
+                    "command": "remoteDevicesMenu.runScript",
+                    "when": "view == remoteDevicesMenu",
+                    "group": "inline"
+                },
+                {
+                    "command": "remoteDevicesMenu.install",
+                    "when": "view == remoteDevicesMenu",
+                    "group": "inline"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "yarn run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "yarn run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "ts-protoc-gen": "^0.8.0",
+        "tslint": "^5.8.0",
+        "typescript": "^3.1.4",
+        "vscode": "^1.1.25"
+    },
+    "dependencies": {
+        "@types/google-protobuf": "^3.2.7",
+        "google-protobuf": "^3.6.1",
+        "grpc-web-client": "^0.7.0",
+        "grpc-web-node-http-transport": "^0.0.1"
+    }
+}
