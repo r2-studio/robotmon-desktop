@@ -1,8 +1,9 @@
 import * as dgram from 'dgram';
 import * as vscode from 'vscode';
 import { RemoteDevice } from './remoteDevice';
+import { Message } from './constVariables';
 
-export class RemoteDeviceMenu implements vscode.TreeDataProvider<RemoteDevice> {
+export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevice> {
 
   private _onDidChangeTreeData: vscode.EventEmitter<RemoteDevice | undefined> = new vscode.EventEmitter<RemoteDevice | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<RemoteDevice | undefined> = this._onDidChangeTreeData.event;
@@ -10,11 +11,14 @@ export class RemoteDeviceMenu implements vscode.TreeDataProvider<RemoteDevice> {
   private mReceiver = dgram.createSocket('udp4');
   private mDevices: Array<RemoteDevice> = [];
 
-  constructor(private mContext: vscode.ExtensionContext, private mWorkspaceRoot: string | undefined) {
+  constructor() {
+    if (vscode.workspace.getWorkspaceFolder == undefined) {
+      vscode.window.showWarningMessage(Message.notifyOpenFolder);
+    }
     this.startScanBroadcast();
   }
 
-  public getTreeItem(element: RemoteDevice): vscode.TreeItem {
+  public getTreeItem(element: RemoteDevice): RemoteDevice {
     return element;
   }
 

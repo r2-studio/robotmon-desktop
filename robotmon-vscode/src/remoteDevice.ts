@@ -5,6 +5,7 @@ import * as path from 'path';
 
 import { GrpcService } from "./grpc/grpc_pb_service"
 import { OutputLogger } from "./logger"
+import { ScreenUtilsPanel } from './screenUtilsPanel'
 
 export class RemoteDevice extends vscode.TreeItem {
 
@@ -14,11 +15,15 @@ export class RemoteDevice extends vscode.TreeItem {
   private mAddress: string
   private mLogConn: grpc.Request | undefined;
   private mLogger: OutputLogger;
+  
   private mIsConnected = false;
 
   constructor(public readonly ip: string, public readonly port: string) {
     super(ip, vscode.TreeItemCollapsibleState.None);
+    this.contextValue = "RemoteDevice";
+    this.command = { command: "remoteDevicesMenu.selected", title: "", arguments: [this] };
     this.mAddress = `http://${ip}:${port}`;
+    this.tooltip = this.mAddress;
     this.mLogger = new OutputLogger(`Robotmon ${this.ip}`);
   }
 
@@ -29,6 +34,7 @@ export class RemoteDevice extends vscode.TreeItem {
         this.mIsConnected = true;
         this.updateDescription();
         this.mLogger.debug(`Connect to ${this.ip} ... Done`);
+        ScreenUtilsPanel.createScreenSyncPanel(this);
         resolve();
       });
       this.listenLogs();
@@ -36,11 +42,11 @@ export class RemoteDevice extends vscode.TreeItem {
   }
 
   public disconnect() {
-    this.mLogger.debug(`Disonnect to ${this.ip} ...`);
     if (this.mIsConnected) {
       this.mIsConnected = false;
       this.width = 0;
       this.height = 0;
+      this.mLogger.debug(`Disonnect to ${this.ip} ...`);
     }
     if (this.mLogConn != undefined) {
       this.mLogConn.close();
@@ -137,6 +143,36 @@ export class RemoteDevice extends vscode.TreeItem {
     });
   }
 
+  public getScreenshot(cx: number, cy: number, cw: number, ch: number, rw: number, rh: number, q: number) {
+    return new Promise<Uint8Array>((resolve, reject) => {
+      const request = new pb.RequestScreenshot();
+      request.setCropx(cx);
+      request.setCropy(cy);
+      request.setCropwidth(cw);
+      request.setCropheight(ch);
+      request.setResizewidth(rw);
+      request.setResizeheight(rh);
+      request.setQuality(q);
+      grpc.invoke(GrpcService.GetScreenshot, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.ResponseScreenshot) => {
+          resolve(message.getImage_asU8());
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error getScreenshot ${code}, ${msg}, ${trailers}`);
+            reject(msg);
+          }
+        }
+      });
+    });
+  }
+
+  public getLogger(): OutputLogger {
+    return this.mLogger;
+  }
+
   private updateDescription() {
     if (this.mIsConnected) {
       this.iconPath = {
@@ -148,6 +184,7 @@ export class RemoteDevice extends vscode.TreeItem {
       this.iconPath = undefined;
       this.description = "";
     }
+    vscode.commands.executeCommand("remoteDevicesMenu.refresh");
   }
   
 }

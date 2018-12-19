@@ -2,11 +2,13 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { RemoteDeviceMenu } from './menuRemoteDevices';
 
 import { grpc } from "grpc-web-client";
+import { RemoteDeviceView } from './remoteDeviceView';
+import { RemoteDeviceProvider } from './remoteDeviceProvider';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { RemoteDevice } from './remoteDevice';
+import { RemoteDeviceFunc } from './remoteDeviceFunc';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -30,12 +32,11 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu
-    const remoteDeviceMenu = new RemoteDeviceMenu(context, vscode.workspace.rootPath);
-    disposable = vscode.Disposable.from(remoteDeviceMenu);
+    const remoteDeviceView = new RemoteDeviceView();
+    disposable = vscode.Disposable.from(remoteDeviceView);
     context.subscriptions.push(disposable);
 
-    disposable = vscode.window.registerTreeDataProvider("remoteDevicesMenu", remoteDeviceMenu);
-    context.subscriptions.push(disposable);
+    const remoteDeviceProvider = remoteDeviceView.getRemoteDeviceProvider();
 
     // New Remote Device Menu - addDevice
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.addDevice', () => {
@@ -46,10 +47,10 @@ export function activate(context: vscode.ExtensionContext) {
             let rx2 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/;
             if (rx1.test(inputBox.value)) {
                 const tmp = inputBox.value.split(":");
-                remoteDeviceMenu.addDevice(tmp[0], tmp[1]);
+                remoteDeviceProvider.addDevice(tmp[0], tmp[1]);
                 inputBox.dispose();
             } else if (rx2.test(inputBox.value)) {
-                remoteDeviceMenu.addDevice(inputBox.value);
+                remoteDeviceProvider.addDevice(inputBox.value);
                 inputBox.dispose();
             } else {
                 vscode.window.showWarningMessage(`IP is not available: ${inputBox.value}`);
@@ -62,10 +63,22 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    // New Remote Device Menu - clear
+    disposable = vscode.commands.registerCommand('remoteDevicesMenu.clear', () => {
+        remoteDeviceProvider.clear();
+        remoteDeviceProvider.refresh();
+    });
+    context.subscriptions.push(disposable);
+
     // New Remote Device Menu - refresh
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.refresh', () => {
-        remoteDeviceMenu.clear();
-        remoteDeviceMenu.refresh();
+        remoteDeviceProvider.refresh();
+    });
+    context.subscriptions.push(disposable);
+
+    // New Remote Device Menu - RemoteDevice - selected
+    disposable = vscode.commands.registerCommand('remoteDevicesMenu.selected', (element: RemoteDevice) => {
+        vscode.window.showInformationMessage(`Successfully selected. ${element.ip}`);
     });
     context.subscriptions.push(disposable);
 
@@ -73,7 +86,6 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.connect', (element: RemoteDevice) => {
         element.connect().then(() => {
             vscode.window.showInformationMessage(`Successfully connect. ${element.ip}`);
-            remoteDeviceMenu.refresh();
         });
     });
     context.subscriptions.push(disposable);
@@ -82,7 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.disconnect', (element: RemoteDevice) => {
         vscode.window.showInformationMessage(`disconnect. ${element.ip}`);
         element.disconnect();
-        remoteDeviceMenu.refresh();
     });
     context.subscriptions.push(disposable);
 
@@ -98,7 +109,27 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showWarningMessage("script is empty");
             return;
         }
-        element.runScriptAsync(script).then(v => console.log(v)); 
+        element.runScriptAsync(script);
+    });
+    context.subscriptions.push(disposable);
+
+    // New Remote Device Menu - RemoteDevice - stopScript
+    disposable = vscode.commands.registerCommand('remoteDevicesMenu.stopScript', (element: RemoteDevice) => {
+        element.runScriptAsync("");
+    });
+    context.subscriptions.push(disposable);
+
+    // New Remote Device Func - RemoteDeviceFunc - screenshot
+    disposable = vscode.commands.registerCommand('remoteDevicesFunc.screenshot', (element: RemoteDeviceFunc) => {
+        element.screenshot();
+    });
+    context.subscriptions.push(disposable);
+
+    // Screen Utils Panel - ScreenUtilsPanel - syncScreen
+    disposable = vscode.commands.registerCommand('screenUtilsPanel.syncScreen', (element: vscode.WebviewPanel) => {
+        console.log("????", element);
+        // element.webview.postMessage({ command: 'refactor' });
+        console.log("???okok")
     });
     context.subscriptions.push(disposable);
 }

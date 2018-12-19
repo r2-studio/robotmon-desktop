@@ -60,12 +60,20 @@
                 }
             },
             {
-                "command": "remoteDevicesMenu.refresh",
+                "command": "remoteDevicesMenu.clear",
                 "title": "clean devices and rescan",
                 "icon": {
                     "light": "res/light_refresh.svg",
                     "dark": "res/dark_refresh.svg"
                 }
+            },
+            {
+                "command": "remoteDevicesMenu.refresh",
+                "title": "clean devices and rescan"
+            },
+            {
+                "command": "remoteDevicesMenu.selected",
+                "title": "device selected"
             },
             {
                 "command": "remoteDevicesMenu.connect",
@@ -92,12 +100,24 @@
                 }
             },
             {
+                "command": "remoteDevicesMenu.stopScript",
+                "title": "stop script",
+                "icon": {
+                    "light": "res/light_stop.svg",
+                    "dark": "res/dark_stop.svg"
+                }
+            },
+            {
                 "command": "remoteDevicesMenu.install",
                 "title": "install to device",
                 "icon": {
                     "light": "res/light_install.svg",
                     "dark": "res/dark_install.svg"
                 }
+            },
+            {
+                "command": "remoteDevicesFunc.screenshot",
+                "title": "screenshot"
             },
             {
                 "command": "assetManager.refresh",
@@ -113,6 +133,38 @@
                 "icon": {
                     "light": "res/light_install.svg",
                     "dark": "res/dark_install.svg"
+                }
+            },
+            {
+                "command": "screenUtilsPanel.syncScreen",
+                "title": "start/stop to sync screen",
+                "icon": {
+                    "light": "res/light_play.svg",
+                    "dark": "res/dark_play.svg"
+                }
+            },
+            {
+                "command": "screenUtilsPanel.infoMode",
+                "title": "click to get screen info",
+                "icon": {
+                    "light": "res/light_play.svg",
+                    "dark": "res/dark_play.svg"
+                }
+            },
+            {
+                "command": "screenUtilsPanel.controlMode",
+                "title": "click to control device",
+                "icon": {
+                    "light": "res/light_play.svg",
+                    "dark": "res/dark_play.svg"
+                }
+            },
+            {
+                "command": "screenUtilsPanel.cropMode",
+                "title": "click and drug to crop image",
+                "icon": {
+                    "light": "res/light_play.svg",
+                    "dark": "res/dark_play.svg"
                 }
             }
         ],
@@ -131,10 +183,16 @@
                     "id": "remoteDevicesMenu",
                     "name": "Remote Devices"
                 }
-            ],
-            "explorer": []
+            ]
         },
         "menus": {
+            "editor/title": [
+                {
+                    "command": "screenUtilsPanel.syncScreen",
+                    "group": "navigation",
+                    "when": "resourceScheme == webview-panel"
+                }
+            ],
             "view/title": [
                 {
                     "command": "adbDevicesMenu.scan",
@@ -147,7 +205,7 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "remoteDevicesMenu.refresh",
+                    "command": "remoteDevicesMenu.clear",
                     "when": "view == remoteDevicesMenu",
                     "group": "navigation"
                 }
@@ -170,22 +228,27 @@
                 },
                 {
                     "command": "remoteDevicesMenu.connect",
-                    "when": "view == remoteDevicesMenu",
+                    "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 },
                 {
                     "command": "remoteDevicesMenu.disconnect",
-                    "when": "view == remoteDevicesMenu",
+                    "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 },
                 {
                     "command": "remoteDevicesMenu.runScript",
-                    "when": "view == remoteDevicesMenu",
+                    "when": "viewItem == RemoteDevice",
+                    "group": "inline"
+                },
+                {
+                    "command": "remoteDevicesMenu.stopScript",
+                    "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 },
                 {
                     "command": "remoteDevicesMenu.install",
-                    "when": "view == remoteDevicesMenu",
+                    "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 }
             ]
