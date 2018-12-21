@@ -2,22 +2,164 @@
 <html>
   <head>
       <meta charset="UTF-8">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
-  </head>
-  <body>
-    <div>
-
+      <style>
+        html, body {
+          height: 100%;
+          margin: 0px;
+        }
+        #container {
+          width: 100%;
+          height: 100%;
+        }
+        #controlPanel {
+          position: fixed;
+        }
+        #preview {
+          width: 99%;
+          height: 99%;
+        }
+        #screenImage {
+          max-width: 300%;
+          max-height: 300%;
+        }
+        .cropText {
+          width: 28px;
+          background-color: #1e1e1e;
+          border: 0px;
+          color: white;
+        }
+        .controlButtons {
+          display: inline;
+          background-color: rgba(255, 0, 0, 0.1);
+        }
+        .mouseEvent {
+          display: inline;
+          background-color: rgba(0, 255, 0, 0.1);
+        }
+        .controlButtons i {
+          font-size: 18px;
+        }
+        .controlButtons i:hover {
+          color: gray;
+        }
+        .controlButtons i:active {
+          color: aquamarine;
+        }
+      </style>
+    </head>
+  <body unselectable="on" onselectstart="return false;" onresize="updatePreviewSize()">
+    <div id="container">
+        <div id="controlPanel">
+          <div class="controlButtons">
+            Controller:
+            <span id="zoomIn"><i class="fas fa-search-plus"></i></i></span>
+            <span id="zoomOut"><i class="fas fa-search-minus"></i></span>
+            <span id="startSyncScreen"><i class="fas fa-play-circle"></i></span>
+            <span id="stopSyncScreen" style="display: none;"><i class="fas fa-stop-circle"></i></span>
+          </div>
+          <br />
+          <div class="mouseEvent">
+            Mouse:
+            <input type="radio" name="mouseMode" value="infoMode" checked /> Color Info
+            <input type="radio" name="mouseMode" value="controlMode" /> Control
+            <input type="radio" name="mouseMode" value="cropMode" /> Crop Image
+            <input type="text" id="cropX1" class="cropText" value="" placeholder="X" />
+            <input type="text" id="cropY1" class="cropText" value="" placeholder="Y" />
+            <input type="text" id="cropX2" class="cropText" value="" placeholder="to X" />
+            <input type="text" id="cropY2" class="cropText" value="" placeholder="to Y" />
+            XY: (<span id="mx">0</span>, <span id="my">0</span>)
+          </div>
+        </div>
+        <div id="preview">
+          <image id="screenImage" style="margin-top: 40px;" />
+        </div>
     </div>
 
     <script>
-    window.addEventListener('message', event => {
-      const message = event.data; // The JSON data our extension sent
-      switch (message.command) {
-        case 'refactor':
-          console.log("GGG");
-          break;
+      let amplification = 1.0;
+      let deviceWidth = 0;
+      let deviceHeight = 0;
+      let imageWidth = 0;
+      let imageHeight = 0;
+      let isSyncScreen = false;
+      
+      (function(){
+        const vscode = acquireVsCodeApi();
+        console.log($("#preview").width(), $("#preview").height());
+        vscode.postMessage({command: 'ready'});
+        $("#startSyncScreen, #stopSyncScreen").click(() => {
+          if (isSyncScreen) {
+            $("#startSyncScreen").show();
+            $("#stopSyncScreen").hide();
+            isSyncScreen = false;
+          } else {
+            $("#startSyncScreen").hide();
+            $("#stopSyncScreen").show();
+            isSyncScreen = true;
+          }
+        });
+        $("#zoomIn").click(() => {
+          amplification += 0.1;
+          updatePreviewSize();
+        });
+        $("#zoomOut").click(() => {
+          amplification -= 0.1;
+          updatePreviewSize();
+        });
+        $("#screenImage").mousemove((e) => {
+          const posX = Math.floor(e.offsetX / imageWidth * deviceWidth);
+          const posY = Math.floor(e.offsetY / imageHeight * deviceHeight);
+          console.log(posX, posY);
+          updateMousePos(posX, posY);
+        });
+        $("#screenImage").mousedown((e) => {
+          const posX = Math.floor(e.offsetX / imageWidth * deviceWidth);
+          const posY = Math.floor(e.offsetY / imageHeight * deviceHeight);
+          console.log(posX, posY);
+          updateMousePos(posX, posY);
+        });
+      })();
+      
+      function updatePreviewSize(dw, dh) {
+        if (dw == undefined) dw = deviceWidth;
+        if (dh == undefined) dh = deviceHeight;
+        const pw = $("#preview").width();
+        const ph = $("#preview").height();
+        const dr = dw/dh;
+        const pr = pw/ph;
+        imageWidth = pw;
+        imageHeight = ph;
+        if (dr > pr) { // device width ratio > preview width ration, full width
+          imageWidth = pw;
+          imageHeight = imageWidth / dr;
+        } else { // device width ratio <= preview width ration, full height
+          imageHeight = ph;
+          imageWidth = imageHeight * dr;
+        }
+        imageWidth = Math.floor(imageWidth * amplification);
+        imageHeight = Math.floor(imageHeight * amplification);
+        $("#screenImage").width(imageWidth);
+        $("#screenImage").height(imageHeight);
       }
-    });
+
+      function updateMousePos(x, y) {
+        $("#mx").html(x);
+        $("#my").html(y);
+      }
+
+      window.addEventListener('message', event => {
+        const message = event.data;
+        switch (message.command) {
+          case 'setScreenSize':
+            deviceWidth = message.width;
+            deviceHeight = message.height;
+            updatePreviewSize(deviceWidth, deviceHeight);
+            break;
+        }
+      });
+
     </script>
   </body>
 </html>

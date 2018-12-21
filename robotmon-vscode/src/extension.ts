@@ -8,7 +8,7 @@ import { RemoteDeviceView } from './remoteDeviceView';
 import { RemoteDeviceProvider } from './remoteDeviceProvider';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { RemoteDevice } from './remoteDevice';
-import { RemoteDeviceFunc } from './remoteDeviceFunc';
+// import { RemoteDeviceFunc } from './remoteDeviceController';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -65,20 +65,13 @@ export function activate(context: vscode.ExtensionContext) {
 
     // New Remote Device Menu - clear
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.clear', () => {
-        remoteDeviceProvider.clear();
-        remoteDeviceProvider.refresh();
+        remoteDeviceView.clear();
     });
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu - refresh
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.refresh', () => {
-        remoteDeviceProvider.refresh();
-    });
-    context.subscriptions.push(disposable);
-
-    // New Remote Device Menu - RemoteDevice - selected
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.selected', (element: RemoteDevice) => {
-        vscode.window.showInformationMessage(`Successfully selected. ${element.ip}`);
+        remoteDeviceView.refresh();
     });
     context.subscriptions.push(disposable);
 
@@ -98,32 +91,32 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu - RemoteDevice - runScript
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.runScript', (element: RemoteDevice) => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor == undefined) {
-            vscode.window.showWarningMessage("no text editor found");
-            return;
-        }
-        const script = editor.document.getText();
-        if (script == "" || editor.document.languageId == "Log") {
-            vscode.window.showWarningMessage("script is empty");
-            return;
-        }
-        element.runScriptAsync(script);
-    });
-    context.subscriptions.push(disposable);
+    // disposable = vscode.commands.registerCommand('remoteDevicesMenu.runScript', (element: RemoteDevice) => {
+    //     const editor = vscode.window.activeTextEditor;
+    //     if (editor == undefined) {
+    //         vscode.window.showWarningMessage("no text editor found");
+    //         return;
+    //     }
+    //     const script = editor.document.getText();
+    //     if (script == "" || editor.document.languageId == "Log") {
+    //         vscode.window.showWarningMessage("script is empty");
+    //         return;
+    //     }
+    //     element.runScriptAsync(script);
+    // });
+    // context.subscriptions.push(disposable);
 
     // New Remote Device Menu - RemoteDevice - stopScript
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.stopScript', (element: RemoteDevice) => {
-        element.runScriptAsync("");
-    });
-    context.subscriptions.push(disposable);
+    // disposable = vscode.commands.registerCommand('remoteDevicesMenu.stopScript', (element: RemoteDevice) => {
+    //     element.runScriptAsync("");
+    // });
+    // context.subscriptions.push(disposable);
 
     // New Remote Device Func - RemoteDeviceFunc - screenshot
-    disposable = vscode.commands.registerCommand('remoteDevicesFunc.screenshot', (element: RemoteDeviceFunc) => {
-        element.screenshot();
-    });
-    context.subscriptions.push(disposable);
+    // disposable = vscode.commands.registerCommand('remoteDevicesFunc.screenshot', (element: RemoteDeviceFunc) => {
+    //     element.screenshot();
+    // });
+    // context.subscriptions.push(disposable);
 
     // Screen Utils Panel - ScreenUtilsPanel - syncScreen
     disposable = vscode.commands.registerCommand('screenUtilsPanel.syncScreen', (element: vscode.WebviewPanel) => {

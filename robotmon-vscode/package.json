@@ -72,10 +72,6 @@
                 "title": "clean devices and rescan"
             },
             {
-                "command": "remoteDevicesMenu.selected",
-                "title": "device selected"
-            },
-            {
                 "command": "remoteDevicesMenu.connect",
                 "title": "connect to device for debugging",
                 "icon": {
@@ -92,32 +88,12 @@
                 }
             },
             {
-                "command": "remoteDevicesMenu.runScript",
-                "title": "run current script on device",
-                "icon": {
-                    "light": "res/light_play.svg",
-                    "dark": "res/dark_play.svg"
-                }
-            },
-            {
-                "command": "remoteDevicesMenu.stopScript",
-                "title": "stop script",
-                "icon": {
-                    "light": "res/light_stop.svg",
-                    "dark": "res/dark_stop.svg"
-                }
-            },
-            {
                 "command": "remoteDevicesMenu.install",
                 "title": "install to device",
                 "icon": {
                     "light": "res/light_install.svg",
                     "dark": "res/dark_install.svg"
                 }
-            },
-            {
-                "command": "remoteDevicesFunc.screenshot",
-                "title": "screenshot"
             },
             {
                 "command": "assetManager.refresh",
@@ -233,16 +209,6 @@
                 },
                 {
                     "command": "remoteDevicesMenu.disconnect",
-                    "when": "viewItem == RemoteDevice",
-                    "group": "inline"
-                },
-                {
-                    "command": "remoteDevicesMenu.runScript",
-                    "when": "viewItem == RemoteDevice",
-                    "group": "inline"
-                },
-                {
-                    "command": "remoteDevicesMenu.stopScript",
                     "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 },

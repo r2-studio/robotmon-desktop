@@ -30,6 +30,9 @@ export class RemoteDevice extends vscode.TreeItem {
   public connect(): Thenable<void> {
     this.mLogger.open();
     return new Promise<void>((resolve) => {
+      if (this.mIsConnected) {
+        return resolve();
+      }
       this.getScreenSize().then(() => {
         this.mIsConnected = true;
         this.updateDescription();
@@ -171,6 +174,10 @@ export class RemoteDevice extends vscode.TreeItem {
 
   public getLogger(): OutputLogger {
     return this.mLogger;
+  }
+
+  public isConnecting(): boolean {
+    return this.mIsConnected;
   }
 
   private updateDescription() {
