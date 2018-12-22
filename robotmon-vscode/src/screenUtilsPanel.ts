@@ -75,6 +75,13 @@ export class ScreenUtilsPanel {
       case 'tapUp':
         break;
       case 'printInfo':
+        const x = message.x;
+        const y = message.y;
+        const script = `var _timg_ = getScreenshotModify(${x}, ${y}, ${x+1}, ${y+1}, 1, 1, 100); var _tc_ = getImageColor(_timg_, 0, 0); releaseImage(_timg_); JSON.stringify(_tc_);`;
+        this.mDevice.runScript(script).then((msg: string) => {
+          const c = JSON.parse(msg);
+          this.mDevice.getLogger().debug(`{x: ${x}, y: ${y}, r: ${c.r}, g: ${c.g}, b: ${c.b}}`)
+        });
         break;
       }
       // this.mWebviewPanel.webview.postMessage({command: 'refactor'});
