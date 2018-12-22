@@ -46,6 +46,8 @@ export class ScreenUtilsPanel {
           break;
         case 'tapUp':
           break;
+        case 'printInfo':
+          break;
       }
       // this.mWebviewPanel.webview.postMessage({command: 'refactor'});
     }, this);

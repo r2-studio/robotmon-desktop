@@ -5,7 +5,6 @@ import * as vscode from 'vscode';
 
 import { grpc } from "grpc-web-client";
 import { RemoteDeviceView } from './remoteDeviceView';
-import { RemoteDeviceProvider } from './remoteDeviceProvider';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { RemoteDevice } from './remoteDevice';
 // import { RemoteDeviceFunc } from './remoteDeviceController';

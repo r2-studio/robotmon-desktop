@@ -62,6 +62,18 @@
         .controlButtons i:active {
           color: aquamarine;
         }
+        #stopSyncScreen i:hover {
+          color: hotpink;
+        }
+        #stopSyncScreen {
+          color: indianred;
+        }
+        .disable {
+          color: #666;
+        }
+        .enable {
+          color: #FFF;
+        }
       </style>
     </head>
   <body unselectable="on" onselectstart="return false;" onresize="updatePreviewSize()">
@@ -73,6 +85,9 @@
           <span id="zoomOut"><i class="fas fa-search-minus"></i></span>
           <span id="startSyncScreen"><i class="fas fa-play-circle"></i></span>
           <span id="stopSyncScreen" style="display: none;"><i class="fas fa-stop-circle"></i></span>
+          <span id="cropImage" class="disable"><i class="fas fa-crop-alt"></i></span>
+          Crop Resize Ratio 
+          <input type="text" id="resizeRatio" class="cropText" value="1.0" placeholder="0~1" />
         </div>
         <br />
         <div class="mouseEvent">
@@ -121,10 +136,12 @@
             $("#startSyncScreen").show();
             $("#stopSyncScreen").hide();
             isSyncScreen = false;
+            vscode.postMessage({command: 'stopSyncScreen'});
           } else {
             $("#startSyncScreen").hide();
             $("#stopSyncScreen").show();
             isSyncScreen = true;
+            vscode.postMessage({command: 'startSyncScreen'});
           }
         });
         $("#zoomIn").click(() => {
@@ -141,7 +158,6 @@
         });
         // preview
         $("#screenImageContainer").mousemove((e) => {
-          
           const x = Math.floor(e.offsetX / imageWidth * deviceWidth);
           const y = Math.floor(e.offsetY / imageHeight * deviceHeight);
           if (x != 0) {posX = x;}
@@ -157,9 +173,9 @@
         $("#screenImageContainer").mousedown((e) => {
           isMouseDown = true;
           if (mouseMode == 'colorMode') {
-
+            vscode.postMessage({command: 'printInfo', x: +posX, y: +posY});
           } else if (mouseMode == 'controlMode') {
-
+            vscode.postMessage({command: 'tapDown', x: +posX, y: +posY});
           } else if (mouseMode == 'cropMode') {
             $("#cropX1").val(posX);
             $("#cropY1").val(posY);
@@ -173,13 +189,49 @@
         $("#screenImageContainer").mouseup((e) => {
           isMouseDown = false;
           if (mouseMode == 'colorMode') {
-
+            // DO NOTHING
           } else if (mouseMode == 'controlMode') {
-
+            vscode.postMessage({command: 'tapUp', x: +posX, y: +posY});
           } else if (mouseMode == 'cropMode') {
             $("#cropX2").val(posX);
             $("#cropY2").val(posY);
+            if ($("#rectXY").width() > 0 && $("#rectXY").height() > 0) {
+              $("#cropImage").removeClass("disable").addClass("enable");
+            } else {
+              $("#cropImage").removeClass("enable").addClass("disable");
+            }
           }
+        });
+        $("#cropImage").click(() => {
+          const rectW = $("#rectXY").width();
+          const rectH = $("#rectXY").height();
+          if (rectW > 0 && rectH > 0) {
+            vscode.postMessage({
+              command: 'corpImage',
+              resizeRatio: +$("#resizeRatio").val(),
+              x: +$("#rectXY").offset().left,
+              y: +$("#rectXY").offset().top,
+              width: +rectW,
+              height: +rectH,
+            });
+          }
+        });
+        $("#cropX1, #cropX2, #cropY1, #cropY2").change(() => {
+          const x1 = +$("#cropX1").val();
+          const y1 = +$("#cropY1").val();
+          const x2 = +$("#cropX2").val();
+          const y2 = +$("#cropY2").val();
+          if (x2 <= x1 || y2 <= y1) {
+            return;
+          }
+          const ix = Math.floor(x1 * imageWidth / deviceWidth);
+          const iy = Math.floor(y1 * imageHeight / deviceHeight);
+          const iw = Math.floor((x2 - x1) * imageWidth / deviceWidth);
+          const ih = Math.floor((y2 - y1) * imageHeight / deviceHeight);
+          console.log($("#screenImage").offset(), ix, iy);
+          $("#rectXY").offset({top: $("#screenImage").offset().top + iy, left: $("#screenImage").offset().left + ix});
+          $("#rectXY").width(iw);
+          $("#rectXY").height(ih);
         });
       })();
       
