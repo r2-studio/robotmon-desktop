@@ -179,9 +179,9 @@ export class RemoteDevice extends vscode.TreeItem {
   public tapDown(x: number, y: number, id: number = 0) {
     return new Promise<void>((resolve, reject) => {
       const request = new pb.RequestTap();
-      request.setX(x)
-      request.setY(y)
-      request.setId(id)
+      request.setX(x);
+      request.setY(y);
+      request.setId(id);
       grpc.invoke(GrpcService.TapDown, {
         request: request,
         host: this.mAddress,
@@ -201,9 +201,9 @@ export class RemoteDevice extends vscode.TreeItem {
   public moveTo(x: number, y: number, id: number = 0) {
     return new Promise<void>((resolve, reject) => {
       const request = new pb.RequestTap();
-      request.setX(x)
-      request.setY(y)
-      request.setId(id)
+      request.setX(x);
+      request.setY(y);
+      request.setId(id);
       grpc.invoke(GrpcService.MoveTo, {
         request: request,
         host: this.mAddress,
@@ -223,9 +223,9 @@ export class RemoteDevice extends vscode.TreeItem {
   public tapUp(x: number, y: number, id: number = 0) {
     return new Promise<void>((resolve, reject) => {
       const request = new pb.RequestTap();
-      request.setX(x)
-      request.setY(y)
-      request.setId(id)
+      request.setX(x);
+      request.setY(y);
+      request.setId(id);
       grpc.invoke(GrpcService.TapUp, {
         request: request,
         host: this.mAddress,
@@ -235,6 +235,63 @@ export class RemoteDevice extends vscode.TreeItem {
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
           if (code != grpc.Code.OK) {
             this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
+            reject();
+          }
+        }
+      });
+    });
+  }
+
+  public reset() {
+    return new Promise<void>((resolve, reject) => {
+      const request = new pb.Empty();
+      grpc.invoke(GrpcService.Reset, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.Response) => {
+          resolve();
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error reset ${code}, ${msg}, ${trailers}`);
+            reject();
+          }
+        }
+      });
+    });
+  }
+
+  public pause() {
+    return new Promise<void>((resolve, reject) => {
+      const request = new pb.Empty();
+      grpc.invoke(GrpcService.Pause, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.Response) => {
+          resolve();
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error pause ${code}, ${msg}, ${trailers}`);
+            reject();
+          }
+        }
+      });
+    });
+  }
+
+  public resume() {
+    return new Promise<void>((resolve, reject) => {
+      const request = new pb.Empty();
+      grpc.invoke(GrpcService.Resume, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.Response) => {
+          resolve();
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error resume ${code}, ${msg}, ${trailers}`);
             reject();
           }
         }

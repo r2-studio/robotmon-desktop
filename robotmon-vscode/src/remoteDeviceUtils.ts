@@ -4,7 +4,7 @@ import * as path from 'path';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
 
-export class RemoteDeviceController {
+export class RemoteDeviceUtils {
 
   static runScriptFromEditor(device: RemoteDevice, script: string | undefined = undefined) {
     return new Promise<string>((resolve, reject) => {

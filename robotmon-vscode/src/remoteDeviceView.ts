@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 
 import { RemoteDeviceProvider } from './remoteDeviceProvider';
-import { RemoteDeviceController } from './remoteDeviceController';
+import { RemoteDeviceUtils } from './remoteDeviceUtils';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
+import { ScreenUtilsPanel } from './screenUtilsPanel'
 
 export class RemoteDeviceView {
 
@@ -17,6 +18,9 @@ export class RemoteDeviceView {
   private mStopItem: vscode.StatusBarItem;
   private mScreenshotItem: vscode.StatusBarItem;
   private mControlItem: vscode.StatusBarItem;
+  private mPauseItem: vscode.StatusBarItem;
+  private mResumeItem: vscode.StatusBarItem;
+  private mSettingItem: vscode.StatusBarItem;
 
   constructor() {
     this.mRemoteDeviceProvider = new RemoteDeviceProvider();
@@ -27,6 +31,9 @@ export class RemoteDeviceView {
     this.mStopItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mScreenshotItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mControlItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.mPauseItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.mResumeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.mSettingItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     
     this.initStatusBarItems();
   }
@@ -84,7 +91,7 @@ export class RemoteDeviceView {
         return;
     }
     for (let device of this.mSelections) {
-      RemoteDeviceController.runScriptFromEditor(device, script).then(() => {
+      RemoteDeviceUtils.runScriptFromEditor(device, script).then(() => {
         vscode.window.showInformationMessage(`${Message.runScriptSuccess} ${device.ip}`);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.runScriptFailure} ${device.ip} ${e}`);
@@ -92,9 +99,29 @@ export class RemoteDeviceView {
     }
   }
 
+  public pauseScript() {
+    for (let device of this.mSelections) {
+      device.pause().then(() => {
+        vscode.window.showInformationMessage(`${Message.pauseScriptSuccess} ${device.ip}`);
+      }, (e) => {
+        vscode.window.showWarningMessage(`${Message.pauseScriptFailure} ${device.ip} ${e}`);
+      });
+    }
+  }
+
+  public resumeScript() {
+    for (let device of this.mSelections) {
+      device.resume().then(() => {
+        vscode.window.showInformationMessage(`${Message.resumeScriptSuccess} ${device.ip}`);
+      }, (e) => {
+        vscode.window.showWarningMessage(`${Message.resumeScriptFailure} ${device.ip} ${e}`);
+      });
+    }
+  }
+
   public stopScript() {
     for (let device of this.mSelections) {
-      RemoteDeviceController.runScriptFromEditor(device, "").then(() => {
+      device.reset().then(() => {
         vscode.window.showInformationMessage(`${Message.stopScriptSuccess} ${device.ip}`);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.stopScriptFailure} ${device.ip} ${e}`);
@@ -104,7 +131,7 @@ export class RemoteDeviceView {
 
   public screenshot() {
     for (let device of this.mSelections) {
-      RemoteDeviceController.screenshot(device).then(() => {
+      RemoteDeviceUtils.screenshot(device).then(() => {
         vscode.window.showInformationMessage(`${Message.screenshotSuccess} ${device.ip}`);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.screenshotFailure} ${device.ip} ${e}`);
@@ -113,7 +140,9 @@ export class RemoteDeviceView {
   }
 
   public controlPanel() {
-
+    for (let device of this.mSelections) {
+      ScreenUtilsPanel.createScreenSyncPanel(device);
+    }
   }
 
   private initStatusBarItems() {
@@ -124,7 +153,21 @@ export class RemoteDeviceView {
         this.runScript();
     }));
 
-    this.mStopItem.text = `$(stop) Stop`;
+    this.mPauseItem.text = `$(clock) Pause`;
+    this.mPauseItem.command = "remoteDevices.pauseScript";
+    this.mStatusBarItems.push(this.mPauseItem);
+    this.mDisposables.push(vscode.commands.registerCommand(this.mPauseItem.command, () => {
+      this.pauseScript();
+    }));
+
+    this.mResumeItem.text = `$(history) Resume`;
+    this.mResumeItem.command = "remoteDevices.resumeScript";
+    this.mStatusBarItems.push(this.mResumeItem);
+    this.mDisposables.push(vscode.commands.registerCommand(this.mResumeItem.command, () => {
+      this.resumeScript();
+    }));
+
+    this.mStopItem.text = `$(circle-slash) Stop`;
     this.mStopItem.command = "remoteDevices.stopScript";
     this.mStatusBarItems.push(this.mStopItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mStopItem.command, () => {
@@ -143,6 +186,13 @@ export class RemoteDeviceView {
     this.mStatusBarItems.push(this.mControlItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mControlItem.command, () => {
       this.controlPanel();
+    }));
+
+    this.mSettingItem.text = `$(gear) Setting`;
+    this.mSettingItem.command = "remoteDevices.openSetting";
+    this.mStatusBarItems.push(this.mSettingItem);
+    this.mDisposables.push(vscode.commands.registerCommand(this.mSettingItem.command, () => {
+      
     }));
   }
 
