@@ -26,7 +26,7 @@
           pointer-events: none;
           position: absolute;
           border: 1px solid #aa1e1e;
-          background-color: rgba(255, 255, 255, 0.2);
+          background-color: rgba(255, 255, 255, 0.1);
         }
         #controlPanel {
           position: fixed;
@@ -104,7 +104,7 @@
       </div>
       <!-- <div style="height: 40px;"></div> -->
       <div id="preview" style="padding-top: 40px;">
-        <div id="screenImageContainer" >
+        <div id="screenImageContainer">
           <img id="screenImage" draggable="false"/>
           <div id="positionCol"></div>
           <div id="positionRow"></div>
@@ -147,10 +147,12 @@
         $("#zoomIn").click(() => {
           amplification += 0.1;
           updatePreviewSize();
+          updateRect();
         });
         $("#zoomOut").click(() => {
           amplification -= 0.1;
           updatePreviewSize();
+          updateRect();
         });
         // mouse functions
         $("input[name=mouseMode]").click(function(){
@@ -209,37 +211,40 @@
             vscode.postMessage({
               command: 'corpImage',
               resizeRatio: +$("#resizeRatio").val(),
-              x: +$("#rectXY").offset().left,
-              y: +$("#rectXY").offset().top,
-              width: +rectW,
-              height: +rectH,
+              cx: +$("#cropX1").val(),
+              cy: +$("#cropY1").val(),
+              cw: +$("#cropX2").val() - +$("#cropX1").val(),
+              ch: +$("#cropY2").val() - +$("#cropY1").val(),
             });
           }
         });
         $("#cropX1, #cropX2, #cropY1, #cropY2").change(() => {
-          const x1 = +$("#cropX1").val();
-          const y1 = +$("#cropY1").val();
-          const x2 = +$("#cropX2").val();
-          const y2 = +$("#cropY2").val();
-          if (x2 <= x1 || y2 <= y1) {
-            return;
-          }
-          const ix = Math.floor(x1 * imageWidth / deviceWidth);
-          const iy = Math.floor(y1 * imageHeight / deviceHeight);
-          const iw = Math.floor((x2 - x1) * imageWidth / deviceWidth);
-          const ih = Math.floor((y2 - y1) * imageHeight / deviceHeight);
-          console.log($("#screenImage").offset(), ix, iy);
-          $("#rectXY").offset({top: $("#screenImage").offset().top + iy, left: $("#screenImage").offset().left + ix});
-          $("#rectXY").width(iw);
-          $("#rectXY").height(ih);
+          updateRect();
         });
       })();
+
+      function updateRect() {
+        const x1 = +$("#cropX1").val();
+        const y1 = +$("#cropY1").val();
+        const x2 = +$("#cropX2").val();
+        const y2 = +$("#cropY2").val();
+        if (x2 <= x1 || y2 <= y1) {
+          return;
+        }
+        const ix = Math.floor(x1 * imageWidth / deviceWidth);
+        const iy = Math.floor(y1 * imageHeight / deviceHeight);
+        const iw = Math.floor((x2 - x1) * imageWidth / deviceWidth);
+        const ih = Math.floor((y2 - y1) * imageHeight / deviceHeight);
+        $("#rectXY").offset({top: $("#screenImage").offset().top + iy, left: $("#screenImage").offset().left + ix});
+        $("#rectXY").width(iw);
+        $("#rectXY").height(ih);
+      }
       
       function updatePreviewSize(dw, dh) {
         if (dw == undefined) dw = deviceWidth;
         if (dh == undefined) dh = deviceHeight;
         const pw = $("#preview").width();
-        const ph = $("#preview").height();
+        const ph = $("#preview").height() - 40;
         const dr = dw/dh;
         const pr = pw/ph;
         imageWidth = pw;
@@ -269,11 +274,15 @@
       window.addEventListener('message', event => {
         const message = event.data;
         switch (message.command) {
-          case 'setScreenSize':
-            deviceWidth = message.width;
-            deviceHeight = message.height;
-            updatePreviewSize(deviceWidth, deviceHeight);
-            break;
+        case 'setScreenSize':
+          deviceWidth = message.width;
+          deviceHeight = message.height;
+          updatePreviewSize(deviceWidth, deviceHeight);
+          break;
+        case 'setScreenImage':
+          console.log(message);
+          $("#screenImage").attr("src", `data:image/png;base64,${message.base64}`);
+          break;
         }
       });
 

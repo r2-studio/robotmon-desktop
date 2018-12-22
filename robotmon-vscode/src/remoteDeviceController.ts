@@ -36,12 +36,12 @@ export class RemoteDeviceController {
       if (!fs.existsSync(screenshotPath)) {
         fs.mkdirSync(screenshotPath);
       }
-      device.getScreenshot(0, 0, device.width, device.height, device.width, device.height, 100)
+      device.getScreenshot(0, 0, device.width, device.height, device.width, device.height, 100, false)
       .then((bs) => {
         const filename = Date.now().toString() + '.jpg'; 
         const fullpath = path.join(screenshotPath, filename);
         console.log(fullpath);
-        fs.writeFileSync(fullpath, new Buffer(bs));
+        fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
         // const webviewPanel = vscode.window.createWebviewPanel("", filename, vscode.ViewColumn.Active);
         // webviewPanel.webview.html = "Hello";
         return resolve(Message.screenshotSuccess);

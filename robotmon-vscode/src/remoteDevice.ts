@@ -146,8 +146,8 @@ export class RemoteDevice extends vscode.TreeItem {
     });
   }
 
-  public getScreenshot(cx: number, cy: number, cw: number, ch: number, rw: number, rh: number, q: number) {
-    return new Promise<Uint8Array>((resolve, reject) => {
+  public getScreenshot(cx: number, cy: number, cw: number, ch: number, rw: number, rh: number, q: number, base64: boolean = false) {
+    return new Promise<Uint8Array | string>((resolve, reject) => {
       const request = new pb.RequestScreenshot();
       request.setCropx(cx);
       request.setCropy(cy);
@@ -160,7 +160,11 @@ export class RemoteDevice extends vscode.TreeItem {
         request: request,
         host: this.mAddress,
         onMessage: (message: pb.ResponseScreenshot) => {
-          resolve(message.getImage_asU8());
+          if (base64) {
+            resolve(message.getImage_asB64());
+          } else {
+            resolve(message.getImage_asU8());
+          }
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
           if (code != grpc.Code.OK) {
