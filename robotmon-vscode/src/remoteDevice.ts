@@ -98,7 +98,7 @@ export class RemoteDevice extends vscode.TreeItem {
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
           if (code != grpc.Code.OK) {
-            this.mLogger.error(`Error listenLogs ${code}, ${msg}, ${trailers}`);
+            this.mLogger.error(`Error getScreenSize ${code}, ${msg}, ${trailers}`);
             reject();
           }
         }
@@ -118,7 +118,7 @@ export class RemoteDevice extends vscode.TreeItem {
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
           if (code != grpc.Code.OK) {
-            this.mLogger.error(`Error listenLogs ${code}, ${msg}, ${trailers}`);
+            this.mLogger.error(`Error runScript ${code}, ${msg}, ${trailers}`);
             reject(msg);
           }
         }
@@ -138,7 +138,7 @@ export class RemoteDevice extends vscode.TreeItem {
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
           if (code != grpc.Code.OK) {
-            this.mLogger.error(`Error listenLogs ${code}, ${msg}, ${trailers}`);
+            this.mLogger.error(`Error runScriptAsync ${code}, ${msg}, ${trailers}`);
             reject(msg);
           }
         }
@@ -170,6 +170,72 @@ export class RemoteDevice extends vscode.TreeItem {
           if (code != grpc.Code.OK) {
             this.mLogger.error(`Error getScreenshot ${code}, ${msg}, ${trailers}`);
             reject(msg);
+          }
+        }
+      });
+    });
+  }
+
+  public tapDown(x: number, y: number, id: number = 0) {
+    return new Promise<void>((resolve, reject) => {
+      const request = new pb.RequestTap();
+      request.setX(x)
+      request.setY(y)
+      request.setId(id)
+      grpc.invoke(GrpcService.TapDown, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.Response) => {
+          resolve();
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
+            reject();
+          }
+        }
+      });
+    });
+  }
+
+  public moveTo(x: number, y: number, id: number = 0) {
+    return new Promise<void>((resolve, reject) => {
+      const request = new pb.RequestTap();
+      request.setX(x)
+      request.setY(y)
+      request.setId(id)
+      grpc.invoke(GrpcService.MoveTo, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.Response) => {
+          resolve();
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
+            reject();
+          }
+        }
+      });
+    });
+  }
+
+  public tapUp(x: number, y: number, id: number = 0) {
+    return new Promise<void>((resolve, reject) => {
+      const request = new pb.RequestTap();
+      request.setX(x)
+      request.setY(y)
+      request.setId(id)
+      grpc.invoke(GrpcService.TapUp, {
+        request: request,
+        host: this.mAddress,
+        onMessage: (message: pb.Response) => {
+          resolve();
+        },
+        onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
+          if (code != grpc.Code.OK) {
+            this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
+            reject();
           }
         }
       });

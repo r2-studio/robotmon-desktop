@@ -66,13 +66,16 @@ export class ScreenUtilsPanel {
           const fullpath = path.join(screenshotPath, filename);
           fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
           vscode.window.showInformationMessage(Message.screenshotSuccess);
-        }, (e: string) => {
-          vscode.window.showWarningMessage(`${Message.screenshotFailure} ${e}`);
         });
         break;
       case 'tapDown':
+        this.mDevice.tapDown(message.x, message.y);
+        break;
+      case 'moveTo':
+        this.mDevice.moveTo(message.x, message.y);
         break;
       case 'tapUp':
+        this.mDevice.tapUp(message.x, message.y);
         break;
       case 'printInfo':
         const x = message.x;
@@ -84,7 +87,6 @@ export class ScreenUtilsPanel {
         });
         break;
       }
-      // this.mWebviewPanel.webview.postMessage({command: 'refactor'});
     }, this);
   }
 

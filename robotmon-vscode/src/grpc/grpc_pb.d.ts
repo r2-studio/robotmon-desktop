@@ -110,8 +110,8 @@ export class RequestTap extends jspb.Message {
   getY(): number;
   setY(value: number): void;
 
-  getDuring(): number;
-  setDuring(value: number): void;
+  getId(): number;
+  setId(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RequestTap.AsObject;
@@ -127,7 +127,7 @@ export namespace RequestTap {
   export type AsObject = {
     x: number,
     y: number,
-    during: number,
+    id: number,
   }
 }
 
@@ -136,6 +136,12 @@ export class ResponseScreenshot extends jspb.Message {
   getImage_asU8(): Uint8Array;
   getImage_asB64(): string;
   setImage(value: Uint8Array | string): void;
+
+  getDevicewidth(): number;
+  setDevicewidth(value: number): void;
+
+  getDeviceheight(): number;
+  setDeviceheight(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ResponseScreenshot.AsObject;
@@ -150,6 +156,8 @@ export class ResponseScreenshot extends jspb.Message {
 export namespace ResponseScreenshot {
   export type AsObject = {
     image: Uint8Array | string,
+    devicewidth: number,
+    deviceheight: number,
   }
 }
 

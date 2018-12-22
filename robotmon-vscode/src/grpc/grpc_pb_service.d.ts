@@ -49,6 +49,69 @@ type GrpcServiceGetScreenSize = {
   readonly responseType: typeof grpc_pb.ResponseScreenSize;
 };
 
+type GrpcServiceGetStoragePath = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.Empty;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
+type GrpcServiceTapDown = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.RequestTap;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
+type GrpcServiceMoveTo = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.RequestTap;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
+type GrpcServiceTapUp = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.RequestTap;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
+type GrpcServicePause = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.Empty;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
+type GrpcServiceResume = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.Empty;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
+type GrpcServiceReset = {
+  readonly methodName: string;
+  readonly service: typeof GrpcService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof grpc_pb.Empty;
+  readonly responseType: typeof grpc_pb.Response;
+};
+
 export class GrpcService {
   static readonly serviceName: string;
   static readonly RunScript: GrpcServiceRunScript;
@@ -56,6 +119,13 @@ export class GrpcService {
   static readonly Logs: GrpcServiceLogs;
   static readonly GetScreenshot: GrpcServiceGetScreenshot;
   static readonly GetScreenSize: GrpcServiceGetScreenSize;
+  static readonly GetStoragePath: GrpcServiceGetStoragePath;
+  static readonly TapDown: GrpcServiceTapDown;
+  static readonly MoveTo: GrpcServiceMoveTo;
+  static readonly TapUp: GrpcServiceTapUp;
+  static readonly Pause: GrpcServicePause;
+  static readonly Resume: GrpcServiceResume;
+  static readonly Reset: GrpcServiceReset;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -126,6 +196,69 @@ export class GrpcServiceClient {
   getScreenSize(
     requestMessage: grpc_pb.Empty,
     callback: (error: ServiceError|null, responseMessage: grpc_pb.ResponseScreenSize|null) => void
+  ): UnaryResponse;
+  getStoragePath(
+    requestMessage: grpc_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  getStoragePath(
+    requestMessage: grpc_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  tapDown(
+    requestMessage: grpc_pb.RequestTap,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  tapDown(
+    requestMessage: grpc_pb.RequestTap,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  moveTo(
+    requestMessage: grpc_pb.RequestTap,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  moveTo(
+    requestMessage: grpc_pb.RequestTap,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  tapUp(
+    requestMessage: grpc_pb.RequestTap,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  tapUp(
+    requestMessage: grpc_pb.RequestTap,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  pause(
+    requestMessage: grpc_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  pause(
+    requestMessage: grpc_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  resume(
+    requestMessage: grpc_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  resume(
+    requestMessage: grpc_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  reset(
+    requestMessage: grpc_pb.Empty,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
+  ): UnaryResponse;
+  reset(
+    requestMessage: grpc_pb.Empty,
+    callback: (error: ServiceError|null, responseMessage: grpc_pb.Response|null) => void
   ): UnaryResponse;
 }
 

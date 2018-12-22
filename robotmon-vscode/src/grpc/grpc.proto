@@ -25,11 +25,13 @@ message RequestScreenshot {
 message RequestTap {
   int32 x = 1;
   int32 y = 2;
-  int32 during = 3;
+  int32 id = 3;
 }
 
 message ResponseScreenshot {
   bytes image = 1;
+  int32 deviceWidth = 2;
+  int32 deviceHeight = 3;
 }
 
 message ResponseScreenSize {
@@ -43,5 +45,12 @@ service GrpcService {
   rpc Logs(Empty) returns (stream Response) {}
   rpc GetScreenshot(RequestScreenshot) returns (ResponseScreenshot) {}
   rpc GetScreenSize(Empty) returns (ResponseScreenSize) {}
+  rpc GetStoragePath(Empty) returns (Response) {}
+  rpc TapDown(RequestTap) returns (Response) {}
+  rpc MoveTo(RequestTap) returns (Response) {}
+  rpc TapUp(RequestTap) returns (Response) {}
+  rpc Pause(Empty) returns (Response) {}
+  rpc Resume(Empty) returns (Response) {}
+  rpc Reset(Empty) returns (Response) {}
 }
 

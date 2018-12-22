@@ -55,6 +55,69 @@ GrpcService.GetScreenSize = {
   responseType: grpc_pb.ResponseScreenSize
 };
 
+GrpcService.GetStoragePath = {
+  methodName: "GetStoragePath",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.Empty,
+  responseType: grpc_pb.Response
+};
+
+GrpcService.TapDown = {
+  methodName: "TapDown",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.RequestTap,
+  responseType: grpc_pb.Response
+};
+
+GrpcService.MoveTo = {
+  methodName: "MoveTo",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.RequestTap,
+  responseType: grpc_pb.Response
+};
+
+GrpcService.TapUp = {
+  methodName: "TapUp",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.RequestTap,
+  responseType: grpc_pb.Response
+};
+
+GrpcService.Pause = {
+  methodName: "Pause",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.Empty,
+  responseType: grpc_pb.Response
+};
+
+GrpcService.Resume = {
+  methodName: "Resume",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.Empty,
+  responseType: grpc_pb.Response
+};
+
+GrpcService.Reset = {
+  methodName: "Reset",
+  service: GrpcService,
+  requestStream: false,
+  responseStream: false,
+  requestType: grpc_pb.Empty,
+  responseType: grpc_pb.Response
+};
+
 exports.GrpcService = GrpcService;
 
 function GrpcServiceClient(serviceHost, options) {
@@ -199,6 +262,223 @@ GrpcServiceClient.prototype.getScreenSize = function getScreenSize(requestMessag
     callback = arguments[1];
   }
   var client = grpc.unary(GrpcService.GetScreenSize, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.getStoragePath = function getStoragePath(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.GetStoragePath, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.tapDown = function tapDown(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.TapDown, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.moveTo = function moveTo(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.MoveTo, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.tapUp = function tapUp(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.TapUp, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.pause = function pause(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.Pause, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.resume = function resume(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.Resume, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+GrpcServiceClient.prototype.reset = function reset(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(GrpcService.Reset, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

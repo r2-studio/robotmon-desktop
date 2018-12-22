@@ -771,7 +771,7 @@ proto.rpc.RequestTap.toObject = function(includeInstance, msg) {
   var f, obj = {
     x: jspb.Message.getFieldWithDefault(msg, 1, 0),
     y: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    during: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    id: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -818,7 +818,7 @@ proto.rpc.RequestTap.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt32());
-      msg.setDuring(value);
+      msg.setId(value);
       break;
     default:
       reader.skipField();
@@ -863,7 +863,7 @@ proto.rpc.RequestTap.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getDuring();
+  f = message.getId();
   if (f !== 0) {
     writer.writeInt32(
       3,
@@ -904,16 +904,16 @@ proto.rpc.RequestTap.prototype.setY = function(value) {
 
 
 /**
- * optional int32 during = 3;
+ * optional int32 id = 3;
  * @return {number}
  */
-proto.rpc.RequestTap.prototype.getDuring = function() {
+proto.rpc.RequestTap.prototype.getId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /** @param {number} value */
-proto.rpc.RequestTap.prototype.setDuring = function(value) {
+proto.rpc.RequestTap.prototype.setId = function(value) {
   jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -965,7 +965,9 @@ proto.rpc.ResponseScreenshot.prototype.toObject = function(opt_includeInstance) 
  */
 proto.rpc.ResponseScreenshot.toObject = function(includeInstance, msg) {
   var f, obj = {
-    image: msg.getImage_asB64()
+    image: msg.getImage_asB64(),
+    devicewidth: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    deviceheight: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1006,6 +1008,14 @@ proto.rpc.ResponseScreenshot.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setImage(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setDevicewidth(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setDeviceheight(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1039,6 +1049,20 @@ proto.rpc.ResponseScreenshot.serializeBinaryToWriter = function(message, writer)
   if (f.length > 0) {
     writer.writeBytes(
       1,
+      f
+    );
+  }
+  f = message.getDevicewidth();
+  if (f !== 0) {
+    writer.writeInt32(
+      2,
+      f
+    );
+  }
+  f = message.getDeviceheight();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
       f
     );
   }
@@ -1081,6 +1105,36 @@ proto.rpc.ResponseScreenshot.prototype.getImage_asU8 = function() {
 /** @param {!(string|Uint8Array)} value */
 proto.rpc.ResponseScreenshot.prototype.setImage = function(value) {
   jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional int32 deviceWidth = 2;
+ * @return {number}
+ */
+proto.rpc.ResponseScreenshot.prototype.getDevicewidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.rpc.ResponseScreenshot.prototype.setDevicewidth = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional int32 deviceHeight = 3;
+ * @return {number}
+ */
+proto.rpc.ResponseScreenshot.prototype.getDeviceheight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.rpc.ResponseScreenshot.prototype.setDeviceheight = function(value) {
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

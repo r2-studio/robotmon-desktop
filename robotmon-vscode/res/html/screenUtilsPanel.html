@@ -170,6 +170,8 @@
           if (isMouseDown && mouseMode == 'cropMode') {
             $("#rectXY").width(e.target.x + e.offsetX - $("#rectXY").offset().left - 2);
             $("#rectXY").height(e.target.y + e.offsetY - $("#rectXY").offset().top - 2);
+          } else if (isMouseDown && mouseMode == 'controlMode') {
+            vscode.postMessage({command: 'moveTo', x: +posX, y: +posY});
           }
         });
         $("#screenImageContainer").mousedown((e) => {
