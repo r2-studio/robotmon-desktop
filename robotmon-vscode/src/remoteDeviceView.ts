@@ -36,6 +36,7 @@ export class RemoteDeviceView {
     this.mSettingItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     
     this.initStatusBarItems();
+    this.displayStatusBarItems(false);
   }
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<RemoteDevice> | null) {
@@ -146,6 +147,13 @@ export class RemoteDeviceView {
   }
 
   private initStatusBarItems() {
+    this.mSettingItem.text = `$(gear) Setting`;
+    this.mSettingItem.command = "remoteDevices.openSetting";
+    this.mStatusBarItems.push(this.mSettingItem);
+    this.mDisposables.push(vscode.commands.registerCommand(this.mSettingItem.command, () => {
+      vscode.commands.executeCommand("config.openSettings");
+    }));
+
     this.mRunItem.text = `$(zap) Run`;
     this.mRunItem.command = "remoteDevices.runScript";
     this.mStatusBarItems.push(this.mRunItem);
@@ -187,13 +195,6 @@ export class RemoteDeviceView {
     this.mDisposables.push(vscode.commands.registerCommand(this.mControlItem.command, () => {
       this.controlPanel();
     }));
-
-    this.mSettingItem.text = `$(gear) Setting`;
-    this.mSettingItem.command = "remoteDevices.openSetting";
-    this.mStatusBarItems.push(this.mSettingItem);
-    this.mDisposables.push(vscode.commands.registerCommand(this.mSettingItem.command, () => {
-      
-    }));
   }
 
   public displayStatusBarItems(show: boolean) {
@@ -204,6 +205,7 @@ export class RemoteDeviceView {
         item.hide();
       }
     }
+    this.mSettingItem.show();
   }
 
 }

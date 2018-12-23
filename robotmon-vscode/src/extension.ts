@@ -7,6 +7,7 @@ import { grpc } from "grpc-web-client";
 import { RemoteDeviceView } from './remoteDeviceView';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { RemoteDevice } from './remoteDevice';
+import { Config } from './config';
 // import { RemoteDeviceFunc } from './remoteDeviceController';
 
 // this method is called when your extension is activated
@@ -89,43 +90,15 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
-    // New Remote Device Menu - RemoteDevice - runScript
-    // disposable = vscode.commands.registerCommand('remoteDevicesMenu.runScript', (element: RemoteDevice) => {
-    //     const editor = vscode.window.activeTextEditor;
-    //     if (editor == undefined) {
-    //         vscode.window.showWarningMessage("no text editor found");
-    //         return;
-    //     }
-    //     const script = editor.document.getText();
-    //     if (script == "" || editor.document.languageId == "Log") {
-    //         vscode.window.showWarningMessage("script is empty");
-    //         return;
-    //     }
-    //     element.runScriptAsync(script);
-    // });
-    // context.subscriptions.push(disposable);
-
-    // New Remote Device Menu - RemoteDevice - stopScript
-    // disposable = vscode.commands.registerCommand('remoteDevicesMenu.stopScript', (element: RemoteDevice) => {
-    //     element.runScriptAsync("");
-    // });
-    // context.subscriptions.push(disposable);
-
-    // New Remote Device Func - RemoteDeviceFunc - screenshot
-    // disposable = vscode.commands.registerCommand('remoteDevicesFunc.screenshot', (element: RemoteDeviceFunc) => {
-    //     element.screenshot();
-    // });
-    // context.subscriptions.push(disposable);
-
-    // Screen Utils Panel - ScreenUtilsPanel - syncScreen
-    disposable = vscode.commands.registerCommand('screenUtilsPanel.syncScreen', (element: vscode.WebviewPanel) => {
-        console.log("????", element);
-        // element.webview.postMessage({ command: 'refactor' });
-        console.log("???okok")
+    // Config - openSettings
+    disposable = vscode.commands.registerCommand('config.openSettings', () => {
+        Config.getConfig().openSetting();
     });
     context.subscriptions.push(disposable);
+
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+    Config.getConfig().dispose();
 }

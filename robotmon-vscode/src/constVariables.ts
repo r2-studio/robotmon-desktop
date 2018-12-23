@@ -14,4 +14,8 @@ export enum Message {
   pauseScriptFailure = "Pause script failure",
   resumeScriptSuccess = "Resume script success",
   resumeScriptFailure = "Resume script failure",
+  createNewSettingFile = "New robotmon-settings.json file created",
+  robotmonSettingsFilename = "robotmon-settings.json",
+  parseSettingsError = "Can not parse robotmon-settings.json",
+  parseSettingsSuccess = "Reload robotmon-settings.json success",
 }
