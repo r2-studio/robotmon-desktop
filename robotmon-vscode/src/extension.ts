@@ -85,7 +85,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // New Remote Device Menu - RemoteDevice - disconnect
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.disconnect', (element: RemoteDevice) => {
-        vscode.window.showInformationMessage(`disconnect. ${element.ip}`);
+        vscode.window.showInformationMessage(`Disconnect. ${element.ip}`);
         element.disconnect();
     });
     context.subscriptions.push(disposable);

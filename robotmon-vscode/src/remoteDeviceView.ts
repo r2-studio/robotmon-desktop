@@ -54,6 +54,7 @@ export class RemoteDeviceView {
       this.mDisposables.push(vscode.window.setStatusBarMessage("Targets " + statusBarTitle));
       this.displayStatusBarItems(true);
     } else {
+      this.mDisposables.push(vscode.window.setStatusBarMessage("Targets []"));
       this.displayStatusBarItems(false);
     }
   }
