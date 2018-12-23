@@ -103,7 +103,7 @@ export class RemoteDeviceView {
   public pauseScript() {
     for (let device of this.mSelections) {
       device.pause().then(() => {
-        vscode.window.showInformationMessage(`${Message.pauseScriptSuccess} ${device.ip}`);
+        device.getLogger().debug(Message.pauseScriptSuccess);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.pauseScriptFailure} ${device.ip} ${e}`);
       });
@@ -113,7 +113,7 @@ export class RemoteDeviceView {
   public resumeScript() {
     for (let device of this.mSelections) {
       device.resume().then(() => {
-        vscode.window.showInformationMessage(`${Message.resumeScriptSuccess} ${device.ip}`);
+        device.getLogger().debug(Message.resumeScriptSuccess);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.resumeScriptFailure} ${device.ip} ${e}`);
       });
@@ -123,7 +123,7 @@ export class RemoteDeviceView {
   public stopScript() {
     for (let device of this.mSelections) {
       device.reset().then(() => {
-        vscode.window.showInformationMessage(`${Message.stopScriptSuccess} ${device.ip}`);
+        device.getLogger().debug(Message.stopScriptSuccess);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.stopScriptFailure} ${device.ip} ${e}`);
       });
