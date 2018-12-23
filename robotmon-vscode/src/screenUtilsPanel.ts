@@ -62,7 +62,7 @@ export class ScreenUtilsPanel {
         const rw = message.cw * message.resizeRatio;
         const rh = message.ch * message.resizeRatio;
         this.mDevice.getScreenshot(message.cx, message.cy, message.cw, message.ch, rw, rh, c.syncScreenImageQuality, false).then((bs) => {
-          const filename = `${Date.now().toString()}_${rw}_${rh}_${message.cx}_${message.cy}_${message.cw}_${message.ch}_.jpg`; 
+          const filename = `${Date.now().toString()}_${rw}x${rh}_xy${message.cx}x${message.cy}_wh${message.cw}x${message.ch}_.jpg`; 
           const fullpath = path.join(screenshotPath, filename);
           fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
           vscode.window.showInformationMessage(Message.screenshotSuccess);
