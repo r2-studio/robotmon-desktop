@@ -11,7 +11,7 @@
     ],
     "activationEvents": [
         "onCommand:extension.sayHello",
-        "onView:adbDevicesMenu",
+        "onView:localDevicesMenu",
         "onView:remoteDevicesMenu",
         "onView:assetManager",
         "onView:functionHints"
@@ -20,7 +20,7 @@
     "contributes": {
         "commands": [
             {
-                "command": "adbDevicesMenu.scan",
+                "command": "localDevicesMenu.scan",
                 "title": "scan",
                 "icon": {
                     "light": "res/light_scan.svg",
@@ -28,7 +28,7 @@
                 }
             },
             {
-                "command": "adbDevicesMenu.startService",
+                "command": "localDevicesMenu.startService",
                 "title": "start service",
                 "icon": {
                     "light": "res/light_start.svg",
@@ -36,7 +36,7 @@
                 }
             },
             {
-                "command": "adbDevicesMenu.stopService",
+                "command": "localDevicesMenu.stopService",
                 "title": "stop service",
                 "icon": {
                     "light": "res/light_stop.svg",
@@ -44,7 +44,7 @@
                 }
             },
             {
-                "command": "adbDevicesMenu.forwardPort",
+                "command": "localDevicesMenu.forwardPort",
                 "title": "forward port of emulator for development",
                 "icon": {
                     "light": "res/light_forward.svg",
@@ -156,6 +156,10 @@
         "views": {
             "robotmon": [
                 {
+                    "id": "localDevicesMenu",
+                    "name": "Local Devices"
+                },
+                {
                     "id": "remoteDevicesMenu",
                     "name": "Remote Devices"
                 }
@@ -171,8 +175,8 @@
             ],
             "view/title": [
                 {
-                    "command": "adbDevicesMenu.scan",
-                    "when": "view == adbDevicesMenu",
+                    "command": "localDevicesMenu.scan",
+                    "when": "view == localDevicesMenu",
                     "group": "navigation"
                 },
                 {
@@ -188,18 +192,18 @@
             ],
             "view/item/context": [
                 {
-                    "command": "adbDevicesMenu.startService",
-                    "when": "view == adbDevicesMenu",
+                    "command": "localDevicesMenu.startService",
+                    "when": "view == localDevicesMenu",
                     "group": "inline"
                 },
                 {
-                    "command": "adbDevicesMenu.stopService",
-                    "when": "view == adbDevicesMenu",
+                    "command": "localDevicesMenu.stopService",
+                    "when": "view == localDevicesMenu",
                     "group": "inline"
                 },
                 {
-                    "command": "adbDevicesMenu.forwardPort",
-                    "when": "view == adbDevicesMenu",
+                    "command": "localDevicesMenu.forwardPort",
+                    "when": "view == localDevicesMenu",
                     "group": "inline"
                 },
                 {

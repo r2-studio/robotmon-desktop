@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 
 import { grpc } from "grpc-web-client";
 import { RemoteDeviceView } from './remoteDeviceView';
+import { LocalDeviceView } from './localDeviceView';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { RemoteDevice } from './remoteDevice';
 import { Config } from './config';
@@ -31,12 +32,23 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
 
+    // New Local Device Menu
+    const localDeviceView = new LocalDeviceView();
+    disposable = vscode.Disposable.from(localDeviceView);
+    context.subscriptions.push(disposable);
+
     // New Remote Device Menu
     const remoteDeviceView = new RemoteDeviceView();
     disposable = vscode.Disposable.from(remoteDeviceView);
     context.subscriptions.push(disposable);
 
     const remoteDeviceProvider = remoteDeviceView.getRemoteDeviceProvider();
+
+    // New Local Device Menu - scan
+    disposable = vscode.commands.registerCommand('localDevicesMenu.scan', () => {
+        localDeviceView.scan();
+    });
+    context.subscriptions.push(disposable);
 
     // New Remote Device Menu - addDevice
     disposable = vscode.commands.registerCommand('remoteDevicesMenu.addDevice', () => {
