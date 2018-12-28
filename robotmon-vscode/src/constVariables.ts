@@ -19,8 +19,13 @@ export enum Message {
   parseSettingsError = "Can not parse robotmon-settings.json",
   parseSettingsSuccess = "Reload robotmon-settings.json success",
   adbPathNotFound = "ADB file not found. Please set adbPath in robotmon-settings.json",
-  apkPathNotFound = "Error: apk path not found on phone",
+  apkPathNotFound = "Error: apk path not found on phone, please check to whether Robotmon is installed",
   appProcessNotFound = "Error: app_process not found on phone",
   libPathNotFound = "Error: lib path not found on phone",
   startServiceFailure = "Start robotmon service failure",
+  startServiceSuccess = "Robotmon Service started",
+  serviceStarted = "Started",
+  serviceStopped = "Stopped",
 }
+
+export const NotFound = -1;

@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import { exec, execSync } from 'child_process';
-import * as path from 'path';
 import * as fs from 'fs';
 
-import { Message } from './constVariables';
+import { Message, NotFound } from './constVariables';
 import { Config } from './config';
 import { LocalDevice } from './localDevice';
 import { OutputLogger } from './logger';
@@ -43,6 +42,10 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     this._onDidChangeTreeData.fire();
   }
 
+  public notifyItemChanged() {
+    this._onDidChangeTreeData.fire();
+  }
+
   public getDeviceIds(): Thenable<Array<LocalDevice>> {
     if (this.mAdbPath == "") {
       return Promise.resolve([]);
@@ -60,6 +63,9 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
         if (stdout != "") {
           const lines = stdout.split("\n");
           for (let line of lines) {
+            if (line.search('offline') != NotFound) {
+              continue;
+            }
             const tabs = line.split("\t");
             if (tabs.length >= 2) {
               deviceIds.push(new LocalDevice(tabs[0], this.mAdbPath));
