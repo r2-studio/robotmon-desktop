@@ -44,14 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     const remoteDeviceProvider = remoteDeviceView.getRemoteDeviceProvider();
 
-    // New Local Device Menu - scan
-    disposable = vscode.commands.registerCommand('localDevicesMenu.scan', () => {
-        localDeviceView.scan();
-    });
-    context.subscriptions.push(disposable);
-
     // New Remote Device Menu - addDevice
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.addDevice', () => {
+    disposable = vscode.commands.registerCommand('remoteDeviceView.addDevice', () => {
         const inputBox = vscode.window.createInputBox();
         inputBox.placeholder = "Input device IP. 10.0.1.10 or 127.0.0.1:8080";
         inputBox.onDidAccept(() => {
@@ -76,19 +70,19 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu - clear
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.clear', () => {
+    disposable = vscode.commands.registerCommand('remoteDeviceView.clear', () => {
         remoteDeviceView.clear();
     });
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu - refresh
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.refresh', () => {
+    disposable = vscode.commands.registerCommand('remoteDeviceView.refresh', () => {
         remoteDeviceView.refresh();
     });
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu - RemoteDevice - connect
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.connect', (element: RemoteDevice) => {
+    disposable = vscode.commands.registerCommand('remoteDeviceViewItem.connect', (element: RemoteDevice) => {
         element.connect().then(() => {
             vscode.window.showInformationMessage(`Successfully connect. ${element.ip}`);
         });
@@ -96,7 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // New Remote Device Menu - RemoteDevice - disconnect
-    disposable = vscode.commands.registerCommand('remoteDevicesMenu.disconnect', (element: RemoteDevice) => {
+    disposable = vscode.commands.registerCommand('remoteDeviceViewItem.disconnect', (element: RemoteDevice) => {
         vscode.window.showInformationMessage(`Disconnect. ${element.ip}`);
         element.disconnect();
     });

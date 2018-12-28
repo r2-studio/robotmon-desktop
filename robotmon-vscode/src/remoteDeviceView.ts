@@ -24,7 +24,7 @@ export class RemoteDeviceView {
 
   constructor() {
     this.mRemoteDeviceProvider = new RemoteDeviceProvider();
-    this.mRemoteDeviceView = vscode.window.createTreeView<RemoteDevice>("remoteDevicesMenu", { treeDataProvider: this.mRemoteDeviceProvider });
+    this.mRemoteDeviceView = vscode.window.createTreeView<RemoteDevice>("remoteDeviceView", { treeDataProvider: this.mRemoteDeviceProvider });
     this.mRemoteDeviceView.onDidChangeSelection(selected => this.onDidChangeSelection(selected));
     
     this.mRunItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
@@ -149,49 +149,49 @@ export class RemoteDeviceView {
 
   private initStatusBarItems() {
     this.mSettingItem.text = `$(gear) Setting`;
-    this.mSettingItem.command = "remoteDevices.openSetting";
+    this.mSettingItem.command = "remoteDevice.openSetting";
     this.mStatusBarItems.push(this.mSettingItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mSettingItem.command, () => {
       vscode.commands.executeCommand("config.openSettings");
     }));
 
     this.mRunItem.text = `$(zap) Run`;
-    this.mRunItem.command = "remoteDevices.runScript";
+    this.mRunItem.command = "remoteDevice.runScript";
     this.mStatusBarItems.push(this.mRunItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mRunItem.command, () => {
         this.runScript();
     }));
 
     this.mPauseItem.text = `$(clock) Pause`;
-    this.mPauseItem.command = "remoteDevices.pauseScript";
+    this.mPauseItem.command = "remoteDevice.pauseScript";
     this.mStatusBarItems.push(this.mPauseItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mPauseItem.command, () => {
       this.pauseScript();
     }));
 
     this.mResumeItem.text = `$(history) Resume`;
-    this.mResumeItem.command = "remoteDevices.resumeScript";
+    this.mResumeItem.command = "remoteDevice.resumeScript";
     this.mStatusBarItems.push(this.mResumeItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mResumeItem.command, () => {
       this.resumeScript();
     }));
 
     this.mStopItem.text = `$(circle-slash) Stop`;
-    this.mStopItem.command = "remoteDevices.stopScript";
+    this.mStopItem.command = "remoteDevice.stopScript";
     this.mStatusBarItems.push(this.mStopItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mStopItem.command, () => {
       this.stopScript();
     }));
 
     this.mScreenshotItem.text = `$(file-media) Screenshot`;
-    this.mScreenshotItem.command = "remoteDevices.screenshot";
+    this.mScreenshotItem.command = "remoteDevice.screenshot";
     this.mStatusBarItems.push(this.mScreenshotItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mScreenshotItem.command, () => {
       this.screenshot();
     }));
 
     this.mControlItem.text = `$(device-mobile) Control`;
-    this.mControlItem.command = "remoteDevices.controlPanel";
+    this.mControlItem.command = "remoteDevice.controlPanel";
     this.mStatusBarItems.push(this.mControlItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mControlItem.command, () => {
       this.controlPanel();

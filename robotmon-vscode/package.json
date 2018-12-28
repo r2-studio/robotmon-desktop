@@ -11,8 +11,8 @@
     ],
     "activationEvents": [
         "onCommand:extension.sayHello",
-        "onView:localDevicesMenu",
-        "onView:remoteDevicesMenu",
+        "onView:localDeviceView",
+        "onView:remoteDeviceView",
         "onView:assetManager",
         "onView:functionHints"
     ],
@@ -20,7 +20,7 @@
     "contributes": {
         "commands": [
             {
-                "command": "localDevicesMenu.scan",
+                "command": "localDeviceView.scan",
                 "title": "scan",
                 "icon": {
                     "light": "res/light_scan.svg",
@@ -28,15 +28,15 @@
                 }
             },
             {
-                "command": "localDevicesMenu.startService",
+                "command": "localDeviceViewItem.startService",
                 "title": "start service",
                 "icon": {
-                    "light": "res/light_start.svg",
-                    "dark": "res/dark_start.svg"
+                    "light": "res/light_play.svg",
+                    "dark": "res/dark_play.svg"
                 }
             },
             {
-                "command": "localDevicesMenu.stopService",
+                "command": "localDeviceViewItem.stopService",
                 "title": "stop service",
                 "icon": {
                     "light": "res/light_stop.svg",
@@ -44,7 +44,7 @@
                 }
             },
             {
-                "command": "localDevicesMenu.forwardPort",
+                "command": "localDeviceViewItem.forwardPort",
                 "title": "forward port of emulator for development",
                 "icon": {
                     "light": "res/light_forward.svg",
@@ -52,7 +52,7 @@
                 }
             },
             {
-                "command": "remoteDevicesMenu.addDevice",
+                "command": "remoteDeviceView.addDevice",
                 "title": "add device by ip",
                 "icon": {
                     "light": "res/light_add.svg",
@@ -60,19 +60,19 @@
                 }
             },
             {
-                "command": "remoteDevicesMenu.clear",
-                "title": "clean devices and rescan",
+                "command": "remoteDeviceView.clear",
+                "title": "clean Device and rescan",
                 "icon": {
                     "light": "res/light_refresh.svg",
                     "dark": "res/dark_refresh.svg"
                 }
             },
             {
-                "command": "remoteDevicesMenu.refresh",
-                "title": "clean devices and rescan"
+                "command": "remoteDeviceView.refresh",
+                "title": "clean Device and rescan"
             },
             {
-                "command": "remoteDevicesMenu.connect",
+                "command": "remoteDeviceViewItem.connect",
                 "title": "connect to device for debugging",
                 "icon": {
                     "light": "res/light_connect.svg",
@@ -80,7 +80,7 @@
                 }
             },
             {
-                "command": "remoteDevicesMenu.disconnect",
+                "command": "remoteDeviceViewItem.disconnect",
                 "title": "disconnect",
                 "icon": {
                     "light": "res/light_disconnect.svg",
@@ -88,7 +88,7 @@
                 }
             },
             {
-                "command": "remoteDevicesMenu.install",
+                "command": "remoteDeviceViewItem.install",
                 "title": "install to device",
                 "icon": {
                     "light": "res/light_install.svg",
@@ -156,12 +156,12 @@
         "views": {
             "robotmon": [
                 {
-                    "id": "localDevicesMenu",
-                    "name": "Local Devices"
+                    "id": "localDeviceView",
+                    "name": "Local Device"
                 },
                 {
-                    "id": "remoteDevicesMenu",
-                    "name": "Remote Devices"
+                    "id": "remoteDeviceView",
+                    "name": "Remote Device"
                 }
             ]
         },
@@ -175,49 +175,49 @@
             ],
             "view/title": [
                 {
-                    "command": "localDevicesMenu.scan",
-                    "when": "view == localDevicesMenu",
+                    "command": "localDeviceView.scan",
+                    "when": "view == localDeviceView",
                     "group": "navigation"
                 },
                 {
-                    "command": "remoteDevicesMenu.addDevice",
-                    "when": "view == remoteDevicesMenu",
+                    "command": "remoteDeviceView.addDevice",
+                    "when": "view == remoteDeviceView",
                     "group": "navigation"
                 },
                 {
-                    "command": "remoteDevicesMenu.clear",
-                    "when": "view == remoteDevicesMenu",
+                    "command": "remoteDeviceView.clear",
+                    "when": "view == remoteDeviceView",
                     "group": "navigation"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "localDevicesMenu.startService",
-                    "when": "view == localDevicesMenu",
+                    "command": "localDeviceViewItem.startService",
+                    "when": "view == localDeviceView",
                     "group": "inline"
                 },
                 {
-                    "command": "localDevicesMenu.stopService",
-                    "when": "view == localDevicesMenu",
+                    "command": "localDeviceViewItem.stopService",
+                    "when": "view == localDeviceView",
                     "group": "inline"
                 },
                 {
-                    "command": "localDevicesMenu.forwardPort",
-                    "when": "view == localDevicesMenu",
+                    "command": "localDeviceViewItem.forwardPort",
+                    "when": "view == localDeviceView",
                     "group": "inline"
                 },
                 {
-                    "command": "remoteDevicesMenu.connect",
+                    "command": "remoteDeviceViewItem.connect",
                     "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 },
                 {
-                    "command": "remoteDevicesMenu.disconnect",
+                    "command": "remoteDeviceViewItem.disconnect",
                     "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 },
                 {
-                    "command": "remoteDevicesMenu.install",
+                    "command": "remoteDeviceViewItem.install",
                     "when": "viewItem == RemoteDevice",
                     "group": "inline"
                 }

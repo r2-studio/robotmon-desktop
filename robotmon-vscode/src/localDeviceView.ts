@@ -14,7 +14,34 @@ export class LocalDeviceView {
  
   constructor() {
     this.mLocalDeviceProvider = new LocalDeviceProvider();
-    this.mLocalDeviceView = vscode.window.createTreeView<LocalDevice>("localDevicesMenu", { treeDataProvider: this.mLocalDeviceProvider });
+    this.mLocalDeviceView = vscode.window.createTreeView<LocalDevice>("localDeviceView", { treeDataProvider: this.mLocalDeviceProvider });
+    this.registVSCodeCommand();
+  }
+
+  private registVSCodeCommand() {
+    // Local Device Menu - scan
+    let disposable = vscode.commands.registerCommand('localDeviceView.scan', () => {
+      this.scan();
+    });
+    this.mDisposables.push(disposable);
+
+    // Local Device Item - startService
+    disposable = vscode.commands.registerCommand('localDeviceViewItem.startService', () => {
+    
+    });
+    this.mDisposables.push(disposable);
+
+    // Local Device Item - stopService
+    disposable = vscode.commands.registerCommand('localDeviceViewItem.stopService', () => {
+    
+    });
+    this.mDisposables.push(disposable);
+
+    // Local Device Item - forwardPort
+    disposable = vscode.commands.registerCommand('localDeviceViewItem.forwardPort', () => {
+    
+    });
+    this.mDisposables.push(disposable);
   }
 
   public scan() {
@@ -22,7 +49,7 @@ export class LocalDeviceView {
   }
 
   public dispose() {
-
+    vscode.Disposable.from(...this.mDisposables).dispose();
   }
 
   public installAdb() {

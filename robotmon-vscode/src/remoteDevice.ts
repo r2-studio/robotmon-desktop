@@ -318,7 +318,7 @@ export class RemoteDevice extends vscode.TreeItem {
       this.iconPath = undefined;
       this.description = "";
     }
-    vscode.commands.executeCommand("remoteDevicesMenu.refresh");
+    vscode.commands.executeCommand("remoteDeviceView.refresh");
   }
   
 }

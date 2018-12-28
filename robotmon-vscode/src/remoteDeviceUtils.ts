@@ -4,6 +4,7 @@ import * as path from 'path';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
 
+// TODO remove this file, and intergrate to remoteDeviceView
 export class RemoteDeviceUtils {
 
   static runScriptFromEditor(device: RemoteDevice, script: string | undefined = undefined) {
