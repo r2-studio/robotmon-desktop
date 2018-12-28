@@ -35,6 +35,7 @@ export class RemoteDeviceView {
     this.mResumeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mSettingItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     
+    this.registVSCodeCommand();
     this.initStatusBarItems();
     this.displayStatusBarItems(false);
   }
@@ -145,6 +146,66 @@ export class RemoteDeviceView {
     for (let device of this.mSelections) {
       ScreenUtilsPanel.createScreenSyncPanel(device);
     }
+  }
+
+  private registVSCodeCommand() {
+    // Remote Device View - addDevice
+    let disposable = vscode.commands.registerCommand('remoteDeviceView.addDevice', () => {
+      const inputBox = vscode.window.createInputBox();
+      inputBox.placeholder = "Input device IP. 10.0.1.10 or 127.0.0.1:8080";
+      inputBox.onDidAccept(() => {
+          let rx1 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]{1,5}$/;
+          let rx2 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/;
+          if (rx1.test(inputBox.value)) {
+            const tmp = inputBox.value.split(":");
+            this.mRemoteDeviceProvider.addDevice(tmp[0], tmp[1]);
+            inputBox.dispose();
+          } else if (rx2.test(inputBox.value)) {
+            this.mRemoteDeviceProvider.addDevice(inputBox.value);
+            inputBox.dispose();
+          } else {
+            vscode.window.showWarningMessage(`IP is not available: ${inputBox.value}`);
+          }        
+      });
+      inputBox.onDidHide(() => {
+        inputBox.dispose();
+      });
+      inputBox.show();
+    });
+    this.mDisposables.push(disposable);
+
+    // Remote Device View - clear
+    disposable = vscode.commands.registerCommand('remoteDeviceView.clear', () => {
+      this.clear();
+    });
+    this.mDisposables.push(disposable);
+
+    // Remote Device View - refresh
+    disposable = vscode.commands.registerCommand('remoteDeviceView.refresh', () => {
+      this.refresh();
+    });
+    this.mDisposables.push(disposable);
+
+    // Remote Device Item - connect
+    disposable = vscode.commands.registerCommand('remoteDeviceViewItem.connect', (element: RemoteDevice) => {
+      element.connect().then(() => {
+          vscode.window.showInformationMessage(`Successfully connect. ${element.ip}`);
+      });
+    });
+    this.mDisposables.push(disposable);
+
+    // Remote Device Item - disconnect
+    disposable = vscode.commands.registerCommand('remoteDeviceViewItem.disconnect', (element: RemoteDevice) => {
+      vscode.window.showInformationMessage(`Disconnect. ${element.ip}`);
+      element.disconnect();
+    });
+    this.mDisposables.push(disposable);
+
+    // Remote Device Item - install
+    disposable = vscode.commands.registerCommand('remoteDeviceViewItem.install', (element: RemoteDevice) => {
+      vscode.window.showWarningMessage(`Install not implement`);
+    });
+    this.mDisposables.push(disposable);
   }
 
   private initStatusBarItems() {

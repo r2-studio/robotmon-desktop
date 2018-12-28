@@ -19,7 +19,7 @@ export class LocalDeviceView {
   }
 
   private registVSCodeCommand() {
-    // Local Device Menu - scan
+    // Local Device View - scan
     let disposable = vscode.commands.registerCommand('localDeviceView.scan', () => {
       this.scan();
     });
