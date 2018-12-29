@@ -104,6 +104,22 @@
                 }
             },
             {
+                "command": "assetsView.openPanel",
+                "title": "open assets panel",
+                "icon": {
+                    "light": "res/light_forward.svg",
+                    "dark": "res/dark_forward.svg"
+                }
+            },
+            {
+                "command": "assetsViewItem.insert",
+                "title": "insert image to code",
+                "icon": {
+                    "light": "res/light_install.svg",
+                    "dark": "res/dark_install.svg"
+                }
+            },
+            {
                 "command": "functionHints.inject",
                 "title": "inject function into code",
                 "icon": {
@@ -157,11 +173,11 @@
             "robotmon": [
                 {
                     "id": "localDeviceView",
-                    "name": "Local Device"
+                    "name": "Local Devices"
                 },
                 {
                     "id": "remoteDeviceView",
-                    "name": "Remote Device"
+                    "name": "Remote Devices"
                 },
                 {
                     "id": "assetsView",
@@ -192,6 +208,16 @@
                     "command": "remoteDeviceView.clear",
                     "when": "view == remoteDeviceView",
                     "group": "navigation"
+                },
+                {
+                    "command": "assetsView.refresh",
+                    "when": "view == assetsView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "assetsView.openPanel",
+                    "when": "view == assetsView",
+                    "group": "navigation"
                 }
             ],
             "view/item/context": [
@@ -212,17 +238,22 @@
                 },
                 {
                     "command": "remoteDeviceViewItem.connect",
-                    "when": "viewItem == RemoteDevice",
+                    "when": "view == remoteDeviceView",
                     "group": "inline"
                 },
                 {
                     "command": "remoteDeviceViewItem.disconnect",
-                    "when": "viewItem == RemoteDevice",
+                    "when": "view == remoteDeviceView",
                     "group": "inline"
                 },
                 {
                     "command": "remoteDeviceViewItem.install",
-                    "when": "viewItem == RemoteDevice",
+                    "when": "view == remoteDeviceView",
+                    "group": "inline"
+                },
+                {
+                    "command": "assetsViewItem.insert",
+                    "when": "view == assetsView",
                     "group": "inline"
                 }
             ]

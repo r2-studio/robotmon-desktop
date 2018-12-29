@@ -43,7 +43,7 @@ export class RemoteDeviceView {
   }
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<RemoteDevice> | null) {
-    if (selected != undefined) {
+    if (selected != null) {
       this.mSelections = selected.selection;
     }
     // TODO allow multi-selestions

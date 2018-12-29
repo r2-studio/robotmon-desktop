@@ -22,6 +22,10 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
     return Promise.resolve([]);
   }
 
+  public refresh() {
+    this._onDidChangeTreeData.fire();
+  }
+
   private getAssets(): Thenable<vscode.TreeItem[]> {
     this.mAssets = [];
     if (vscode.workspace.rootPath == undefined) {
@@ -36,7 +40,10 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
       for (let filename of filenames) {
         const filePath = path.join(assetsPath, filename);
         if (fs.lstatSync(filePath).isFile()) {
-          this.mAssets.push(new vscode.TreeItem(filename, vscode.TreeItemCollapsibleState.None));
+          const item = new vscode.TreeItem(filename, vscode.TreeItemCollapsibleState.None);
+          item.id = filename;
+          item.tooltip = filename;
+          this.mAssets.push(item);
         }
       }
       resolve(this.mAssets);

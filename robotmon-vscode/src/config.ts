@@ -11,6 +11,7 @@ export class Config {
     return Config.config;
   }
 
+  public projectName: string = "ScriptTest";
   public adbPath: string = "adb";
   public syncScreenImageQuality: number = 90;
   public syncScreenImageSizeRatio: number = 0.75;
