@@ -14,6 +14,8 @@ export class Config {
   public adbPath: string = "adb";
   public syncScreenImageQuality: number = 90;
   public syncScreenImageSizeRatio: number = 0.75;
+  public screenshotQuality: number = 90;
+  public screenshotSizeRatio: number = 1.0;
   
   private mDisposes: Array<vscode.Disposable> = [];
 

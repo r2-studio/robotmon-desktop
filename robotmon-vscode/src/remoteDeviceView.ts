@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
+import { Config } from './config';
 import { RemoteDeviceProvider } from './remoteDeviceProvider';
-import { RemoteDeviceUtils } from './remoteDeviceUtils';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
 import { ScreenUtilsPanel } from './screenUtilsPanel'
@@ -94,7 +96,7 @@ export class RemoteDeviceView {
         return;
     }
     for (let device of this.mSelections) {
-      RemoteDeviceUtils.runScriptFromEditor(device, script).then(() => {
+      RemoteDeviceView.runScriptFromEditor(device, script).then(() => {
         vscode.window.showInformationMessage(`${Message.runScriptSuccess} ${device.ip}`);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.runScriptFailure} ${device.ip} ${e}`);
@@ -134,7 +136,7 @@ export class RemoteDeviceView {
 
   public screenshot() {
     for (let device of this.mSelections) {
-      RemoteDeviceUtils.screenshot(device).then(() => {
+      RemoteDeviceView.screenshot(device).then(() => {
         vscode.window.showInformationMessage(`${Message.screenshotSuccess} ${device.ip}`);
       }, (e) => {
         vscode.window.showWarningMessage(`${Message.screenshotFailure} ${device.ip} ${e}`);
@@ -268,6 +270,55 @@ export class RemoteDeviceView {
       }
     }
     this.mSettingItem.show();
+  }
+
+  static runScriptFromEditor(device: RemoteDevice, script: string | undefined = undefined) {
+    return new Promise<string>((resolve, reject) => {
+      if (script == undefined) {
+        const editor = vscode.window.activeTextEditor;
+        if (editor == undefined) {
+          return reject(Message.notifyNoEditor);
+        }
+        script = editor.document.getText();
+        if (script == "" || editor.document.languageId == "Log") {
+          return reject(Message.notifyScriptEmpty);
+        }
+      }
+      device.runScriptAsync(script).then(() => {
+        return resolve("");
+      }, (e: string) => {
+        return reject(e);
+      });
+    });
+  }
+
+  static screenshot(device: RemoteDevice): Thenable<string> {
+    return new Promise<string>((resolve, reject) => {
+      const localPath = vscode.workspace.rootPath;
+      if (localPath == undefined) {
+        return reject(Message.notifyOpenFolder);
+      }
+      const screenshotPath = path.join(localPath, 'screenshot');
+      if (!fs.existsSync(screenshotPath)) {
+        fs.mkdirSync(screenshotPath);
+      }
+      const resizeWidth = Math.floor(device.width * Config.getConfig().screenshotSizeRatio);
+      const resizeHeight = Math.floor(device.height * Config.getConfig().screenshotSizeRatio);
+      const quality = Config.getConfig().screenshotQuality;
+      device.getScreenshot(0, 0, device.width, device.height, resizeWidth, resizeHeight, quality, false)
+      .then((bs) => {
+        const filename = Date.now().toString() + '.jpg'; 
+        const fullpath = path.join(screenshotPath, filename);
+        console.log(fullpath);
+        fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
+        // const webviewPanel = vscode.window.createWebviewPanel("", filename, vscode.ViewColumn.Active);
+        // webviewPanel.webview.html = "Hello";
+        return resolve(Message.screenshotSuccess);
+      })
+      .catch((e: string) => {
+        return reject(e);
+      });
+    });
   }
 
 }
