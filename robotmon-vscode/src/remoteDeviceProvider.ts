@@ -12,7 +12,7 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
   private mDevices: Array<RemoteDevice> = [];
 
   constructor() {
-    if (vscode.workspace.getWorkspaceFolder == undefined) {
+    if (vscode.workspace.rootPath == undefined) {
       vscode.window.showWarningMessage(Message.notifyOpenFolder);
     }
     this.startScanBroadcast();

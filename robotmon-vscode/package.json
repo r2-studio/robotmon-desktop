@@ -13,7 +13,7 @@
         "onCommand:extension.sayHello",
         "onView:localDeviceView",
         "onView:remoteDeviceView",
-        "onView:assetManager",
+        "onView:assetsView",
         "onView:functionHints"
     ],
     "main": "./out/extension",
@@ -96,7 +96,7 @@
                 }
             },
             {
-                "command": "assetManager.refresh",
+                "command": "assetsView.refresh",
                 "title": "refresh assets",
                 "icon": {
                     "light": "res/light_refresh.svg",
@@ -162,6 +162,10 @@
                 {
                     "id": "remoteDeviceView",
                     "name": "Remote Device"
+                },
+                {
+                    "id": "assetsView",
+                    "name": "Assets"
                 }
             ]
         },

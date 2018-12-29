@@ -4,8 +4,9 @@
 import * as vscode from 'vscode';
 
 import { grpc } from "grpc-web-client";
-import { RemoteDeviceView } from './remoteDeviceView';
 import { LocalDeviceView } from './localDeviceView';
+import { RemoteDeviceView } from './remoteDeviceView';
+import { AssetsView } from './assetsView';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { Config } from './config';
 // import { RemoteDeviceFunc } from './remoteDeviceController';
@@ -15,14 +16,19 @@ import { Config } from './config';
 export function activate(context: vscode.ExtensionContext) {
     grpc.setDefaultTransport(NodeHttpTransport());
 
-    // New Local Device Menu
+    // New Local Device View
     const localDeviceView = new LocalDeviceView();
     let disposable = vscode.Disposable.from(localDeviceView);
     context.subscriptions.push(disposable);
 
-    // New Remote Device Menu
+    // New Remote Device View
     const remoteDeviceView = new RemoteDeviceView();
     disposable = vscode.Disposable.from(remoteDeviceView);
+    context.subscriptions.push(disposable);
+
+    // New Assets View
+    const asstesView = new AssetsView();
+    disposable = vscode.Disposable.from(asstesView);
     context.subscriptions.push(disposable);
 
     // Config - openSettings
