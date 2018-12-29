@@ -45,6 +45,9 @@
           border: 0px;
           color: white;
         }
+        #cropName {
+          width: 64px;
+        }
         .controlButtons {
           display: inline;
           background-color: rgba(255, 0, 0, 0.1);
@@ -88,6 +91,8 @@
           <span id="cropImage" class="disable"><i class="fas fa-crop-alt"></i></span>
           Crop Resize Ratio 
           <input type="text" id="resizeRatio" class="cropText" value="1.0" placeholder="0~1" />
+          Image Prefix
+          <input type="text" id="cropName" class="cropText" value="" placeholder="name" />
         </div>
         <br />
         <div class="mouseEvent">
@@ -212,6 +217,7 @@
           if (rectW > 0 && rectH > 0) {
             vscode.postMessage({
               command: 'corpImage',
+              name: $("#cropName").val() || Date.now(),
               resizeRatio: +$("#resizeRatio").val(),
               cx: +$("#cropX1").val(),
               cy: +$("#cropY1").val(),

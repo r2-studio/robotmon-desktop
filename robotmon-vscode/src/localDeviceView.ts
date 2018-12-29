@@ -65,6 +65,7 @@ export class LocalDeviceView {
 
   public dispose() {
     vscode.Disposable.from(...this.mDisposables).dispose();
+    this.mLocalDeviceView.dispose();
   }
 
   public installAdb() {

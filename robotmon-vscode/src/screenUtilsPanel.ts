@@ -54,15 +54,16 @@ export class ScreenUtilsPanel {
         if (localPath == undefined) {
           return vscode.window.showWarningMessage(Message.notifyOpenFolder);
         }
-        const imagePath = path.join(localPath, 'images');
+        const imagePath = path.join(localPath, 'assets');
         if (!fs.existsSync(imagePath)) {
           fs.mkdirSync(imagePath);
         }
         const c = Config.getConfig();
+        const name = message.name || Date.now().toString();
         const rw = message.cw * message.resizeRatio;
         const rh = message.ch * message.resizeRatio;
         this.mDevice.getScreenshot(message.cx, message.cy, message.cw, message.ch, rw, rh, c.syncScreenImageQuality, false).then((bs) => {
-          const filename = `${Date.now().toString()}_${rw}x${rh}_xy${message.cx}x${message.cy}_wh${message.cw}x${message.ch}.jpg`; 
+          const filename = `${name}_${rw}x${rh}_xy${message.cx}x${message.cy}_wh${message.cw}x${message.ch}.jpg`; 
           const fullpath = path.join(imagePath, filename);
           fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
           vscode.window.showInformationMessage(Message.screenshotSuccess);
