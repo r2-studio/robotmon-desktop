@@ -8,6 +8,7 @@
         html, body {
           height: 100%;
           margin: 0px;
+          padding: 2px;
         }
         #container {
           width: 100%;
@@ -119,6 +120,7 @@
     </div>
 
     <script>
+      const vscode = acquireVsCodeApi();
       let amplification = 1.0;
       let deviceWidth = 0;
       let deviceHeight = 0;
@@ -132,7 +134,6 @@
       let posY = 0;
       
       (function(){
-        const vscode = acquireVsCodeApi();
         console.log($("#preview").width(), $("#preview").height());
         vscode.postMessage({command: 'ready'});
         // controller

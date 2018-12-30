@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+      <style>
+        html, body {
+          height: 100%;
+          margin: 0px;
+          padding: 2px;
+        }
+        #container {
+          width: 100%;
+          height: 100%;
+          font-size: 11px;
+        }
+        .asset {
+          text-align: center;
+          padding: 2px;
+          border-bottom: 1px gray solid;
+        }
+        .asset:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      </style>
+    </head>
+  <body unselectable="on">
+    <div id="container">
+      <div id="assets">
+        
+      </div>
+    </div>
+
+    <script>
+      const vscode = acquireVsCodeApi();
+      const ImageExtenstions = ['.png', '.jpg', '.jpeg', '.bmp'];
+      (function() {
+        vscode.postMessage({command: 'ready'});
+      })();
+
+      function newAssetInfo(title1, content1, title2, content2) {
+        return $(`
+          <div class="assetInfo">
+            {<span class="assetInfoItemTitle">${title1}<span>: <span class="assetInfoItemContent">${content1}</span>, 
+            <span class="assetInfoItemTitle">${title2}<span>: <span class="assetInfoItemContent">${content2}</span>}
+          </div>`);
+      }
+
+      window.addEventListener('message', event => {
+        const message = event.data;
+        switch (message.command) {
+        case 'clearAssets':
+          $("#assets").html("");
+          break;
+        case 'addNewAsset':
+          const assetItem = message.asset;
+          const jAssetDiv = $(`<div class="asset"></div>`);
+          const jAssetTitle = $(`<div class="assetTitle">${assetItem.filename}</div>`);
+          jAssetDiv.append(jAssetTitle);
+          if (ImageExtenstions.indexOf(assetItem.fileExt) != -1) {
+            if (assetItem.width != 0 && assetItem.height != 0) {
+              jAssetDiv.append(newAssetInfo("width", assetItem.width, "height", assetItem.height));
+            }
+            if (assetItem.originX != 0 && assetItem.originY != 0) {
+              jAssetDiv.append(newAssetInfo("originX", assetItem.originX, "originY", assetItem.originY));
+            }
+            if (assetItem.originW != 0 && assetItem.originH != 0) {
+              jAssetDiv.append(newAssetInfo("originW", assetItem.originW, "originH", assetItem.originH));
+            }
+            const imgType = assetItem.fileExt.substr(1);
+            const jImg = $(`<img id="${assetItem.filename}" class="assetImg" src="data:image/${imgType};base64,${assetItem.base64}" />`);
+            jImg.dblclick(() => {
+              console.log("dblclick");
+              vscode.postMessage({command: 'insertCode', filename: assetItem.filename});
+            });
+            jAssetDiv.append(jImg);
+          }
+          $("#assets").append(jAssetDiv);
+          break;
+        }
+      });
+
+    </script>
+  </body>
+</html>

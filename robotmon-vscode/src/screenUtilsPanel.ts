@@ -31,6 +31,7 @@ export class ScreenUtilsPanel {
   }
 
   private initWebviewContent() {
+    // TODO check screen rotation and reset screen size
     const htmlPath = path.join(__filename, '..', '..', 'res', 'html', 'screenUtilsPanel.html');
     this.mWebviewPanel.webview.html = fs.readFileSync(htmlPath).toString();
     this.mWebviewPanel.webview.onDidReceiveMessage(message => {
@@ -67,6 +68,7 @@ export class ScreenUtilsPanel {
           const fullpath = path.join(imagePath, filename);
           fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
           vscode.window.showInformationMessage(Message.screenshotSuccess);
+          vscode.commands.executeCommand("assetsView.refresh");
         });
         break;
       case 'tapDown':

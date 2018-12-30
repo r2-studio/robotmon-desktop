@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { NotFound, ImageExtenstions } from './constVariables';
+
 export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
   private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem> = new vscode.EventEmitter<vscode.TreeItem>();
@@ -26,27 +28,43 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
     this._onDidChangeTreeData.fire();
   }
 
-  private getAssets(): Thenable<vscode.TreeItem[]> {
-    this.mAssets = [];
+  public getAssetsFilenames(extFilters: Array<string> | undefined = undefined): Array<string> {
+    const files: Array<string> = [];
     if (vscode.workspace.rootPath == undefined) {
-      return Promise.resolve([]);
+      return files;
     }
     const assetsPath = path.join(vscode.workspace.rootPath, 'assets');
     if (!fs.existsSync(assetsPath)) {
-      return Promise.resolve([]);
+      return files;
     }
-    return new Promise((resolve, reject) => {
-      const filenames = fs.readdirSync(assetsPath, {encoding: 'utf8'});
-      for (let filename of filenames) {
-        const filePath = path.join(assetsPath, filename);
-        if (fs.lstatSync(filePath).isFile()) {
-          const item = new vscode.TreeItem(filename, vscode.TreeItemCollapsibleState.None);
-          item.id = filename;
-          item.tooltip = filename;
-          this.mAssets.push(item);
+    const filenames = fs.readdirSync(assetsPath, {encoding: 'utf8'});
+    for (let filename of filenames) {
+      if (extFilters != undefined && extFilters.length > 0) {
+        if (extFilters.indexOf(path.extname(filename)) == NotFound) {
+          continue;
         }
       }
-      resolve(this.mAssets);
+      const filePath = path.join(assetsPath, filename);
+      if (fs.lstatSync(filePath).isFile()) {
+        files.push(filePath);
+      }
+    }
+    files.reverse();
+    return files;
+  }
+
+  private getAssets(): Thenable<vscode.TreeItem[]> {
+    this.mAssets = [];
+    return new Promise((resolve) => {
+      const filenames = this.getAssetsFilenames(ImageExtenstions);
+      for (let filename of filenames) {
+        const basename = path.basename(filename);
+        const item = new vscode.TreeItem(basename, vscode.TreeItemCollapsibleState.None);
+        item.id = basename;
+        item.tooltip = basename;
+        this.mAssets.push(item);
+        resolve(this.mAssets);
+      }
     });
   }
 

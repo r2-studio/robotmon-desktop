@@ -29,3 +29,4 @@ export enum Message {
 }
 
 export const NotFound = -1;
+export const ImageExtenstions = ['.png', '.jpg', '.jpeg', '.bmp'];
