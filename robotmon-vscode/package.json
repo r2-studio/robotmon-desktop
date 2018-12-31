@@ -14,6 +14,7 @@
         "onView:localDeviceView",
         "onView:remoteDeviceView",
         "onView:assetsView",
+        "onView:snippetView",
         "onView:functionHints"
     ],
     "main": "./out/extension",
@@ -120,6 +121,14 @@
                 }
             },
             {
+                "command": "snippetViewItem.insert",
+                "title": "insert robotmon function to code",
+                "icon": {
+                    "light": "res/light_install.svg",
+                    "dark": "res/dark_install.svg"
+                }
+            },
+            {
                 "command": "functionHints.inject",
                 "title": "inject function into code",
                 "icon": {
@@ -182,6 +191,10 @@
                 {
                     "id": "assetsView",
                     "name": "Assets"
+                },
+                {
+                    "id": "snippetView",
+                    "name": "Snippets"
                 }
             ]
         },
@@ -254,6 +267,11 @@
                 {
                     "command": "assetsViewItem.insert",
                     "when": "view == assetsView",
+                    "group": "inline"
+                },
+                {
+                    "command": "snippetViewItem.insert",
+                    "when": "viewItem == snippetItem",
                     "group": "inline"
                 }
             ]

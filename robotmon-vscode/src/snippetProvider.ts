@@ -3,50 +3,69 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
-export class SnippetProvider {
+export class SnippetProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
+
+  private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem> = new vscode.EventEmitter<vscode.TreeItem>();
+	readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem> = this._onDidChangeTreeData.event;
 
   private mDisposables: Array<vscode.Disposable> = [];
-  private mLanguage: string = "en";
+  
   private mRawApiDoc: any;
+  private mRawApiTreeTitle: vscode.TreeItem;
+  private mRawApiTreeItems: Array<vscode.TreeItem>;
 
   constructor() {
-    let disposable = vscode.languages.registerCompletionItemProvider({language: 'javascript', scheme: 'file'}, this);
-    this.mDisposables.push(disposable);
-
     const rawApiPath = path.join(__filename, '..', '..', 'res', 'snippetRawAPI.yml');
     this.mRawApiDoc = yaml.safeLoad(fs.readFileSync(rawApiPath, 'utf8'));
-    // this.getRawApiSnippets(this.mRawApiDoc);
+
+    // prepare tree items
+    this.mRawApiTreeTitle = new vscode.TreeItem("RawAPI", vscode.TreeItemCollapsibleState.Expanded);
+    this.mRawApiTreeItems = this.getTreeItems(this.mRawApiDoc);
   }
 
-  private getRawApiSnippets(doc: any, eol: vscode.EndOfLine = vscode.EndOfLine.CRLF) {
-    const ending = (eol == vscode.EndOfLine.CRLF) ? `\r\n` : `\n`;
-    const snippets: Array<vscode.CompletionItem> = [];
+  public getRawApiDoc(): any {
+    return this.mRawApiDoc;
+  }
+
+  public getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
+    return element;
+  }
+
+  public getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+    if (element == undefined) {
+      return Promise.resolve([
+        this.mRawApiTreeTitle
+      ]);
+    } else if (element == this.mRawApiTreeTitle) {
+      return Promise.resolve(this.mRawApiTreeItems);
+    }
+    return Promise.resolve([]);
+  }
+
+  private getTreeItems(doc: any): Array<vscode.TreeItem> {
+    const items: Array<vscode.TreeItem> = [];
     for (const key in doc) {
       let scopes = key.split(':');
-      const functionName = scopes[scopes.length - 1];
-      const completionItem = new vscode.CompletionItem(functionName, vscode.CompletionItemKind.Function);
-      completionItem.filterText = scopes.join('_');
-      completionItem.insertText = new vscode.SnippetString(doc[key].body.join(ending));
-      if (doc[key][`description_${this.mLanguage}`] != undefined) {
-        completionItem.documentation = new vscode.MarkdownString(doc[key][`description_${this.mLanguage}`]);
-      } else {
-        completionItem.documentation = new vscode.MarkdownString(doc[key].description || "");
-      }
-      completionItem.sortText = functionName;
-      snippets.push(completionItem);
+      const functionName = scopes[scopes.length - 1] as string;
+      const item = new vscode.TreeItem(functionName, vscode.TreeItemCollapsibleState.None);
+      item.contextValue = "snippetItem";
+      const description = doc[key].description || "";
+      item.description = description.substring(description.indexOf("("), description.indexOf(")")+1);
+      item.tooltip = description;
+      items.push(item);
     }
-    return snippets;
+    return items;
   }
 
-  provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-    const rawApiSnippets = this.getRawApiSnippets(this.mRawApiDoc, document.eol);
-
-    const simpleCompletion = new vscode.CompletionItem('openImage2', vscode.CompletionItemKind.Function);
-    simpleCompletion.insertText = new vscode.SnippetString('var ${1:varName} = openimage(${2|".jpg",getStoragePath()|});');
-    simpleCompletion.filterText = "robotmon_raw_api_openImage2";
-
-    // return rawApiSnippets;
-    return [simpleCompletion, ...rawApiSnippets];
+  public searchDocBody(searchFunction: string): string[] {
+    for (const key in this.mRawApiDoc) {
+      let scopes = key.split(':');
+      const functionName = scopes[scopes.length - 1] as string;
+      if (functionName == searchFunction) {
+        return this.mRawApiDoc[key].body as string[];
+      }
+    }
+    return [];
   }
 
   public dispose() {
