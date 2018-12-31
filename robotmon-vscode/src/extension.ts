@@ -9,6 +9,7 @@ import { RemoteDeviceView } from './remoteDeviceView';
 import { AssetsView } from './assetsView';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { Config } from './config';
+import { SnippetProvider } from './snippetProvider';
 // import { RemoteDeviceFunc } from './remoteDeviceController';
 
 // this method is called when your extension is activated
@@ -35,6 +36,10 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('config.openSettings', () => {
         Config.getConfig().openSetting();
     });
+    context.subscriptions.push(disposable);
+
+    const snippetProvider = new SnippetProvider();
+    disposable = vscode.Disposable.from(snippetProvider);
     context.subscriptions.push(disposable);
 }
 

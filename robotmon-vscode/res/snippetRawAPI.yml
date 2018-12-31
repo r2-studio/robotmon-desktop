@@ -1,0 +1,346 @@
+robotmon_raw:getScreenSize:
+  body:
+    - var ${1:whSize} = getScreenSize();
+    - var width = ${1}.width;
+    - var height = ${1}.height;
+  description: "#### `getScreenSize()`
+\n
+\nReturns `Object` - `{width: Integer, height: Integer}`
+\n
+\n```javascript
+\nvar sizeObj = getScreenSize();
+\nconsole.log(sizeObj.width, sizeObj.height);
+\n// 1080 1920
+\n```"
+
+robotmon_raw:getScreenshot:
+  body:
+    - var ${1:img} = getScreenshot();
+    - 
+    - releaseImage(${1});
+  description: "#### `getScreenshot()`
+\n
+\nReturns `Integer` - The image pointer
+\n
+\n```javascript
+\nvar img = getScreenshot();
+\nconsole.log(img);
+\n// 122344533 <- image pointer
+\nreleaseImage(img); // Don't forgot release a pointer
+\n```"
+
+robotmon_raw:getScreenshotModify:
+  body:
+    - var ${1:img} = getScreenshotModify(${2:cropX}, ${3:cropY}, ${4:cropWidth}, ${5:cropHeight}, ${6:resizeWidth}, ${7:resizeHeight}, ${8:quality}); 
+    - 
+    - releaseImage(${1});
+  description: "#### `getScreenshotModify(cropX, cropY, cropWidth, cropHeight, resizeWidth, resizeHeight, qualitys)`
+\n
+\nGet screenshot, crop and resize. For speeding up screenshot.
+\n
+\n* `cropX` Integer
+\n* `cropY` Integer
+\n* `cropWidth`  Integer
+\n* `cropHeight` Integer
+\n* `resizeWidth` Integer
+\n* `resizeHeight` Integer
+\n* `quality` Integer
+\n
+\nReturns `Integer` - The image pointer
+\n
+\n```javascript
+\nvar image = getScreenshotModify(200, 200, 100, 100, 50, 50, 80);
+\nconsole.log(image); // image width = 50, height = 50 
+\n// 12333122
+\nreleaseImage(image);
+\n```"
+
+robotmon_raw:execute:
+  body:
+    - var ${1:lines} = execute(${2:command});
+  description: "#### `execute(command)`
+\n
+\nCall exec command in android system. It's permission is same as `adb shell`
+\n
+\n* `command` String
+\n
+\nReturns `String` - The result of the execution
+\n
+\n```javascript
+\nvar result = execute(\"ls -al /sdcard\");
+\nconsole.log(result);
+\n// drwxr-xr-x   2 root  root    64B 12 14 23:44 Robotmon
+\n```"
+
+robotmon_raw:tap:
+  body:
+    - tap(${1:x}, ${2:y}, ${3:during});
+  description: ""
+
+robotmon_raw:tapDown:
+  body:
+    - tapDown(${1:x}, ${2:y}, ${3:during}, ${4:id});
+  description: ""
+
+robotmon_raw:tapUp:
+  body:
+    - tapUp(${1:x}, ${2:y}, ${3:during}, ${4:id});
+  description: ""
+
+robotmon_raw:moveTo:
+  body:
+    - moveTo(${1:x}, ${2:y}, ${3:during}, ${4:id});
+  description: ""
+
+robotmon_raw:swipe:
+  body:
+    - swipe(${1:x1}, ${2:y1}, ${3:x2}, ${4:y2}, ${5:during});
+  description: ""
+
+robotmon_raw:keycode:
+  body:
+    - keycode(${1|"KEYCODE_","KEYCODE_HOME","KEYCODE_BACK","KEYCODE_MENU","KEYCODE_VOLUME_UP","KEYCODE_VOLUME_DOWN"|}, ${2:during});
+  description: ""
+
+robotmon_raw:typing:
+  body:
+    - typing(${1:words}, ${2:during});
+  description: ""
+
+robotmon_raw:clone:
+  body:
+    - var ${1:copyImg} = clone(${2:sourceImg});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:smooth:
+  body:
+    - smooth(${1:sourceImage}, ${2|smoothType,0,1,2,3,4|}, ${3:size});
+  description: ""
+
+robotmon_raw:convertColor:
+  body:
+    - convertColor(${1:sourceImage}, ${2|toType,40,52|});
+  description: ""
+
+robotmon_raw:bgrToGray:
+  body:
+    - var ${1:grayImage} = bgrToGray(${2:sourceImage});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:absDiff:
+  body:
+    - var ${1:diffMat} = absDiff(${2:sourceImage}, ${3:targetImage});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:threshold:
+  body:
+    - threshold(${1:sourceImage}, ${2:threshold}, ${3:maxThreshold}, 0);
+  description: ""
+
+robotmon_raw:eroid:
+  body:
+    - eroid(${1:sourceImage}, ${2:width}, ${3:height}, ${4:x}, ${5:y});
+  description: ""
+
+robotmon_raw:dilate:
+  body:
+    - dilate(${1:sourceImage}, ${2:width}, ${3:height}, ${4:x}, ${5:y});
+  description: ""
+
+robotmon_raw:inRange:
+  body:
+    - var ${1:filteredImage} = inRange(${2:sourceImage}, ${3:minB}, ${4:minG}, ${5:minR}, ${6:minA}, ${7:maxB}, ${8:maxG}, ${9:maxR}, ${10:maxA});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:outRange:
+  body:
+    - var ${1:filteredImage} = outRange(${2:sourceImage}, ${3:minB}, ${4:minG}, ${5:minR}, ${6:minA}, ${7:maxB}, ${8:maxG}, ${9:maxR}, ${10:maxA});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:cloneWithMask:
+  body:
+    - var ${1:maskedImage} = cloneWithMask(${2:sourceImage}, ${3:maskMat});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:houghCircles:
+  body:
+    - var ${1:pointsObj} = houghCircles(${2:sourceImage}, 3, ${3:dp}, ${4:p1}, ${5:p2}, ${6:minR}, ${7:maxR});
+  description: ""
+
+robotmon_raw:canny:
+  body:
+    - var ${1:cannyMat} = canny(${2:sourceImage}, ${3:min}, ${4:max}, ${5:apertureSize});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:findContours:
+  body:
+    - var ${1:resultContours} = findContours(${2:cannyMat}, ${3:minArea}, ${4:maxArea});
+  description: ""
+
+robotmon_raw:drawCircle:
+  body:
+    - drawCircle(${1:sourceImage}, ${2:x}, ${3:y}, ${4:radius}, ${5:r}, ${6:g}, ${7:b}, ${8:a});
+  description: ""
+
+robotmon_raw:getIdentityScore:
+  body:
+    - var ${1:score} = getIdentityScore(${2:sourceImage1}, ${3:sourceImage2});
+  description: ""
+
+robotmon_raw:cropImage:
+  body:
+    - var ${1:croppedImage} = cropImage(${2:sourceImage}, ${3:x}, ${4:y}, ${5:width}, ${6:height});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:findImage:
+  body:
+    - var ${1:foundResult} = findImage(${2:sourceImage}, ${3:targetImage});
+    - var foundScore = ${1}.score;
+    - var foundX = ${1}.x;
+    - var foundY = ${1}.y;
+  description: ""
+
+robotmon_raw:findImages:
+  body:
+    - var ${1:foundResults} = findImages(${2:sourceImage}, ${3:targetImage}, ${4:scoreLimit}, ${5:resultCountLimit}, ${6|true,false|});
+    - for (var k in ${1}) {
+    - "\tvar ${1}Item = ${1}[k];"
+    - "\tvar score = ${1}Item.score;"
+    - "\tvar x = ${1}Item.x;"
+    - "\tvar y = ${1}Item.y;"
+    - "}"
+  description: ""
+
+robotmon_raw:resizeImage:
+  body:
+    - var ${1:resizedImage} = resizeImage(${2:sourceImage}, ${3:width}, ${4:height});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:releaseImage:
+  body:
+    - releaseImage(${1:image});
+  description: ""
+
+robotmon_raw:getImageColor:
+  body:
+    - var ${1:color} = getImageColor(${1:sourceImage}, ${2:x}, ${3:y});
+    - var r = ${1}.r;
+    - var g = ${1}.g;
+    - var b = ${1}.b;
+  description: ""
+
+robotmon_raw:getImageSize:
+  body:
+    - var ${1:whSize} = getImageSize(${2:sourceImage});
+    - var width = ${1}.width;
+    - var height = ${1}.height;
+  description: ""
+
+robotmon_raw:saveImage:
+  body:
+    - saveImage(${1:sourceImage}, ${2|filename,getStoragePath()+'/filename'|}+'.jpg');
+  description: ""
+
+robotmon_raw:openImage:
+  body:
+    - var ${1:image} = openImage(${2|filename,getStoragePath()+'/filename'|}+'.jpg');
+    -
+    - releaseImage(${1});
+  description: ""
+ 
+robotmon_raw:sleep:
+  body:
+    - sleep(${1:milliseconds});
+  description: ""
+
+robotmon_raw:getStoragePath:
+  body:
+    - var ${1:storagePath} = getStoragePath();
+  description: ""
+
+robotmon_raw:getImageFromURL:
+  body:
+    - var ${1:image} = getImageFromURL("${2:imageUrl}");
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:getImageFromBase64:
+  body:
+    - var ${1:image} = getImageFromBase64(${2:base64String});
+    -
+    - releaseImage(${1});
+  description: ""
+
+robotmon_raw:getBase64FromImage:
+  body:
+    - var ${1:base64String} = getBase64FromImage(${2:image});
+  description: ""
+
+robotmon_raw:readFile:
+  body:
+    - var ${1:text} = readFile(${2|filename,getStoragePath()+'/filename'|}+'.txt');
+  description: ""
+
+robotmon_raw:writeFile:
+  body:
+    - writeFile(${1|filename,getStoragePath()+'/filename'|}+'.txt', ${2:text});
+  description: ""
+
+robotmon_raw:encrypt:
+  body:
+    - var ${1:encryptedString} = encrypt(${2:string})
+  description: ""
+
+robotmon_raw:runEncryptedScript:
+  body:
+    - runEncryptedScript(${1:encryptedScript});
+  description: ""
+
+robotmon_raw:runScript:
+  body:
+    - runScript(${1:script});
+  description: ""
+
+robotmon_raw:httpClient:
+  body:
+    - var ${1:content} = httpClient(${2|'GET','POST'|}, ${3:url}, ${4|'',bodyString|}, ${5|{},headerObject|});
+  description: ""
+
+robotmon_raw:importJS:
+  body:
+    - importJS(${1:library});
+  description: ""
+
+robotmon_raw:getVirtualButtonHeight:
+  body:
+    - var ${1:height) = getVirtualButtonHeight();
+  description: ""
+
+# robotmon_raw:example:
+#   body:
+#     -
+#   description: ""
+
+# robotmon_raw:example:
+#   body:
+#     - example(${1:sourceImage}, ${2:}, ${3:}, ${4:}, ${5:}, ${6:}, ${7:}, ${8:}, ${9:});
+#   description: ""
