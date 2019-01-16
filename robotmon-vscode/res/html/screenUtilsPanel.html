@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+      <style>
+        html, body {
+          height: 100%;
+          margin: 0px;
+          padding: 2px;
+        }
+        #container {
+          width: 100%;
+          height: 100%;
+        }
+        #positionCol, #positionRow {
+          pointer-events: none;
+          position: absolute;
+          background: blue;
+          width: 1px;
+          height: 1px;
+          left: -1px;
+          top: -1px;
+        }
+        #rectXY {
+          pointer-events: none;
+          position: absolute;
+          border: 1px solid #aa1e1e;
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        #controlPanel {
+          position: fixed;
+        }
+        #preview {
+          width: 99%;
+          height: 99%;
+        }
+        #screenImageContainer {
+          max-width: 300%;
+          max-height: 300%;
+        }
+        .cropText {
+          width: 28px;
+          background-color: #1e1e1e;
+          border: 0px;
+          color: white;
+        }
+        #cropName {
+          width: 64px;
+        }
+        .controlButtons {
+          display: inline;
+          background-color: rgba(255, 0, 0, 0.1);
+        }
+        .mouseEvent {
+          display: inline;
+          background-color: rgba(0, 255, 0, 0.1);
+        }
+        .controlButtons i {
+          font-size: 18px;
+        }
+        .controlButtons i:hover {
+          color: gray;
+        }
+        .controlButtons i:active {
+          color: aquamarine;
+        }
+        #stopSyncScreen i:hover {
+          color: hotpink;
+        }
+        #stopSyncScreen {
+          color: indianred;
+        }
+        .disable {
+          color: #666;
+        }
+        .enable {
+          color: #FFF;
+        }
+      </style>
+    </head>
+  <body unselectable="on" onselectstart="return false;" onresize="updatePreviewSize()">
+    <div id="container">
+      <div id="controlPanel">
+        <div class="controlButtons">
+          Controller:
+          <span id="zoomIn"><i class="fas fa-search-plus"></i></i></span>
+          <span id="zoomOut"><i class="fas fa-search-minus"></i></span>
+          <span id="startSyncScreen"><i class="fas fa-play-circle"></i></span>
+          <span id="stopSyncScreen" style="display: none;"><i class="fas fa-stop-circle"></i></span>
+          <span id="cropImage" class="disable"><i class="fas fa-crop-alt"></i></span>
+          Crop Resize Ratio 
+          <input type="text" id="resizeRatio" class="cropText" value="1.0" placeholder="0~1" />
+          Image Prefix
+          <input type="text" id="cropName" class="cropText" value="" placeholder="name" />
+        </div>
+        <br />
+        <div class="mouseEvent">
+          Mouse:
+          <input type="radio" name="mouseMode" value="colorMode" checked /> Color Info
+          <input type="radio" name="mouseMode" value="controlMode" /> Control
+          <input type="radio" name="mouseMode" value="cropMode" /> Crop Image
+          <input type="text" id="cropX1" class="cropText" value="" placeholder="X" />
+          <input type="text" id="cropY1" class="cropText" value="" placeholder="Y" />
+          <input type="text" id="cropX2" class="cropText" value="" placeholder="to X" />
+          <input type="text" id="cropY2" class="cropText" value="" placeholder="to Y" />
+          XY: (<span id="mx">0</span>, <span id="my">0</span>)
+        </div>
+      </div>
+      <!-- <div style="height: 40px;"></div> -->
+      <div id="preview" style="padding-top: 40px;">
+        <div id="screenImageContainer">
+          <img id="screenImage" draggable="false"/>
+          <div id="positionCol"></div>
+          <div id="positionRow"></div>
+          <div id="rectXY"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const vscode = acquireVsCodeApi();
+      let amplification = 1.0;
+      let deviceWidth = 0;
+      let deviceHeight = 0;
+      let imageWidth = 0;
+      let imageHeight = 0;
+      let isSyncScreen = false;
+      let isMouseDown = false;
+      let mouseMode = 'colorMode';
+      
+      let posX = 0;
+      let posY = 0;
+      
+      (function(){
+        console.log($("#preview").width(), $("#preview").height());
+        vscode.postMessage({command: 'ready'});
+        // controller
+        $("#startSyncScreen, #stopSyncScreen").click(() => {
+          if (isSyncScreen) {
+            $("#startSyncScreen").show();
+            $("#stopSyncScreen").hide();
+            isSyncScreen = false;
+            vscode.postMessage({command: 'stopSyncScreen'});
+          } else {
+            $("#startSyncScreen").hide();
+            $("#stopSyncScreen").show();
+            isSyncScreen = true;
+            vscode.postMessage({command: 'startSyncScreen'});
+          }
+        });
+        $("#zoomIn").click(() => {
+          amplification += 0.1;
+          updatePreviewSize();
+          updateRect();
+        });
+        $("#zoomOut").click(() => {
+          amplification -= 0.1;
+          updatePreviewSize();
+          updateRect();
+        });
+        // mouse functions
+        $("input[name=mouseMode]").click(function(){
+          mouseMode = $(this).val();
+        });
+        // preview
+        $("#screenImageContainer").mousemove((e) => {
+          const x = Math.floor(e.offsetX / imageWidth * deviceWidth);
+          const y = Math.floor(e.offsetY / imageHeight * deviceHeight);
+          if (x != 0) {posX = x;}
+          if (y != 0) {posY = y;}
+          updateMousePos();
+          $("#positionRow").offset({top: e.target.y + e.offsetY - 1, left: e.target.x});
+          $("#positionCol").offset({top: e.target.y, left: e.target.x + e.offsetX - 1});
+          if (isMouseDown && mouseMode == 'cropMode') {
+            $("#rectXY").width(e.target.x + e.offsetX - $("#rectXY").offset().left - 2);
+            $("#rectXY").height(e.target.y + e.offsetY - $("#rectXY").offset().top - 2);
+          } else if (isMouseDown && mouseMode == 'controlMode') {
+            vscode.postMessage({command: 'moveTo', x: +posX, y: +posY});
+          }
+        });
+        $("#screenImageContainer").mousedown((e) => {
+          isMouseDown = true;
+          if (mouseMode == 'colorMode') {
+            vscode.postMessage({command: 'printInfo', x: +posX, y: +posY});
+          } else if (mouseMode == 'controlMode') {
+            vscode.postMessage({command: 'tapDown', x: +posX, y: +posY});
+          } else if (mouseMode == 'cropMode') {
+            $("#cropX1").val(posX);
+            $("#cropY1").val(posY);
+            $("#cropX2").val("");
+            $("#cropY2").val("");
+            $("#rectXY").offset({top: e.target.y + e.offsetY - 1, left: e.target.x + e.offsetX - 1});
+            $("#rectXY").width(0);
+            $("#rectXY").height(0);
+          }
+        });
+        $("#screenImageContainer").mouseup((e) => {
+          isMouseDown = false;
+          if (mouseMode == 'colorMode') {
+            // DO NOTHING
+          } else if (mouseMode == 'controlMode') {
+            vscode.postMessage({command: 'tapUp', x: +posX, y: +posY});
+          } else if (mouseMode == 'cropMode') {
+            $("#cropX2").val(posX);
+            $("#cropY2").val(posY);
+            if ($("#rectXY").width() > 0 && $("#rectXY").height() > 0) {
+              $("#cropImage").removeClass("disable").addClass("enable");
+            } else {
+              $("#cropImage").removeClass("enable").addClass("disable");
+            }
+          }
+        });
+        $("#cropImage").click(() => {
+          const rectW = $("#rectXY").width();
+          const rectH = $("#rectXY").height();
+          if (rectW > 0 && rectH > 0) {
+            vscode.postMessage({
+              command: 'corpImage',
+              name: $("#cropName").val() || Date.now(),
+              resizeRatio: +$("#resizeRatio").val(),
+              cx: +$("#cropX1").val(),
+              cy: +$("#cropY1").val(),
+              cw: +$("#cropX2").val() - +$("#cropX1").val(),
+              ch: +$("#cropY2").val() - +$("#cropY1").val(),
+            });
+          }
+        });
+        $("#cropX1, #cropX2, #cropY1, #cropY2").change(() => {
+          updateRect();
+        });
+      })();
+
+      function updateRect() {
+        const x1 = +$("#cropX1").val();
+        const y1 = +$("#cropY1").val();
+        const x2 = +$("#cropX2").val();
+        const y2 = +$("#cropY2").val();
+        if (x2 <= x1 || y2 <= y1) {
+          return;
+        }
+        const ix = Math.floor(x1 * imageWidth / deviceWidth);
+        const iy = Math.floor(y1 * imageHeight / deviceHeight);
+        const iw = Math.floor((x2 - x1) * imageWidth / deviceWidth);
+        const ih = Math.floor((y2 - y1) * imageHeight / deviceHeight);
+        $("#rectXY").offset({top: $("#screenImage").offset().top + iy, left: $("#screenImage").offset().left + ix});
+        $("#rectXY").width(iw);
+        $("#rectXY").height(ih);
+      }
+      
+      function updatePreviewSize(dw, dh) {
+        if (dw == undefined) dw = deviceWidth;
+        if (dh == undefined) dh = deviceHeight;
+        const pw = $("#preview").width();
+        const ph = $("#preview").height() - 40;
+        const dr = dw/dh;
+        const pr = pw/ph;
+        imageWidth = pw;
+        imageHeight = ph;
+        if (dr > pr) { // device width ratio > preview width ration, full width
+          imageWidth = pw;
+          imageHeight = imageWidth / dr;
+        } else { // device width ratio <= preview width ration, full height
+          imageHeight = ph;
+          imageWidth = imageHeight * dr;
+        }
+        imageWidth = Math.floor(imageWidth * amplification);
+        imageHeight = Math.floor(imageHeight * amplification);
+        $("#screenImageContainer").width(imageWidth);
+        $("#screenImageContainer").height(imageHeight);
+        $("#screenImage").width(imageWidth-2);
+        $("#screenImage").height(imageHeight-2);
+        $("#positionRow").width(imageWidth-2);
+        $("#positionCol").height(imageHeight-2);
+      }
+
+      function updateMousePos() {
+        $("#mx").html(posX);
+        $("#my").html(posY);
+      }
+
+      window.addEventListener('message', event => {
+        const message = event.data;
+        switch (message.command) {
+        case 'setScreenSize':
+          deviceWidth = message.width;
+          deviceHeight = message.height;
+          updatePreviewSize(deviceWidth, deviceHeight);
+          break;
+        case 'setScreenImage':
+          console.log(message);
+          $("#screenImage").attr("src", `data:image/png;base64,${message.base64}`);
+          break;
+        }
+      });
+
+    </script>
+  </body>
+</html>
