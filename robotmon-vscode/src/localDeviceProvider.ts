@@ -1,8 +1,12 @@
 import * as vscode from 'vscode';
 import { exec, execSync } from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
+import * as https from 'https';
+import * as process from 'process';
+import * as AdmZip from 'adm-zip';
 
-import { Message, NotFound } from './constVariables';
+import { Message, NotFound, ADBDownloadURL } from './constVariables';
 import { Config } from './config';
 import { LocalDevice } from './localDevice';
 import { OutputLogger } from './logger';
@@ -15,6 +19,19 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
 
   constructor() {
     this.findAdb();
+    if (this.mAdbPath === "") {
+      OutputLogger.default.debug(`adb currently not found`);
+      this.downloadAdb().then(() => {
+        this.findAdb();
+        if (this.mAdbPath !== "") {
+          OutputLogger.default.debug(`Found adb path: ${this.mAdbPath}`);
+        } else {
+          OutputLogger.default.debug(`adb not found, you should install adb your self`);
+        }
+      });
+    } else {
+      OutputLogger.default.debug(`Found adb path: ${this.mAdbPath}`);
+    }
   }
 
   public getTreeItem(element: LocalDevice): LocalDevice {
@@ -29,10 +46,59 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
   }
 
   private findAdb() {
+    if (vscode.workspace.rootPath !== undefined) {
+      const adbPath = path.join(vscode.workspace.rootPath, 'bin', 'adb');
+      if (fs.existsSync(adbPath)) {
+        this.mAdbPath = adbPath;
+        return;
+      }
+    }
     if (fs.existsSync(Config.getConfig().adbPath)) {
       return Config.getConfig().adbPath;
     }
     this.mAdbPath = execSync("which adb").toString().trim();
+  }
+
+  private downloadAdb() {
+    return new Promise(function(resolve, reject) {
+      if (vscode.workspace.rootPath === undefined) {
+        return reject();
+      }
+      const plateform = process.platform;
+      let downloadURL = "";
+      if (plateform === 'win32') {
+        downloadURL = ADBDownloadURL.windows;
+      } else if (plateform === 'darwin') {
+        downloadURL = ADBDownloadURL.darwin;
+      } else if (plateform === 'linux') {
+        downloadURL = ADBDownloadURL.linux;
+      }
+      const binPath = path.join(vscode.workspace.rootPath, 'bin');
+      if (!fs.existsSync(binPath)) {
+        fs.mkdirSync(binPath);
+      }
+      const adbZipPath = path.join(binPath, 'adb.zip');
+      const adbZipFile = fs.createWriteStream(adbZipPath);
+      OutputLogger.default.debug(`Download ${downloadURL} ...`);
+      https.get(downloadURL, function(response) {
+        response.pipe(adbZipFile);
+        adbZipFile.on('finish', () => {
+          adbZipFile.close();
+          const zip = new AdmZip(adbZipPath);
+          zip.extractAllTo(binPath);
+          fs.unlinkSync(adbZipPath);
+          fs.chmodSync(path.join(binPath, 'adb'), 755);
+          OutputLogger.default.debug(`Extract ${downloadURL} Done`);
+          resolve();
+        }).on('error', (err) => {
+          OutputLogger.default.error(`Download Error: ${err}`);
+        });
+      }).on('error', function(err) {
+        fs.unlinkSync(adbZipPath);
+        OutputLogger.default.error(`Download Error: ${err}`);
+        reject();
+      });
+    });
   }
 
   public scan() {

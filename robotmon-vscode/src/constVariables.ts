@@ -30,3 +30,8 @@ export enum Message {
 
 export const NotFound = -1;
 export const ImageExtenstions = ['.png', '.jpg', '.jpeg', '.bmp'];
+export const ADBDownloadURL = {
+  "windows": "https://s3-ap-northeast-1.amazonaws.com/robotmon.elggum.com/adb/windows_adb.zip",
+  "darwin": "https://s3-ap-northeast-1.amazonaws.com/robotmon.elggum.com/adb/darwin_adb.zip",
+  "linux": "https://s3-ap-northeast-1.amazonaws.com/robotmon.elggum.com/adb/linux_adb.zip",
+};
