@@ -8,16 +8,16 @@ import { VSCodeUtils } from './vscodeUtils';
 
 class AssetItem {
 
-  public readonly filename: string
-  public readonly filePath: string
-  public readonly fileExt: string
-  public readonly name: string
-  public readonly width: number = 0
-  public readonly height: number = 0
-  public readonly originX: number = 0
-  public readonly originY: number = 0
-  public readonly originW: number = 0
-  public readonly originH: number = 0
+  public readonly filename: string;
+  public readonly filePath: string;
+  public readonly fileExt: string;
+  public readonly name: string;
+  public readonly width: number = 0;
+  public readonly height: number = 0;
+  public readonly originX: number = 0;
+  public readonly originY: number = 0;
+  public readonly originW: number = 0;
+  public readonly originH: number = 0;
   public base64: string | undefined;
 
   constructor(fullPath: string) {
@@ -26,7 +26,7 @@ class AssetItem {
     this.fileExt = path.extname(this.filename);
     const tmps = this.filename.split('_');
     this.name = this.filename;
-    if (tmps.length == 4) {
+    if (tmps.length === 4) {
       this.name = tmps[0];
       let vs = tmps[1].split('x');
       this.width = parseInt(vs[0]);
@@ -74,7 +74,7 @@ export class AssetsPanel {
         break;
       case 'insertCode':
         const editor = VSCodeUtils.findTextEditor();
-        if (editor != undefined) {
+        if (editor !== undefined) {
           const imageName = message.filename;
           const basename = path.basename(imageName, path.extname(imageName)).split("_")[0];
           const robotmonPath = `getStoragePath()+'/scripts/${Config.getConfig().projectName}/assets/${path.basename(imageName)}'`;
@@ -99,7 +99,7 @@ export class AssetsPanel {
   }
 
   private notifyAssetsChanged() {
-    if (this.mAssetItems.length == 0) {
+    if (this.mAssetItems.length === 0) {
       return;
     }
     this.mWebviewPanel.webview.postMessage({command: 'clearAssets'});

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { SnippetProvider } from './snippetProvider'
+import { SnippetProvider } from './snippetProvider';
 import { VSCodeUtils } from './vscodeUtils';
 
 export class SnippetView {
@@ -19,8 +19,8 @@ export class SnippetView {
 
     let disposable = vscode.commands.registerCommand('snippetViewItem.insert', (element: vscode.TreeItem) => {
       const editor = VSCodeUtils.findTextEditor();
-      if (editor != undefined) {
-        const ending = (editor.document.eol == vscode.EndOfLine.CRLF) ? `\r\n` : `\n`;
+      if (editor !== undefined) {
+        const ending = (editor.document.eol === vscode.EndOfLine.CRLF) ? `\r\n` : `\n`;
         const body = this.mSnippetProvider.searchDocBody(element.label as string);
         editor.insertSnippet(new vscode.SnippetString(body.join(ending)));
       }
@@ -34,10 +34,10 @@ export class SnippetView {
   }
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<vscode.TreeItem> | null) {
-    if (selected == null) {
+    if (selected === null) {
       return;
     }
-    if (selected.selection.length > 0 && this.mSelected == selected.selection[0]) {
+    if (selected.selection.length > 0 && this.mSelected === selected.selection[0]) {
     }
     this.mSelected = selected.selection[0];
   }
@@ -53,7 +53,7 @@ export class SnippetView {
   }
 
   private getRawApiSnippets(doc: any, eol: vscode.EndOfLine = vscode.EndOfLine.CRLF) {
-    const ending = (eol == vscode.EndOfLine.CRLF) ? `\r\n` : `\n`;
+    const ending = (eol === vscode.EndOfLine.CRLF) ? `\r\n` : `\n`;
     const snippets: Array<vscode.CompletionItem> = [];
     for (const key in doc) {
       let scopes = key.split(':');
@@ -61,7 +61,7 @@ export class SnippetView {
       const completionItem = new vscode.CompletionItem(functionName, vscode.CompletionItemKind.Function);
       completionItem.filterText = scopes.join('_');
       completionItem.insertText = new vscode.SnippetString(doc[key].body.join(ending));
-      if (doc[key][`description_${this.mLanguage}`] != undefined) {
+      if (doc[key][`description_${this.mLanguage}`] !== undefined) {
         completionItem.documentation = new vscode.MarkdownString(doc[key][`description_${this.mLanguage}`]);
       } else {
         completionItem.documentation = new vscode.MarkdownString(doc[key].description || "");

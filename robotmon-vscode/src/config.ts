@@ -23,7 +23,7 @@ export class Config {
   constructor() {
     // Config - listen robotmon-settings.json saved
     let event = vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
-      if (this.getSettingPath() == document.fileName) {
+      if (this.getSettingPath() === document.fileName) {
         this.onSettingFileSaved();
       }
     });
@@ -35,8 +35,8 @@ export class Config {
 
   public openSetting() {
     const settingsPath = this.getSettingPath();
-    if (settingsPath == "") {
-      return vscode.window.showWarningMessage(Message.notifyOpenFolder)
+    if (settingsPath === "") {
+      return vscode.window.showWarningMessage(Message.notifyOpenFolder);
     }
     if (!fs.existsSync(settingsPath)) {
       const settingContent = this.getDefaultSettingsJSON();
@@ -50,7 +50,7 @@ export class Config {
 
   public loadSettings() {
     const settingsPath = this.getSettingPath();
-    if (settingsPath == "") {
+    if (settingsPath === "") {
       return;
     }
     if (!fs.existsSync(settingsPath)) {
@@ -60,7 +60,7 @@ export class Config {
     try {
       const obj = JSON.parse(content);
       for (let name in this) {
-        if (name[0] != 'm' && obj[name] != undefined) {
+        if (name[0] !== 'm' && obj[name] !== undefined) {
           this[name] = obj[name];
         }
       }
@@ -81,7 +81,7 @@ export class Config {
 
   private getSettingPath(): string {
     const localPath = vscode.workspace.rootPath;
-    if (localPath == undefined) {
+    if (localPath === undefined) {
       return "";
     }
     return path.join(localPath, Message.robotmonSettingsFilename);
@@ -90,7 +90,7 @@ export class Config {
   private getDefaultSettingsJSON() {
     const allowVariables: Array<string> = [];
     for (let name in this) {
-      if (name[0] != 'm') {
+      if (name[0] !== 'm') {
         allowVariables.push(name);
       }
     }

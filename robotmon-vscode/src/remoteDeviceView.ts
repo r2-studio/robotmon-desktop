@@ -6,7 +6,7 @@ import { Config } from './config';
 import { RemoteDeviceProvider } from './remoteDeviceProvider';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
-import { ScreenUtilsPanel } from './screenUtilsPanel'
+import { ScreenUtilsPanel } from './screenUtilsPanel';
 
 export class RemoteDeviceView {
 
@@ -310,7 +310,7 @@ export class RemoteDeviceView {
         const filename = Date.now().toString() + '.jpg'; 
         const fullpath = path.join(screenshotPath, filename);
         console.log(fullpath);
-        fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
+        fs.writeFileSync(fullpath, Buffer.from(bs));
         // const webviewPanel = vscode.window.createWebviewPanel("", filename, vscode.ViewColumn.Active);
         // webviewPanel.webview.html = "Hello";
         return resolve(Message.screenshotSuccess);

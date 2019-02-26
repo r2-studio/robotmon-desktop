@@ -22,7 +22,7 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
   }
 
   public getChildren(element?: LocalDevice): Thenable<LocalDevice[]> {
-    if (element == undefined) {
+    if (element === undefined) {
       return this.getDeviceIds();
     }
     return Promise.resolve([]);
@@ -36,7 +36,7 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
   }
 
   public scan() {
-    if (this.mAdbPath == "") {
+    if (this.mAdbPath === "") {
       return vscode.window.showWarningMessage(Message.adbPathNotFound);
     }
     this._onDidChangeTreeData.fire();
@@ -47,23 +47,23 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
   }
 
   public getDeviceIds(): Thenable<Array<LocalDevice>> {
-    if (this.mAdbPath == "") {
+    if (this.mAdbPath === "") {
       return Promise.resolve([]);
     }
     return new Promise((resolve, reject) => {
       const deviceIds: Array<LocalDevice> = [];
       exec(`${this.mAdbPath} devices`, (error, stdout, stderr) => {
-        if (error != null) {
+        if (error !== null) {
           OutputLogger.default.error(error.message);
           return reject();
         }
-        if (stderr != "") {
+        if (stderr !== "") {
           OutputLogger.default.warn(stderr);
         }
-        if (stdout != "") {
+        if (stdout !== "") {
           const lines = stdout.split("\n");
           for (let line of lines) {
-            if (line.search('offline') != NotFound) {
+            if (line.search('offline') !== NotFound) {
               continue;
             }
             const tabs = line.split("\t");

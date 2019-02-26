@@ -41,24 +41,24 @@ export class AssetsView {
   }
 
   public openPanel() {
-    if (this.mAssetsPanel == undefined || this.mAssetsPanel.isWebViewClosed) {
+    if (this.mAssetsPanel === undefined || this.mAssetsPanel.isWebViewClosed) {
       this.mAssetsPanel = AssetsPanel.createAssetsPanel();
     }
     this.mAssetsPanel.update(this.mAssetsProvider.getAssetsFilenames(ImageExtenstions));
   }
 
   public updatePanel() {
-    if (this.mAssetsPanel == undefined || this.mAssetsPanel.isWebViewClosed) {
+    if (this.mAssetsPanel === undefined || this.mAssetsPanel.isWebViewClosed) {
       return;
     }
     this.mAssetsPanel.update(this.mAssetsProvider.getAssetsFilenames(ImageExtenstions));
   }
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<vscode.TreeItem> | null) {
-    if (selected == null) {
+    if (selected === null) {
       return;
     }
-    if (selected.selection.length > 0 && this.mSelected == selected.selection[0]) {
+    if (selected.selection.length > 0 && this.mSelected === selected.selection[0]) {
     }
     this.mSelected = selected.selection[0];
   }
@@ -70,7 +70,7 @@ export class AssetsView {
 
   public insertOpenImageCode(imageName: string) {
     const editor = VSCodeUtils.findTextEditor();
-    if (editor != undefined) {
+    if (editor !== undefined) {
       const basename = path.basename(imageName, path.extname(imageName)).split("_")[0];
       const robotmonPath = `getStoragePath()+'/scripts/${Config.getConfig().projectName}/assets/${path.basename(imageName)}'`;
       let snippetString = `var img_${basename} = openImage(${robotmonPath});\n`;

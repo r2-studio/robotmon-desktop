@@ -1,18 +1,18 @@
 import * as vscode from 'vscode';
 import { grpc } from "grpc-web-client";
-import * as pb from "./grpc/grpc_pb"
+import * as pb from "./grpc/grpc_pb";
 import * as path from 'path';
 
-import { GrpcService } from "./grpc/grpc_pb_service"
-import { OutputLogger } from "./logger"
-import { ScreenUtilsPanel } from './screenUtilsPanel'
+import { GrpcService } from "./grpc/grpc_pb_service";
+import { OutputLogger } from "./logger";
+import { ScreenUtilsPanel } from "./screenUtilsPanel";
 
 export class RemoteDevice extends vscode.TreeItem {
 
   public width: number = 0;
   public height: number = 0;
 
-  private mAddress: string
+  private mAddress: string;
   private mLogConn: grpc.Request | undefined;
   private mLogger: OutputLogger;
   
@@ -51,11 +51,11 @@ export class RemoteDevice extends vscode.TreeItem {
       this.height = 0;
       this.mLogger.debug(`Disonnect to ${this.ip} ...`);
     }
-    if (this.mLogConn != undefined) {
+    if (this.mLogConn !== undefined) {
       this.mLogConn.close();
       this.mLogConn = undefined;
     }
-    if (this.mLogger != undefined) {
+    if (this.mLogger !== undefined) {
       this.mLogger.close();
     }
     this.updateDescription();
@@ -72,10 +72,10 @@ export class RemoteDevice extends vscode.TreeItem {
         request: request,
         host: this.mAddress,
         onMessage: (message: pb.Response) => {
-          this.mLogger.rLog(`${message.getMessage()}`)
+          this.mLogger.rLog(`${message.getMessage()}`);
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error listenLogs ${code}, ${msg}, ${trailers}`);
             this.disconnect();
             reject(msg);
@@ -97,7 +97,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve({width: this.width, height: this.height});
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error getScreenSize ${code}, ${msg}, ${trailers}`);
             reject();
           }
@@ -117,7 +117,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve(message.getMessage());
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error runScript ${code}, ${msg}, ${trailers}`);
             reject(msg);
           }
@@ -137,7 +137,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve(message.getMessage());
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error runScriptAsync ${code}, ${msg}, ${trailers}`);
             reject(msg);
           }
@@ -167,7 +167,7 @@ export class RemoteDevice extends vscode.TreeItem {
           }
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error getScreenshot ${code}, ${msg}, ${trailers}`);
             reject(msg);
           }
@@ -189,7 +189,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve();
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
             reject();
           }
@@ -211,7 +211,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve();
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
             reject();
           }
@@ -233,7 +233,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve();
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error tapDown ${code}, ${msg}, ${trailers}`);
             reject();
           }
@@ -252,7 +252,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve();
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error reset ${code}, ${msg}, ${trailers}`);
             reject();
           }
@@ -271,7 +271,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve();
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error pause ${code}, ${msg}, ${trailers}`);
             reject();
           }
@@ -290,7 +290,7 @@ export class RemoteDevice extends vscode.TreeItem {
           resolve();
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
-          if (code != grpc.Code.OK) {
+          if (code !== grpc.Code.OK) {
             this.mLogger.error(`Error resume ${code}, ${msg}, ${trailers}`);
             reject();
           }

@@ -52,7 +52,7 @@ export class ScreenUtilsPanel {
         break;
       case 'corpImage':
         const localPath = vscode.workspace.rootPath;
-        if (localPath == undefined) {
+        if (localPath === undefined) {
           return vscode.window.showWarningMessage(Message.notifyOpenFolder);
         }
         const imagePath = path.join(localPath, 'assets');
@@ -66,7 +66,7 @@ export class ScreenUtilsPanel {
         this.mDevice.getScreenshot(message.cx, message.cy, message.cw, message.ch, rw, rh, c.syncScreenImageQuality, false).then((bs) => {
           const filename = `${name}_${rw}x${rh}_xy${message.cx}x${message.cy}_wh${message.cw}x${message.ch}.jpg`; 
           const fullpath = path.join(imagePath, filename);
-          fs.writeFileSync(fullpath, new Buffer(bs as Uint8Array));
+          fs.writeFileSync(fullpath, Buffer.from(bs));
           vscode.window.showInformationMessage(Message.screenshotSuccess);
           vscode.commands.executeCommand("assetsView.refresh");
         });
@@ -83,10 +83,10 @@ export class ScreenUtilsPanel {
       case 'printInfo':
         const x = message.x;
         const y = message.y;
-        const script = `var _timg_ = getScreenshotModify(${x}, ${y}, ${x+1}, ${y+1}, 1, 1, 100); var _tc_ = getImageColor(_timg_, 0, 0); releaseImage(_timg_); JSON.stringify(_tc_);`;
+        const script = `var _timg_ = getScreenshotModify(${x}, ${y}, 1, 1, 1, 1, 100); var _tc_ = getImageColor(_timg_, 0, 0); releaseImage(_timg_); JSON.stringify(_tc_);`;
         this.mDevice.runScript(script).then((msg: string) => {
           const c = JSON.parse(msg);
-          this.mDevice.getLogger().debug(`{x: ${x}, y: ${y}, r: ${c.r}, g: ${c.g}, b: ${c.b}}`)
+          this.mDevice.getLogger().debug(`{x: ${x}, y: ${y}, r: ${c.r}, g: ${c.g}, b: ${c.b}}`);
         });
         break;
       }

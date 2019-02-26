@@ -12,7 +12,7 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
   private mDevices: Array<RemoteDevice> = [];
 
   constructor() {
-    if (vscode.workspace.rootPath == undefined) {
+    if (vscode.workspace.rootPath === undefined) {
       vscode.window.showWarningMessage(Message.notifyOpenFolder);
     }
     this.startScanBroadcast();
@@ -23,7 +23,7 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
   }
 
   public getChildren(element?: RemoteDevice): Thenable<RemoteDevice[]> {
-    if (element == undefined) {
+    if (element === undefined) {
       return Promise.resolve(this.mDevices);
     }
     return Promise.resolve([]);
@@ -48,13 +48,13 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
   }
 
   private stopScanBroadcast() {
-    this.mReceiver.close()
+    this.mReceiver.close();
   }
 
   public addDevice(ip: string, port: string = "8080") {
     let isExist = false;
     for (let device of this.mDevices) {
-      if (ip == device.ip) {
+      if (ip === device.ip) {
         isExist = true;
       }
     }
@@ -70,4 +70,4 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
     vscode.Disposable.from(...this.mDevices).dispose();
   }
 
-};
+}

@@ -28,10 +28,10 @@ export class LocalDevice extends vscode.TreeItem {
   public runAdbCommand(cmd: string): Thenable<string> {
     return new Promise((resolve, reject) => {
       exec(`${this.adbPath} -s ${this.id} shell '${cmd}'`, {timeout: 3000}, (error, stdout, stderr) => {
-        if (error != null) {
+        if (error !== null) {
           return reject(error.message);
         }
-        if (stderr != "") {
+        if (stderr !== "") {
           return reject(stderr.trim());
         }
         return resolve(stdout.trim());
@@ -40,10 +40,10 @@ export class LocalDevice extends vscode.TreeItem {
   }
 
   public updateServiceState(pids: Array<string> | undefined = undefined) {
-    if (pids == undefined) {
+    if (pids === undefined) {
       pids = this.getProcessPid();
     }
-    if (pids.length == 2) {
+    if (pids.length === 2) {
       this.description = Message.serviceStarted;
     } else {
       this.description = Message.serviceStopped;
@@ -52,7 +52,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   private getAppProcess(): string {
     const app32 = this.runAdbCommandSync("ls /system/bin/app_process32");
-    if (app32.search("No") == -1) {
+    if (app32.search("No") === -1) {
       return "app_process32";
     }
     return "app_process";
@@ -61,10 +61,10 @@ export class LocalDevice extends vscode.TreeItem {
   private getNohub(): string {
     let result1 = this.runAdbCommandSync("ls /system/bin/nohup");
     let result2 = this.runAdbCommandSync("ls /system/xbin/nohup");
-    if (result1 == "" && result2 == "") {
+    if (result1 === "" && result2 === "") {
       return "";
     }
-    if (result1.search("No") == -1 || result2.search("No") == -1) {
+    if (result1.search("No") === -1 || result2.search("No") === -1) {
       return "nohup";
     }
     return "";
@@ -73,7 +73,7 @@ export class LocalDevice extends vscode.TreeItem {
   private getDaemonize(): string {
     const result1 = this.runAdbCommandSync("ls /system/bin/daemonize");
     const result2 = this.runAdbCommandSync("ls /system/xbin/daemonize");
-    if (result1.search("No") == -1 || result2.search("No") == -1) {
+    if (result1.search("No") === -1 || result2.search("No") === -1) {
       return "daemonize";
     }
     return "";
@@ -81,7 +81,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   private getApkPath(): string {
     const result = this.runAdbCommandSync("pm path com.r2studio.robotmon");
-    if (result == "") {
+    if (result === "") {
       return "";
     }
     return result.substr(result.search("/"));
@@ -100,11 +100,11 @@ export class LocalDevice extends vscode.TreeItem {
     let libPath = "";
     for (let lib of libs) {
       const result = this.runAdbCommandSync(`ls ${lib}`);
-      if (result.search("No") == -1) {
+      if (result.search("No") === -1) {
         libPath += `:${lib}`;
       }
     }
-    if (libPath != "") {
+    if (libPath !== "") {
       libPath = "/system/lib" + libPath;
     }
     return libPath;
@@ -115,7 +115,7 @@ export class LocalDevice extends vscode.TreeItem {
     const lines = result.split('\n');
     const pids: Array<string> = [];
     for (let line of lines) {
-      if (line.search("app_process") == NotFound) {
+      if (line.search("app_process") === NotFound) {
         continue;
       }
       const tmps = line.split(' ');
@@ -136,23 +136,23 @@ export class LocalDevice extends vscode.TreeItem {
     }
     return new Promise((resolve, reject) => {
       let nohup = this.getNohub();
-      if (nohup == "") {
+      if (nohup === "") {
         nohup = this.getDaemonize();
       }
       let apkPath = this.getApkPath();
-      if (apkPath == "") {
+      if (apkPath === "") {
         return reject(Message.apkPathNotFound);
       }
       OutputLogger.default.debug(`apkPath: ${apkPath}`);
 
       const appProcess = this.getAppProcess();
-      if (appProcess == "") {
+      if (appProcess === "") {
         return reject(Message.appProcessNotFound);
       }
       OutputLogger.default.debug(`process: ${appProcess}`);
 
       const libPath = this.getLibPath(apkPath);
-      if (libPath == "") {
+      if (libPath === "") {
         return reject(Message.libPathNotFound);
       }
       OutputLogger.default.debug(`libPath: ${libPath}`);
@@ -164,7 +164,7 @@ export class LocalDevice extends vscode.TreeItem {
       
       const printPid = () => {
         const pids = this.getProcessPid();
-        if (pids.length == 0) {
+        if (pids.length === 0) {
           return reject(Message.startServiceFailure);
         }
         for (let pid of pids) {
@@ -178,7 +178,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   public stopRobotmonService(): Thenable<void> {
     const pids = this.getProcessPid();
-    if (pids.length == 0) {
+    if (pids.length === 0) {
       return Promise.resolve();
     }
     return new Promise((resolve, reject) => {
@@ -187,7 +187,7 @@ export class LocalDevice extends vscode.TreeItem {
         this.runAdbCommandSync(`kill ${pid}`);
       }
       const nPids = this.getProcessPid();
-      if (nPids.length == 0) {
+      if (nPids.length === 0) {
         resolve();
       } else {
         reject();
@@ -202,7 +202,7 @@ export class LocalDevice extends vscode.TreeItem {
       OutputLogger.default.debug(`Test forward port: ${p}`);
       try {
         const result = execSync(`${this.adbPath} -s ${this.id} forward --no-rebind tcp:${p} tcp:8080;`, {timeout: 3000}).toString().trim();
-        if (result.search("error") == NotFound) {
+        if (result.search("error") === NotFound) {
           return `${p}`;
         }
       } catch(e) {

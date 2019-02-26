@@ -6,14 +6,14 @@ export class VSCodeUtils {
     const editors: vscode.TextEditor[] = vscode.window.visibleTextEditors;
     let matchEditor: vscode.TextEditor | undefined = undefined;
     for (let editor of editors) {
-      if (editor.document.languageId == "Log") {
+      if (editor.document.languageId === "Log") {
         continue;
       }
-      if (matchEditor == undefined) {
+      if (matchEditor === undefined) {
         matchEditor = editor;
         continue;
       }
-      if (matchEditor.document.languageId == "javascript") {
+      if (matchEditor.document.languageId === "javascript") {
         matchEditor = editor;
         continue;
       }
