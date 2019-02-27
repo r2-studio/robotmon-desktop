@@ -47,7 +47,12 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
 
   private findAdb() {
     if (vscode.workspace.rootPath !== undefined) {
-      const adbPath = path.join(vscode.workspace.rootPath, 'bin', 'adb');
+      let adbPath;
+      if (process.platform === 'win32') {
+        adbPath = path.join(vscode.workspace.rootPath, 'bin', 'adb.exe');
+      } else {
+        adbPath = path.join(vscode.workspace.rootPath, 'bin', 'adb');
+      }
       if (fs.existsSync(adbPath)) {
         this.mAdbPath = adbPath;
         return;
@@ -57,7 +62,11 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
       return Config.getConfig().adbPath;
     }
     try {
-      this.mAdbPath = execSync("which adb").toString().trim();
+      if (process.platform === 'win32') {
+        this.mAdbPath = execSync("which adb.exe").toString().trim();
+      } else {
+        this.mAdbPath = execSync("which adb").toString().trim();
+      }
     } catch(e) {}
   }
 
@@ -66,13 +75,13 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
       if (vscode.workspace.rootPath === undefined) {
         return reject();
       }
-      const plateform = process.platform;
+      const platform = process.platform;
       let downloadURL = "";
-      if (plateform === 'win32') {
+      if (platform === 'win32') {
         downloadURL = ADBDownloadURL.windows;
-      } else if (plateform === 'darwin') {
+      } else if (platform === 'darwin') {
         downloadURL = ADBDownloadURL.darwin;
-      } else if (plateform === 'linux') {
+      } else if (platform === 'linux') {
         downloadURL = ADBDownloadURL.linux;
       }
       const binPath = path.join(vscode.workspace.rootPath, 'bin');
@@ -90,6 +99,9 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
           zip.extractAllTo(binPath);
           fs.unlinkSync(adbZipPath);
           fs.chmodSync(path.join(binPath, 'adb'), 755);
+          if (platform === 'win32') {
+            fs.renameSync(path.join(binPath, 'adb'), path.join(binPath, 'adb.exe'));
+          }
           OutputLogger.default.debug(`Extract ${downloadURL} Done`);
           resolve();
         }).on('error', (err) => {
