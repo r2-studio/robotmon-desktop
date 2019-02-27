@@ -18,7 +18,7 @@ export class LocalDevice extends vscode.TreeItem {
   public runAdbCommandSync(cmd: string): string {
     let result = "";
     try {
-      result = execSync(`${this.adbPath} -s ${this.id} shell '${cmd};exit 0;'`, {timeout: 3000}).toString().trim();
+      result = execSync(`${this.adbPath} -s ${this.id} shell "${cmd}"`, {timeout: 3000}).toString().trim();
     } catch(e) {
       // ignore error
     }
@@ -27,7 +27,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   public runAdbCommand(cmd: string): Thenable<string> {
     return new Promise((resolve, reject) => {
-      exec(`${this.adbPath} -s ${this.id} shell '${cmd}'`, {timeout: 3000}, (error, stdout, stderr) => {
+      exec(`${this.adbPath} -s ${this.id} shell "${cmd}"`, {timeout: 3000}, (error, stdout, stderr) => {
         if (error !== null) {
           return reject(error.message);
         }
@@ -111,7 +111,10 @@ export class LocalDevice extends vscode.TreeItem {
   }
 
   private getProcessPid(): Array<string> {
-    const result = this.runAdbCommandSync("ps | grep app_process");
+    let result = this.runAdbCommandSync("ps | grep app_process");
+    if (result === "") {
+      result = this.runAdbCommandSync("ps -A | grep app_process");
+    }
     const lines = result.split('\n');
     const pids: Array<string> = [];
     for (let line of lines) {
@@ -158,7 +161,7 @@ export class LocalDevice extends vscode.TreeItem {
       OutputLogger.default.debug(`libPath: ${libPath}`);
 
       const baseCommand = `LD_LIBRARY_PATH=${libPath} CLASSPATH=${apkPath} ${appProcess} /system/bin com.r2studio.robotmon.Main $@`;
-      const cmd = `${nohup} sh -c "${baseCommand}" > /dev/null 2> /dev/null && sleep 1 &`;
+      const cmd = `${nohup} sh -c '${baseCommand}' > /dev/null 2> /dev/null && sleep 1 &`;
       OutputLogger.default.debug(`baseCommand: ${baseCommand}`);
       OutputLogger.default.debug(`fullCommand: ${cmd}`);
       
