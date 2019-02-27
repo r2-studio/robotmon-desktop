@@ -1,7 +1,9 @@
 {
     "name": "robotmon-vscode",
     "displayName": "Robotmon VSCode",
+    "repository": "https://github.com/r2-studio/robotmon-desktop/robotmon-vscode",
     "description": "Robotmon developing tool with VSCode",
+    "publisher": "r2-studio",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.30.0"

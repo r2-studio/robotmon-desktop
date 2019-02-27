@@ -56,7 +56,9 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     if (fs.existsSync(Config.getConfig().adbPath)) {
       return Config.getConfig().adbPath;
     }
-    this.mAdbPath = execSync("which adb").toString().trim();
+    try {
+      this.mAdbPath = execSync("which adb").toString().trim();
+    } catch(e) {}
   }
 
   private downloadAdb() {
