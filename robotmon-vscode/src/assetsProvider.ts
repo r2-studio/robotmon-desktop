@@ -18,7 +18,7 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
   }
 
   public getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
-    if (element == undefined) {
+    if (element === undefined) {
       return this.getAssets();
     }
     return Promise.resolve([]);
@@ -30,7 +30,7 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
 
   public getAssetsFilenames(extFilters: Array<string> | undefined = undefined): Array<string> {
     const files: Array<string> = [];
-    if (vscode.workspace.rootPath == undefined) {
+    if (vscode.workspace.rootPath === undefined) {
       return files;
     }
     const assetsPath = path.join(vscode.workspace.rootPath, 'assets');
@@ -39,8 +39,8 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
     }
     const filenames = fs.readdirSync(assetsPath, {encoding: 'utf8'});
     for (let filename of filenames) {
-      if (extFilters != undefined && extFilters.length > 0) {
-        if (extFilters.indexOf(path.extname(filename)) == NotFound) {
+      if (extFilters !== undefined && extFilters.length > 0) {
+        if (extFilters.indexOf(path.extname(filename)) === NotFound) {
           continue;
         }
       }
@@ -63,8 +63,8 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
         item.id = basename;
         item.tooltip = basename;
         this.mAssets.push(item);
-        resolve(this.mAssets);
       }
+      resolve(this.mAssets);
     });
   }
 

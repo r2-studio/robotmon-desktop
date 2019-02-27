@@ -32,11 +32,11 @@ export class SnippetProvider implements vscode.TreeDataProvider<vscode.TreeItem>
   }
 
   public getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
-    if (element == undefined) {
+    if (element === undefined) {
       return Promise.resolve([
         this.mRawApiTreeTitle
       ]);
-    } else if (element == this.mRawApiTreeTitle) {
+    } else if (element === this.mRawApiTreeTitle) {
       return Promise.resolve(this.mRawApiTreeItems);
     }
     return Promise.resolve([]);
@@ -61,7 +61,7 @@ export class SnippetProvider implements vscode.TreeDataProvider<vscode.TreeItem>
     for (const key in this.mRawApiDoc) {
       let scopes = key.split(':');
       const functionName = scopes[scopes.length - 1] as string;
-      if (functionName == searchFunction) {
+      if (functionName === searchFunction) {
         return this.mRawApiDoc[key].body as string[];
       }
     }

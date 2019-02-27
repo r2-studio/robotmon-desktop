@@ -50,7 +50,7 @@ export class LocalDeviceView {
     // Local Device Item - forwardPort
     disposable = vscode.commands.registerCommand('localDeviceViewItem.forwardPort', (element: LocalDevice) => {
       const rPort = element.forwardPort("8080");
-      if (rPort != "") {
+      if (rPort !== "") {
         vscode.window.showInformationMessage(`${element.id} forward port: ${rPort} success`);
       } else {
         vscode.window.showErrorMessage(`${element.id} Forward port: ${rPort} failed`);

@@ -19,7 +19,7 @@ export class OutputLogger {
   }
 
   public close() {
-    if (this.mOutputChannel != undefined) {
+    if (this.mOutputChannel !== undefined) {
       this.mOutputChannel.dispose();
     }
   }
@@ -47,7 +47,7 @@ export class OutputLogger {
   }
 
   private log(msg: string) {
-    if (this.mOutputChannel != undefined) {
+    if (this.mOutputChannel !== undefined) {
       this.mOutputChannel.appendLine(msg);
     } else {
       OutputLogger.default.rLog(msg);
@@ -55,7 +55,7 @@ export class OutputLogger {
   }
 
   private show() {
-    if (this.mOutputChannel != undefined) {
+    if (this.mOutputChannel !== undefined) {
       this.mOutputChannel.show();
     } else {
       OutputLogger.default.show();
