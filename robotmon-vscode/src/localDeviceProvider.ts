@@ -157,4 +157,31 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     });
   }
 
+  public tcpConnect(ip: string, fromPort: string): Thenable<undefined> {
+    let port = parseInt(fromPort);
+    return new Promise((resolve, reject) => {
+      exec(`${this.mAdbPath} connect ${ip}:${port};`, (error, stdout, stderr) => {
+        let errMsg = "";
+        if (error !== null) {
+          errMsg = error.message;
+        }
+        if (stderr !== "") {
+          errMsg = stderr;
+        }
+        if (errMsg === "") {
+          const result = stdout.trim();
+          if (result.search("failed") !== NotFound) {
+            errMsg = `Can not connect to ${ip}:${port}`;
+          } else if (result.search("already") !== NotFound) {
+            errMsg = `Already connect to ${ip}:${port}`;
+          } else if (result !== "" && errMsg === "") {
+            return resolve();
+          }
+        }
+        execSync(`${this.mAdbPath} disconnect ${ip}:${port};`);
+        return reject(errMsg);
+      });
+    });
+  }
+
 }

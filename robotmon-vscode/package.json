@@ -4,7 +4,7 @@
     "repository": "https://github.com/r2-studio/robotmon-desktop/robotmon-vscode",
     "description": "Robotmon developing tool with VSCode",
     "publisher": "r2-studio",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "engines": {
         "vscode": "^1.30.0"
     },
@@ -31,6 +31,14 @@
                 }
             },
             {
+                "command": "localDeviceView.add",
+                "title": "adb connect",
+                "icon": {
+                    "light": "res/light_add.svg",
+                    "dark": "res/dark_add.svg"
+                }
+            },
+            {
                 "command": "localDeviceViewItem.startService",
                 "title": "start service",
                 "icon": {
@@ -44,6 +52,14 @@
                 "icon": {
                     "light": "res/light_stop.svg",
                     "dark": "res/dark_stop.svg"
+                }
+            },
+            {
+                "command": "localDeviceViewItem.tcpip",
+                "title": "adb tcpip",
+                "icon": {
+                    "light": "res/light_install.svg",
+                    "dark": "res/dark_install.svg"
                 }
             },
             {
@@ -215,6 +231,11 @@
                     "group": "navigation"
                 },
                 {
+                    "command": "localDeviceView.add",
+                    "when": "view == localDeviceView",
+                    "group": "navigation"
+                },
+                {
                     "command": "remoteDeviceView.addDevice",
                     "when": "view == remoteDeviceView",
                     "group": "navigation"
@@ -248,6 +269,11 @@
                 },
                 {
                     "command": "localDeviceViewItem.forwardPort",
+                    "when": "view == localDeviceView",
+                    "group": "inline"
+                },
+                {
+                    "command": "localDeviceViewItem.tcpip",
                     "when": "view == localDeviceView",
                     "group": "inline"
                 },

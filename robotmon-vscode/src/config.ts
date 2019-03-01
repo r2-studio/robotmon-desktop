@@ -17,6 +17,7 @@ export class Config {
   public syncScreenImageSizeRatio: number = 0.75;
   public screenshotQuality: number = 90;
   public screenshotSizeRatio: number = 1.0;
+  public emulatorPort: number = 62001;
   
   private mDisposes: Array<vscode.Disposable> = [];
 
