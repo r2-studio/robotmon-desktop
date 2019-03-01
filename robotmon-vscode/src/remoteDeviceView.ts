@@ -53,7 +53,7 @@ export class RemoteDeviceView {
         statusBarTitle += `[${remoteDevice.ip}]`;
       }
     }
-    if (statusBarTitle != "") {
+    if (statusBarTitle !== "") {
       this.mDisposables.push(vscode.window.setStatusBarMessage("Targets " + statusBarTitle));
       this.displayStatusBarItems(true);
     } else {
@@ -152,7 +152,11 @@ export class RemoteDeviceView {
 
   private registVSCodeCommand() {
     // Remote Device View - addDevice
-    let disposable = vscode.commands.registerCommand('remoteDeviceView.addDevice', () => {
+    let disposable = vscode.commands.registerCommand('remoteDeviceView.addDevice', (localPort: string | undefined) => {
+      if (localPort !== undefined) {
+        this.mRemoteDeviceProvider.addDevice('127.0.0.1', localPort);
+        return;
+      }
       const inputBox = vscode.window.createInputBox();
       inputBox.placeholder = "Input device IP. 10.0.1.10 or 127.0.0.1:8080";
       inputBox.onDidAccept(() => {

@@ -204,7 +204,7 @@ export class LocalDevice extends vscode.TreeItem {
     for (let p = port; p < port + 10; p++) {
       OutputLogger.default.debug(`Test forward port: ${p}`);
       try {
-        const result = execSync(`${this.adbPath} -s ${this.id} forward --no-rebind tcp:${p} tcp:8080;`, {timeout: 3000}).toString().trim();
+        const result = execSync(`${this.adbPath} -s ${this.id} forward --no-rebind tcp:${p} tcp:8080`, {timeout: 3000}).toString().trim();
         if (result.search("error") === NotFound) {
           return `${p}`;
         }
@@ -213,6 +213,18 @@ export class LocalDevice extends vscode.TreeItem {
       }
     }
     return "";
+  }
+
+  public tcpip(): boolean {
+    try {
+      const result = execSync(`${this.adbPath} -s ${this.id} tcpip 5555`, {timeout: 3000}).toString().trim();
+      if (result.search("error") === NotFound) {
+        return true;
+      }
+    } catch(e) {
+      return false;
+    }
+    return false;
   }
 
 }

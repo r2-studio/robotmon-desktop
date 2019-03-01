@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { Message } from './constVariables';
 import { LocalDevice } from './localDevice';
 import { LocalDeviceProvider } from './localDeviceProvider';
+import { OutputLogger } from './logger';
 
 export class LocalDeviceView {
 
@@ -20,6 +21,11 @@ export class LocalDeviceView {
     // Local Device View - scan
     let disposable = vscode.commands.registerCommand('localDeviceView.scan', () => {
       this.scan();
+    });
+    this.mDisposables.push(disposable);
+    // Local Device View - add
+    disposable = vscode.commands.registerCommand('localDeviceView.add', () => {
+      this.tcpConnect();
     });
     this.mDisposables.push(disposable);
 
@@ -51,16 +57,64 @@ export class LocalDeviceView {
     disposable = vscode.commands.registerCommand('localDeviceViewItem.forwardPort', (element: LocalDevice) => {
       const rPort = element.forwardPort("8080");
       if (rPort !== "") {
+        vscode.commands.executeCommand('remoteDeviceView.addDevice', rPort);
         vscode.window.showInformationMessage(`${element.id} forward port: ${rPort} success`);
       } else {
-        vscode.window.showErrorMessage(`${element.id} Forward port: ${rPort} failed`);
+        vscode.window.showErrorMessage(`${element.id} forward port: ${rPort} failed`);
       }
     });
+
+    // Local Device Item - tcpip
+    disposable = vscode.commands.registerCommand('localDeviceViewItem.tcpip', (element: LocalDevice) => {
+      if (element.tcpip()) {
+        vscode.window.showInformationMessage(`${element.id} "adb tcpip 5555" success`);
+      } else {
+        vscode.window.showErrorMessage(`${element.id} "adb tcpip 5555" Failed`);
+      }
+    });
+    this.mDisposables.push(disposable);
+
     this.mDisposables.push(disposable);
   }
 
   public scan() {
     this.mLocalDeviceProvider.scan();
+  }
+
+  public tcpConnect() {
+    const inputBox = vscode.window.createInputBox();
+    let prompt = "If use emulator, you should know emulator port.";
+    prompt += "127.0.0.1:62001 (nox 1), 127.0.0.1:62025 (nox2), ";
+    prompt += "127.0.0.1:5555 (bs 1), 127.0.0.1:5565  (bs 2), 5575 (bs 3), 5585 (bs 4)...";
+    inputBox.placeholder = "Input device IP:PORT. 127.0.0.1:62001 or 127.0.0.1:5555";
+    inputBox.prompt = prompt;
+
+    inputBox.onDidAccept(() => {
+      let rx1 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]{1,5}$/;
+      if (rx1.test(inputBox.value)) {
+        const tmp = inputBox.value.split(":");
+        inputBox.prompt = "Connecting... please wait";
+        inputBox.busy = true;
+        inputBox.enabled = false;
+        this.mLocalDeviceProvider.tcpConnect(tmp[0], tmp[1]).then(() => {
+          vscode.window.showInformationMessage(`Connect to ${inputBox.value} success`);
+          OutputLogger.default.debug(`Connect to ${inputBox.value} success`);
+          inputBox.dispose();
+          this.scan();
+        }, (err) => {
+          inputBox.prompt = `${err}`;
+          inputBox.busy = false;
+          inputBox.enabled = true;
+        });
+      } else {
+        // inputBox.validationMessage = `IP is not available: ${inputBox.value}`;
+        inputBox.prompt = `IP is not available: ${inputBox.value}`;
+      }
+    });
+    inputBox.onDidHide(() => {
+      inputBox.dispose();
+    });
+    inputBox.show();
   }
 
   public dispose() {
