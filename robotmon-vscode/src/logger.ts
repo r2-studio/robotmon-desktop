@@ -24,6 +24,11 @@ export class OutputLogger {
     }
   }
 
+  public timeLog(msg: string) {
+    const date = new Date();
+    this.log(`[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}] ${msg}`);
+  }
+
   public rLog(msg: string) {
     this.log(msg);
   }
