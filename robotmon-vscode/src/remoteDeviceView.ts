@@ -43,7 +43,7 @@ export class RemoteDeviceView {
   }
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<RemoteDevice> | null) {
-    if (selected != null) {
+    if (selected !== null) {
       this.mSelections = selected.selection;
     }
     // TODO allow multi-selestions
@@ -86,12 +86,12 @@ export class RemoteDeviceView {
 
   public runScript() {
     const editor = vscode.window.activeTextEditor;
-    if (editor == undefined) {
+    if (editor === undefined) {
         vscode.window.showWarningMessage(Message.notifyNoEditor);
         return;
     }
     const script = editor.document.getText();
-    if (script == "" || editor.document.languageId == "Log") {
+    if (script === "" || editor.document.languageId === "Log") {
         vscode.window.showWarningMessage(Message.notifyScriptEmpty);
         return;
     }
@@ -278,13 +278,13 @@ export class RemoteDeviceView {
 
   static runScriptFromEditor(device: RemoteDevice, script: string | undefined = undefined) {
     return new Promise<string>((resolve, reject) => {
-      if (script == undefined) {
+      if (script === undefined) {
         const editor = vscode.window.activeTextEditor;
-        if (editor == undefined) {
+        if (editor === undefined) {
           return reject(Message.notifyNoEditor);
         }
         script = editor.document.getText();
-        if (script == "" || editor.document.languageId == "Log") {
+        if (script === "" || editor.document.languageId === "Log") {
           return reject(Message.notifyScriptEmpty);
         }
       }
@@ -299,7 +299,7 @@ export class RemoteDeviceView {
   static screenshot(device: RemoteDevice): Thenable<string> {
     return new Promise<string>((resolve, reject) => {
       const localPath = vscode.workspace.rootPath;
-      if (localPath == undefined) {
+      if (localPath === undefined) {
         return reject(Message.notifyOpenFolder);
       }
       const screenshotPath = path.join(localPath, 'screenshot');

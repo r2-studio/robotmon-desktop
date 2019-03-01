@@ -72,7 +72,7 @@ export class RemoteDevice extends vscode.TreeItem {
         request: request,
         host: this.mAddress,
         onMessage: (message: pb.Response) => {
-          this.mLogger.rLog(`${message.getMessage()}`);
+          this.mLogger.timeLog(`${message.getMessage()}`);
         },
         onEnd: (code: grpc.Code, msg: string | undefined, trailers: grpc.Metadata) => {
           if (code !== grpc.Code.OK) {
