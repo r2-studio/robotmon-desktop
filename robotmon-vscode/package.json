@@ -4,7 +4,7 @@
     "repository": "https://github.com/r2-studio/robotmon-desktop/robotmon-vscode",
     "description": "Robotmon developing tool with VSCode",
     "publisher": "r2-studio",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "engines": {
         "vscode": "^1.30.0"
     },
@@ -303,7 +303,14 @@
                     "group": "inline"
                 }
             ]
-        }
+        },
+        "grammars": [
+            {
+                "language": "Log",
+                "scopeName": "code.log",
+                "path": "log.tmLanguage"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "yarn run compile",
