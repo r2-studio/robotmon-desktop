@@ -26,7 +26,11 @@ export class OutputLogger {
 
   public timeLog(msg: string) {
     const date = new Date();
-    this.log(`[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}] ${msg}`);
+    const h = date.getHours();
+    const M = date.getMinutes();
+    const s = date.getSeconds();
+    const m = date.getMilliseconds();
+    this.log(`[${h<10?'0'+h:h}:${M<10?'0'+M:M}:${s<10?'0'+s:s}.${m<10?'00'+m:(m<100?'0'+m:m)}] ${msg}`);
   }
 
   public rLog(msg: string) {
