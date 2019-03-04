@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -180,6 +181,8 @@ func (c *Controller) setOnEvent() {
 			c.task = "DevelopEmulator"
 			c.layoutLog.NewLog("Please select device...")
 			c.g.SetCurrentView(c.layoutSlectionDevices.viewName)
+		} else if strings.Contains(c.task, "Exit") {
+			os.Exit(0)
 		}
 	})
 	c.layoutSlectionDevices.setOnSelected(func(selected string) {
@@ -213,13 +216,14 @@ func (c *Controller) setOnEvent() {
 		} else if c.task == "EnableRemotePhone" {
 			c.adbHelper.tcpip(serialNo)
 			c.layoutLog.NewLog(fmt.Sprintf("adb -s %s tcpip 5555 success", serialNo))
+			c.g.SetCurrentView(c.layoutSlectionMenu.viewName)
 		} else if c.task == "DevelopEmulator" {
 			c.layoutLog.NewLog(fmt.Sprintf("Forward port %s ... please wait", serialNo))
 			go func() {
 				for i := 8080; i < 8085; i++ {
-					success, _ := c.adbHelper.forward(fmt.Sprintf("%d", i))
+					success, err := c.adbHelper.forward(fmt.Sprintf("%d", i))
 					if !success {
-						c.layoutLog.NewLog(fmt.Sprintf("Forward port failed: %d", i))
+						c.layoutLog.NewLog(fmt.Sprintf("Forward port failed: %d, %s", i, err.Error()))
 					} else {
 						c.layoutLog.NewLog(fmt.Sprintf("Forward port success: %d", i))
 						break

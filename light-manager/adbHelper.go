@@ -186,7 +186,9 @@ func (a *AdbHelper) getApkPath(serial string) (string, error) {
 	hideWindow(cmd)
 	bs, err := cmd.Output()
 	if err != nil {
-		return "", err
+		if !strings.Contains(err.Error(), "exit status 1") {
+			return "", err
+		}
 	}
 	result := string(bs)
 	result = strings.Trim(result, "\r\n")
