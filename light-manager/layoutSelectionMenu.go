@@ -33,6 +33,7 @@ func NewLayoutMenu(g *gocui.Gui) *LayoutMenu {
 			"========= Advanced =========",
 			"[6] ConnectDevice (connect)",
 			"[7] DevelopEmulator (forward)",
+			"[8] Exit (exit)",
 		},
 	}
 	return l
