@@ -129,7 +129,7 @@ function readMessages() {
     .collection("messages")
     .where("timestamp", "<", gReadTime)
     .orderBy("timestamp", "desc")
-    .limit(1);
+    .limit(5);
   messagesRef.get().then(function(msgSnapshot) {
     msgSnapshot.forEach(function(msgDoc) {
       var groupTime = +msgDoc.id;
