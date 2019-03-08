@@ -29,7 +29,7 @@ type LayoutInput struct {
 }
 
 func (l *LayoutInput) layout() error {
-	if v, err := l.g.SetView(l.viewName, 40-20, 10-2, 40+20, 10+2); err != nil {
+	if v, err := l.g.SetView(l.viewName, 40-20, 10-1, 40+20, 10+1); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}

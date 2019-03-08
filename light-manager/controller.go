@@ -33,6 +33,7 @@ type Controller struct {
 func (c *Controller) init() {
 	// prepare GUI
 	g, err := gocui.NewGui(gocui.OutputNormal)
+	g.ASCII = true
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -55,6 +56,38 @@ func (c *Controller) init() {
 		log.Panicln(err)
 	}
 	if err := g.SetKeybinding("", gocui.KeyTab, gocui.ModNone, c.nextView); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('1'), gocui.ModNone, c.key1); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('2'), gocui.ModNone, c.key2); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('3'), gocui.ModNone, c.key3); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('4'), gocui.ModNone, c.key4); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('5'), gocui.ModNone, c.key5); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('6'), gocui.ModNone, c.key6); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('7'), gocui.ModNone, c.key7); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.SetKeybinding(c.layoutSlectionMenu.viewName, rune('8'), gocui.ModNone, c.key8); err != nil {
 		log.Panicln(err)
 	}
 
@@ -87,6 +120,54 @@ func (c *Controller) nextView(g *gocui.Gui, v *gocui.View) error {
 	c.task = ""
 	_, err := g.SetCurrentView(c.layoutSlectionMenu.viewName)
 	return err
+}
+
+func (c *Controller) key1(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 0)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key2(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 1)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key3(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 2)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key4(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 3)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key5(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 4)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key6(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 6)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key7(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 7)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
+}
+
+func (c *Controller) key8(g *gocui.Gui, v *gocui.View) error {
+	v.SetCursor(0, 8)
+	c.layoutSlectionMenu.onEnter(g, v)
+	return nil
 }
 
 func (c *Controller) refreshDevices() {
@@ -150,24 +231,18 @@ func (c *Controller) setOnEvent() {
 			go c.autoConnectToEmulator()
 		} else if strings.Contains(c.task, "ConnectDevice") {
 			c.layoutLog.NewLog("Please input ip and port")
-			c.layoutInput = NewLayoutInput(c.g, "Ip:Port (127.0.0.1:5555)")
-			c.layoutInput.setOnSelected(func(v string) {
-				ss := strings.Split(strings.Trim(v, "\r\n "), ":")
-				if len(ss) != 2 {
-					c.layoutLog.NewLog(fmt.Sprintf("Format error: %s", v))
-					return
-				}
-				ip := ss[0]
-				port := ss[1]
+			c.layoutInput = NewLayoutInput(c.g, "Ip:Port (127.0.0.1)")
+			c.layoutInput.setOnSelected(func(ip string) {
+				port := "5555"
 				c.layoutLog.NewLog(fmt.Sprintf("Try to connect %s:%s...", ip, port))
 				go func() {
 					success, err := c.adbHelper.connect(ip, port)
 					if err != nil {
-						c.layoutLog.NewLog(fmt.Sprintf("127.0.0.1:%s Failed. %s", port, err.Error()))
+						c.layoutLog.NewLog(fmt.Sprintf("%s:%s Failed. %s", ip, port, err.Error()))
 					} else if !success {
-						c.layoutLog.NewLog(fmt.Sprintf("127.0.0.1:%s Failed", port))
+						c.layoutLog.NewLog(fmt.Sprintf("%s:%s Failed", ip, port))
 					} else if success {
-						c.layoutLog.NewLog(fmt.Sprintf("Connect to 127.0.0.1:%s success", port))
+						c.layoutLog.NewLog(fmt.Sprintf("Connect to %s:%s success", ip, port))
 						c.refreshDevices()
 					}
 					c.layoutInput.setOnSelected(nil)
