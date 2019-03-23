@@ -56,7 +56,7 @@ func (l *LayoutMenu) layout() error {
 		v.Highlight = true
 		v.SelBgColor = gocui.ColorGreen
 		v.SelFgColor = gocui.ColorBlack
-		v.Title = "[Menu-v1.0]"
+		v.Title = fmt.Sprintf("[Menu-%s]", VERSION)
 		for _, s := range l.menuList {
 			fmt.Fprintln(v, s)
 		}

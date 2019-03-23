@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// VERSION -ldflags "-X main.VERSION=v1.0"
+var VERSION string
 var adbHelper *AdbHelper
 
 func initAdb() {

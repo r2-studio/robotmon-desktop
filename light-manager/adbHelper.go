@@ -275,5 +275,18 @@ func (a *AdbHelper) stopService(serial string) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+	pids, _ = a.getPids(serial)
+	if len(pids) == 0 {
+		return nil
+	}
+	for _, pid := range pids {
+		cmd := exec.Command(a.adbPath, "-s", serial, "shell", "kill -9 "+pid)
+		hideWindow(cmd)
+		_, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
 	return nil
 }

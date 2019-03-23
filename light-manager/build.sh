@@ -1,4 +1,6 @@
-VERSION="v1.1"
+VERSION="v1.2"
+
+mkdir -p release
 
 GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.VERSION=$VERSION" -o release/light-manager-mac
 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.VERSION=$VERSION" -o release/light-manager-linux

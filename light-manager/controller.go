@@ -231,9 +231,14 @@ func (c *Controller) setOnEvent() {
 			go c.autoConnectToEmulator()
 		} else if strings.Contains(c.task, "ConnectDevice") {
 			c.layoutLog.NewLog("Please input ip and port")
-			c.layoutInput = NewLayoutInput(c.g, "Ip:Port (127.0.0.1)")
-			c.layoutInput.setOnSelected(func(ip string) {
+			c.layoutInput = NewLayoutInput(c.g, "Ip:Port (127.0.0.1:5555)")
+			c.layoutInput.setOnSelected(func(ipport string) {
+				ss := strings.Split(strings.Trim(ipport, "\r\n "), ":")
+				ip := ss[0]
 				port := "5555"
+				if len(ss) > 1 {
+					port = ss[1]
+				}
 				c.layoutLog.NewLog(fmt.Sprintf("Try to connect %s:%s...", ip, port))
 				go func() {
 					success, err := c.adbHelper.connect(ip, port)
@@ -312,7 +317,7 @@ func (c *Controller) setOnEvent() {
 }
 
 func (c *Controller) autoConnectToEmulator() {
-	ports := []string{"62001", "5555", "62025", "5565", "5556", "5575", "5557"}
+	ports := []string{"62001", "5555", "62025", "5565", "5556", "62026", "5575", "62027", "5557", "62028"}
 	for _, port := range ports {
 		c.layoutLog.NewLog(fmt.Sprintf("Try to connect 127.0.0.1:%s...", port))
 		go func(port string) {
