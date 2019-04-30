@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -33,7 +34,9 @@ type Controller struct {
 func (c *Controller) init() {
 	// prepare GUI
 	g, err := gocui.NewGui(gocui.OutputNormal)
-	g.ASCII = true
+	if runtime.GOOS == "windows" {
+		g.ASCII = true
+	}
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -262,6 +265,7 @@ func (c *Controller) setOnEvent() {
 			c.layoutLog.NewLog("Please select device...")
 			c.g.SetCurrentView(c.layoutSlectionDevices.viewName)
 		} else if strings.Contains(c.task, "Exit") {
+			c.g.Close()
 			os.Exit(0)
 		}
 	})

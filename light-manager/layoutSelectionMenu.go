@@ -6,6 +6,11 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+const (
+	menuWidth  = 30
+	menuHeight = 10
+)
+
 // layer 1 selection
 // StartService (start)
 // StopService (stop)
@@ -49,7 +54,8 @@ type LayoutMenu struct {
 
 func (l *LayoutMenu) layout() error {
 	// maxX, maxY := g.Size()
-	if v, err := l.g.SetView(l.viewName, 0, 0, 30, 10); err != nil {
+	//l.g.Mouse = true
+	if v, err := l.g.SetView(l.viewName, 0, 0, menuWidth, menuHeight); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -109,4 +115,9 @@ func (l *LayoutMenu) keybindings() {
 	if err := l.g.SetKeybinding(l.viewName, gocui.KeyEnter, gocui.ModNone, l.onEnter); err != nil {
 		fmt.Println(err)
 	}
+	/*
+		if err := l.g.SetKeybinding(l.viewName, gocui.MouseLeft, gocui.ModNone, l.onEnter); err != nil {
+			fmt.Println(err)
+		}
+	*/
 }
