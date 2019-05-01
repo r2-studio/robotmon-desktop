@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+
+  <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+  <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase.js"></script>
+  <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.min.js"></script> -->
+  <script src="https://unpkg.com/http-vue-loader"></script>
+  <script src="https://unpkg.com/vuex@3.1.0/dist/vuex.js"></script>
+  <!-- <script src="src/config.js"></script> -->
+  <script src="src/stores/firebase.js"></script>
+  <script src="src/stores/developer.js"></script>
+  <script src="src/store.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-navigation-drawer app permanent open clipped>
+        <v-toolbar flat>
+          <v-toolbar-title>Scripts</v-toolbar-title>
+        </v-toolbar>
+        <v-divider></v-divider>
+        <v-list dense class="pt-0">
+          <v-list-tile @click="">
+            <v-list-tile-action>
+              <v-icon>add_circle_outline</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>New Script</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile
+            v-for="item in items"
+            :key="item.title"
+            @click=""
+          >
+            <v-list-tile-action>
+              <v-icon>description</v-icon>
+            </v-list-tile-action>
+    
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-navigation-drawer>
+      <!-- Toolbar -->
+      <user-info :user="user"></user-info>
+      
+      <v-content>
+        <v-container fluid>
+          <login-box v-if="!isLogin"></login-box>
+          <new-script v-else></new-script>
+        </v-container>
+      </v-content>
+      <v-footer app></v-footer>
+    </v-app>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      store: store,
+      data: {
+        items: [
+          { title: 'Home', icon: 'dashboard' },
+          { title: 'About', icon: 'question_answer' }
+        ],
+        right: null
+      },
+      methods: {
+        ...Vuex.mapActions('firebase', ['initFirebase']),
+      },
+      computed: {
+        ...Vuex.mapState('firebase', ['isLogin', 'user']),
+      },
+      components: {
+        'login-box': httpVueLoader('src/components/login-box.vue'),
+        'user-info': httpVueLoader('src/components/user-info.vue'),
+        'new-script': httpVueLoader('src/components/new-script.vue'),
+      },
+      mounted: function() {
+        // console.log(this.$store.state.firebase.loginConfig)
+        this.initFirebase();
+      },
+      watch: {
+        isLogin: function(newIsLogin, oldIsLogin) {
+          if (newIsLogin && !oldIsLogin) {
+            // init/get developer
+            this.$store.dispatch('developer/getMe', {
+              name: this.user.displayName,
+              email: this.user.email,
+            });
+          }
+        }
+      },
+    });
+
+    // firebase.auth().onAuthStateChanged(function (user) {
+    //   if (user) {
+    //     store.commit('login', user);
+    //     // User is signed in.
+    //     // var displayName = user.displayName;
+    //     // var email = user.email;
+    //     // var emailVerified = user.emailVerified;
+    //     // var photoURL = user.photoURL;
+    //     // var uid = user.uid;
+    //     // var phoneNumber = user.phoneNumber;
+    //     // var providerData = user.providerData;
+    //     // user.getIdToken().then(function (accessToken) {
+    //     //   console.log('accessToken', accessToken);
+    //     // }); 
+    //     console.log('login', user);
+    //   } else {
+    //     store.commit('logout');
+    //     // User is signed out.
+    //     // document.getElementById('sign-in-status').textContent = 'Signed out';
+    //     // document.getElementById('sign-in').textContent = 'Sign in';
+    //     // document.getElementById('account-details').textContent = 'null';
+    //     console.log('logout', user);
+
+    //   }
+    // }, function (error) {
+    //   console.log(error);
+    // });
+  </script>
+</body>
+
+</html>
