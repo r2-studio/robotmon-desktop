@@ -32,5 +32,20 @@ var DeveloperModule = {
         console.log('err', e);
       });
     },
+    newScripts: function(context, payload) {
+      firebase.functions().httpsCallable('newDeveloper')({
+        scriptId: payload.scriptId,
+        gamePackageName: payload.gamePackageName,
+        displayName: payload.displayName,
+        description: payload.description,
+      })
+      .then(function (result) {
+        const developer = result.data;
+        context.commit('update', developer);
+      })
+      .catch(function (e) {
+        console.log('err', e);
+      });
+    }
   }
 };

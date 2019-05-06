@@ -37,6 +37,11 @@
         >
         </v-textarea>
       </v-flex>
+      <v-flex xs8 mb-2 v-if="alert != ''">
+        <v-alert :value="true" type="warning" >
+          {{alert}}
+        </v-alert>
+      </v-flex>
       <v-flex xs6></v-flex>
       <v-flex xs4>
         <v-btn color="info" @click="newScript">New Script</v-btn>
@@ -53,6 +58,7 @@ module.exports = {
   },
   data: function() {
     return {
+      alert: "",
       scriptId: "",
       displayName: "",
       gamePackageName: "",
@@ -62,6 +68,32 @@ module.exports = {
   methods: {
     newScript: function() {
       console.log('new script', this.scriptId);
+      const ok = this.checkFields();
+      if (!ok) {
+        return;
+      }
+      // const functions = this.$store.getters['firebase/functions'];
+    },
+    checkFields: function() {
+      let ok = true;
+      this.alert = '';
+      if (this.scriptId === '') {
+        ok = false;
+        this.alert += 'Script ID not set, ';
+      }
+      if (this.displayName === '') {
+        ok = false;
+        this.alert += 'Display Name not set, ';
+      }
+      if (this.gamePackageName === '') {
+        ok = false;
+        this.alert += 'Game package name not set, ';
+      }
+      if (this.description === '') {
+        ok = false;
+        this.alert += 'Discription not set, ';
+      }
+      return ok;
     },
   },
 };
