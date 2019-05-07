@@ -29,22 +29,39 @@ var DeveloperModule = {
         context.commit('update', developer);
       })
       .catch(function(e) {
-        console.log('err', e);
+        context.dispatch('httpError', e, {root: true});
+      });
+    },
+    getMyScripts: function(context, payload) {
+      return new Promise((resolve, reject) => {
+        firebase.functions().httpsCallable('getMyScripts')({})
+        .then(function (result) {
+          console.log('getMyScripts result', result.data);
+          resolve(result);
+        })
+        .catch(function (e) {
+          context.dispatch('httpError', e, {root: true});
+        });
       });
     },
     newScripts: function(context, payload) {
-      firebase.functions().httpsCallable('newDeveloper')({
-        scriptId: payload.scriptId,
-        gamePackageName: payload.gamePackageName,
-        displayName: payload.displayName,
-        description: payload.description,
-      })
-      .then(function (result) {
-        const developer = result.data;
-        context.commit('update', developer);
-      })
-      .catch(function (e) {
-        console.log('err', e);
+      return new Promise((resolve, reject) => {
+        const parameters = {
+          scriptId: payload.scriptId,
+          gamePackageName: payload.gamePackageName,
+          displayName: payload.displayName,
+          description: payload.description,
+          payPlan: payload.payPlan,
+          payPeriod: payload.payPeriod,
+          payMount: payload.payMount,
+        };
+        firebase.functions().httpsCallable('newScript')(parameters)
+        .then(function (result) {
+          resolve(result);
+        })
+        .catch(function (e) {
+          context.dispatch('httpError', e, {root: true});
+        });
       });
     }
   }

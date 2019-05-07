@@ -68,7 +68,7 @@
     <v-layout row wrap>
       <v-flex xs11 mb-2>
        <v-slider 
-        v-model="payPrice"
+        v-model="payMount"
         label="Price Points" 
         value="0"
         step="5"
@@ -109,7 +109,7 @@ module.exports = {
       gamePackageName: "",
       description: "",
       payPlan: 0,
-      payPrice: 0,
+      payMount: 0,
       payPeriod: 0,
       payPeriodSelection: 5,
       periodLabels: [
@@ -137,7 +137,15 @@ module.exports = {
       if (!ok) {
         return;
       }
-      // const functions = this.$store.getters['firebase/functions'];
+      this.$store.dispatch('developer/newScripts', {
+        scriptId: this.scriptId,
+        gamePackageName: this.gamePackageName,
+        displayName: this.displayName,
+        description: this.description,
+        payPlan: this.payPlan,
+        payPeriod: this.payPeriod,
+        payMount: this.payMount,
+      });
     },
     checkFields: function() {
       let ok = true;
@@ -160,8 +168,8 @@ module.exports = {
       }
       if (this.payPlan === 0) {
         this.payPeriodSelection = 5;
-        this.payPrice = 0;
-      } else if (this.payPlan === 2 && this.payPrice === 0) {
+        this.payMount = 0;
+      } else if (this.payPlan === 2 && this.payMount === 0) {
         ok = false;
         this.alert += 'Price cloud not be 0 when on Pay Plan';
       }
@@ -173,10 +181,10 @@ module.exports = {
     onPayClick: function() {
       if (this.payPlan === 0) {
         this.payPeriodSelection = 5;
-        this.payPrice = 0;
+        this.payMount = 0;
       } else if (this.payPlan === 2) {
         this.payPeriodSelection = 3;
-        this.payPrice = 30;
+        this.payMount = 30;
       }
     }
   },
