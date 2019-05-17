@@ -30,7 +30,7 @@
         </v-toolbar>
         <v-divider></v-divider>
         <v-list dense class="pt-0">
-          <v-list-tile @click="">
+          <v-list-tile @click="selectScript(null)">
             <v-list-tile-action>
               <v-icon>add_circle_outline</v-icon>
             </v-list-tile-action>
@@ -39,17 +39,13 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile
-            v-for="item in items"
-            :key="item.title"
-            @click=""
-          >
+          <v-list-tile v-for="item in scripts" :key="item.scriptId" @click="selectScript(item)">
             <v-list-tile-action>
               <v-icon>description</v-icon>
             </v-list-tile-action>
     
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ item.displayName }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -73,7 +69,7 @@
           </v-dialog>
           
           <login-box v-if="!isLogin"></login-box>
-          <new-script v-else></new-script>
+          <script-editor v-else :script="selectedScript"></script-editor>
         </v-container>
       </v-content>
       <v-footer app></v-footer>
@@ -90,19 +86,25 @@
           { title: 'Home', icon: 'dashboard' },
           { title: 'About', icon: 'question_answer' }
         ],
-        right: null
+        right: null,
+        selectedScript: null,
       },
       methods: {
         ...Vuex.mapActions('firebase', ['initFirebase']),
+        selectScript: function(script) {
+          console.log('selectScript', script);
+          this.selectedScript = script;
+        },
       },
       computed: {
         ...Vuex.mapState('firebase', ['isLogin', 'user']),
+        ...Vuex.mapState('developer', ['scripts']),
         ...Vuex.mapState(['alertTitle', 'alertMessage']),
       },
       components: {
         'login-box': httpVueLoader('src/components/login-box.vue'),
         'user-info': httpVueLoader('src/components/user-info.vue'),
-        'new-script': httpVueLoader('src/components/new-script.vue'),
+        'script-editor': httpVueLoader('src/components/script-editor.vue'),
       },
       mounted: function() {
         // console.log(this.$store.state.firebase.loginConfig)
@@ -116,7 +118,7 @@
               name: this.user.displayName,
               email: this.user.email,
             });
-            this.$store.dispatch('developer/getMyScripts', {});
+            // this.$store.dispatch('developer/getMyScripts', {});
           }
         }
       },

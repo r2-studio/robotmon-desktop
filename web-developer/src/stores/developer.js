@@ -5,6 +5,7 @@ var DeveloperModule = {
     name: "",
     email: "",
     earnPoints: 0,
+    scripts: [],
     scriptRefs: {},
   },
   mutations: {
@@ -16,6 +17,10 @@ var DeveloperModule = {
       state.scriptRefs = payload.scriptRefs;
       console.log('developer state', state);
     },
+    updateScripts: function(state, payload) {
+      console.log('updateScripts', payload);
+      Vue.set(state, 'scripts', payload);
+    }
   },
   actions: {
     getMe: function(context, payload) {
@@ -27,6 +32,7 @@ var DeveloperModule = {
       .then(function(result) {
         const developer = result.data;
         context.commit('update', developer);
+        context.dispatch('getMyScripts');
       })
       .catch(function(e) {
         context.dispatch('httpError', e, {root: true});
@@ -36,7 +42,7 @@ var DeveloperModule = {
       return new Promise((resolve, reject) => {
         firebase.functions().httpsCallable('getMyScripts')({})
         .then(function (result) {
-          console.log('getMyScripts result', result.data);
+          context.commit('updateScripts', result.data);
           resolve(result);
         })
         .catch(function (e) {
@@ -44,7 +50,7 @@ var DeveloperModule = {
         });
       });
     },
-    newScripts: function(context, payload) {
+    newScript: function(context, payload) {
       return new Promise((resolve, reject) => {
         const parameters = {
           scriptId: payload.scriptId,
@@ -57,6 +63,27 @@ var DeveloperModule = {
         };
         firebase.functions().httpsCallable('newScript')(parameters)
         .then(function (result) {
+          // update my scripts
+          context.dispatch('getMyScripts');
+          resolve(result);
+        })
+        .catch(function (e) {
+          context.dispatch('httpError', e, {root: true});
+        });
+      });
+    },
+    updateScript: function(context, payload) {
+      return new Promise((resolve, reject) => {
+        const parameters = {
+          scriptId: payload.scriptId,
+          gamePackageName: payload.gamePackageName,
+          displayName: payload.displayName,
+          description: payload.description,
+        };
+        firebase.functions().httpsCallable('updateScript')(parameters)
+        .then(function (result) {
+          // update my scripts
+          context.dispatch('getMyScripts');
           resolve(result);
         })
         .catch(function (e) {
