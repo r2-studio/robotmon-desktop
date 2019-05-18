@@ -89,17 +89,30 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs6>
-        <v-btn color="success" @click="newVersion" v-if="edit">New Version</v-btn>
-      </v-flex>
+      <v-flex xs8></v-flex>
       <v-flex xs4>
         <v-btn color="info" @click="submit" v-if="edit">Update Script</v-btn>
         <v-btn color="info" @click="submit" v-else>Create Script</v-btn>
       </v-flex>
     </v-layout>
+    <v-layout row wrap>
+      <v-flex xs12 display-1 mb-4>Script Versions</v-flex>
+    </v-layout>
+    <v-layout row wrap>
+      <v-flex xs8 v-if="edit">
+        <v-btn color="grey lighten-1" @click="newVersion">New Version</v-btn>
+        <v-btn 
+          v-for="i in (script.latestVersionCode > 3 ? 3 : script.latestVersionCode)" 
+          :key="i" 
+          color="grey lighten-2" 
+          @click="getVersion(i)">
+          V {{script.latestVersionCode-i+1}}
+        </v-btn>
+      </v-flex>
+    </v-layout>
     <v-layout row wrap mt-5>
       <v-flex xs12>
-        <script-version v-if="showVersion" :script="script"></script-version>
+        <script-version v-if="showVersion" :script="script" :version="version"></script-version>
       </v-flex>
     </v-layout>
     <full-loading :loading="loading"></full-loading>
@@ -112,6 +125,7 @@
 function newDefaultData() {
   return {
     showVersion: false,
+    version: 0,
     edit: false,
     loading: false,
     alert: "",
@@ -218,6 +232,11 @@ module.exports = {
     },
     newVersion: function() {
       this.showVersion = true;
+      this.version = 0;
+    },
+    getVersion: function(i) {
+      this.showVersion = true;
+      this.version = this.script.latestVersionCode - i + 1;
     },
   },
   watch: {

@@ -107,7 +107,7 @@ var DeveloperModule = {
           firebase.functions().httpsCallable('newScriptVersion')(parameters)
           .then(function (result) {
             // update my scripts
-            // context.dispatch('getMyScripts');
+            context.dispatch('getMyScripts');
             resolve(result);
           })
           .catch(function (e) {
@@ -118,6 +118,23 @@ var DeveloperModule = {
           context.dispatch('httpError', e, { root: true });
           reject(e);
         });
+      });
+    },
+    getScriptVersion: function (context, payload) {
+      return new Promise((resolve, reject) => {
+        const parameters = {
+          scriptId: payload.scriptId,
+          versionCode: payload.versionCode,
+        };
+        firebase.functions().httpsCallable('getScriptVersion')(parameters)
+          .then(function (result) {
+            console.log(result.data);
+            resolve(result.data);
+          })
+          .catch(function (e) {
+            context.dispatch('httpError', e, { root: true });
+            reject(e);
+          });
       });
     },
   }
