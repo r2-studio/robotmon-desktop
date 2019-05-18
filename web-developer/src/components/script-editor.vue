@@ -89,10 +89,17 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs6></v-flex>
+      <v-flex xs6>
+        <v-btn color="success" @click="newVersion" v-if="edit">New Version</v-btn>
+      </v-flex>
       <v-flex xs4>
         <v-btn color="info" @click="submit" v-if="edit">Update Script</v-btn>
         <v-btn color="info" @click="submit" v-else>Create Script</v-btn>
+      </v-flex>
+    </v-layout>
+    <v-layout row wrap mt-5>
+      <v-flex xs12>
+        <script-version v-if="showVersion" :script="script"></script-version>
       </v-flex>
     </v-layout>
     <full-loading :loading="loading"></full-loading>
@@ -104,6 +111,7 @@
 <script>
 function newDefaultData() {
   return {
+    showVersion: false,
     edit: false,
     loading: false,
     alert: "",
@@ -207,7 +215,10 @@ module.exports = {
         this.payPeriodSelection = 3;
         this.payMount = 30;
       }
-    }
+    },
+    newVersion: function() {
+      this.showVersion = true;
+    },
   },
   watch: {
     script: function(script) {

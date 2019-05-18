@@ -92,6 +92,33 @@ var DeveloperModule = {
           reject(e);
         });
       });
-    }
+    },
+    newScriptVersion: function (context, payload) {
+      return new Promise((resolve, reject) => {
+        const storageRef = firebase.storage().ref();
+        const scriptRef = storageRef.child(context.state.userId).child(payload.scriptId);
+        const versionRef = scriptRef.child(String(payload.versionCode)).child('index.zip');
+        versionRef.put(payload.file).then(function (snapshot) {
+          console.log('Uploaded index.zip success');
+          const parameters = {
+            scriptId: payload.scriptId,
+            description: payload.description,
+          };
+          firebase.functions().httpsCallable('newScriptVersion')(parameters)
+          .then(function (result) {
+            // update my scripts
+            // context.dispatch('getMyScripts');
+            resolve(result);
+          })
+          .catch(function (e) {
+            context.dispatch('httpError', e, { root: true });
+            reject(e);
+          });
+        }).catch(function(e) {
+          context.dispatch('httpError', e, { root: true });
+          reject(e);
+        });
+      });
+    },
   }
 };
