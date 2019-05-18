@@ -95,6 +95,7 @@
         <v-btn color="info" @click="submit" v-else>Create Script</v-btn>
       </v-flex>
     </v-layout>
+    <full-loading :loading="loading"></full-loading>
   </v-form>
 </template>
 
@@ -104,6 +105,7 @@
 function newDefaultData() {
   return {
     edit: false,
+    loading: false,
     alert: "",
     scriptId: "",
     displayName: "",
@@ -151,6 +153,7 @@ module.exports = {
         dispatch = 'developer/newScript';
         console.log('new script', this.scriptId);
       }
+      this.loading = true;
       this.$store.dispatch(dispatch, {
         scriptId: this.scriptId,
         gamePackageName: this.gamePackageName,
@@ -159,10 +162,11 @@ module.exports = {
         payPlan: this.payPlan,
         payPeriod: this.payPeriod,
         payMount: this.payMount,
+      }).then(() => {
+        this.loading = false;
+      }).catch(() => {
+        this.loading = false;
       });
-    },
-    newScript: function() {
-      
     },
     checkFields: function() {
       let ok = true;

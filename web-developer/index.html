@@ -78,6 +78,9 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
   <script>
+    // Global registration
+    Vue.component('full-loading', httpVueLoader('src/components/full-loading.vue'));
+    
     var app = new Vue({
       el: '#app',
       store: store,

@@ -69,6 +69,7 @@ var DeveloperModule = {
         })
         .catch(function (e) {
           context.dispatch('httpError', e, {root: true});
+          reject(e);
         });
       });
     },
@@ -88,6 +89,7 @@ var DeveloperModule = {
         })
         .catch(function (e) {
           context.dispatch('httpError', e, {root: true});
+          reject(e);
         });
       });
     }
