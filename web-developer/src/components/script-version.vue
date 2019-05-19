@@ -37,6 +37,17 @@
     </v-layout>
     <!-- -->
     <v-layout row wrap v-if="version">
+      <v-flex xs2 mb-2>Stable Version</v-flex>
+      <v-flex xs8>
+        <v-switch
+          :value="this.script.stableVersionCode==this.scriptVersion.versionCode"
+          :disabled="this.script.stableVersionCode==this.scriptVersion.versionCode"
+          :label="(this.script.stableVersionCode==this.scriptVersion.versionCode).toString()"
+          @change="setStableVersion">
+        </v-switch>
+      </v-flex>
+    </v-layout>
+    <v-layout row wrap v-if="version">
       <v-flex xs2 mb-2>Download Count</v-flex>
       <v-flex xs2 mb-2>{{scriptVersion.downloadCount}}</v-flex>
     </v-layout>
@@ -74,6 +85,7 @@ function newDefaultData() {
     file: null,
     description: '',
     scriptVersion: {},
+    // isStableVersion: false,
     alert: '',
   };
 }
@@ -135,6 +147,21 @@ module.exports = {
         this.loading = false;
       }).catch(() => {
         this.scriptVersion = {};
+        this.loading = false;
+      });
+    },
+    setStableVersion: function() {
+      if (this.script.stableVersionCode === this.scriptVersion.versionCode) {
+        return;
+      }
+      this.loading = true;
+      this.$store.dispatch('developer/stableScriptVersion', {
+        scriptId: this.script.scriptId,
+        version: this.scriptVersion.versionCode,
+      }).then(() => {
+        this.loading = false;
+        Vue.set(this.script, 'stableVersionCode', this.scriptVersion.versionCode);
+      }).catch(() => {
         this.loading = false;
       });
     },

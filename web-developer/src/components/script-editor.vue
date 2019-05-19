@@ -89,13 +89,19 @@
       </v-flex>
     </v-layout>
     <v-layout row wrap>
-      <v-flex xs8></v-flex>
+      <v-flex xs8> 
+        <v-switch v-if="edit && this.script && this.script.latestVersionCode != 0" 
+          v-model="visible" 
+          :label="`Public This Script: ${visible.toString()}`" 
+          @change="setVisible">
+        </v-switch>
+      </v-flex>
       <v-flex xs4>
         <v-btn color="info" @click="submit" v-if="edit">Update Script</v-btn>
         <v-btn color="info" @click="submit" v-else>Create Script</v-btn>
       </v-flex>
     </v-layout>
-    <v-layout row wrap>
+    <v-layout row wrap v-if="edit">
       <v-flex xs12 display-1 mb-4>Script Versions</v-flex>
     </v-layout>
     <v-layout row wrap>
@@ -133,6 +139,7 @@ function newDefaultData() {
     displayName: "",
     gamePackageName: "",
     description: "",
+    visible: false,
     payPlan: 0,
     payMount: 0,
     payPeriod: 0,
@@ -238,6 +245,23 @@ module.exports = {
       this.showVersion = true;
       this.version = this.script.latestVersionCode - i + 1;
     },
+    setVisible: function() {
+      if (this.script.latestVersionCode === 0) {
+        this.visible = false;
+        return;
+      }
+      this.loading = true;
+      this.$store.dispatch('developer/visibleScript', {
+        scriptId: this.scriptId,
+        visible: this.visible,
+      }).then(() => {
+        this.loading = false;
+        this.script.visible = this.visible;
+      }).catch(() => {
+        this.loading = false;
+        this.visible = !this.visible;
+      });
+    }
   },
   watch: {
     script: function(script) {
@@ -253,6 +277,7 @@ module.exports = {
         this.displayName = script.displayName;
         this.gamePackageName = script.gamePackageName;
         this.description = script.description;
+        this.visible = script.visible,
         this.payPlan = script.payPlan;
         this.payMount = script.payMount;
         this.payPeriod = script.payPeriod;

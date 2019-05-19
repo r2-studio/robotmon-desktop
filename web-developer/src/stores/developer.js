@@ -93,6 +93,42 @@ var DeveloperModule = {
         });
       });
     },
+    visibleScript: function(context, payload) {
+      return new Promise((resolve, reject) => {
+        const parameters = {
+          scriptId: payload.scriptId,
+          visible: payload.visible,
+        };
+        firebase.functions().httpsCallable('visibleScript')(parameters)
+          .then(function (result) {
+            // update my scripts
+            // context.dispatch('getMyScripts');
+            resolve(result);
+          })
+          .catch(function (e) {
+            context.dispatch('httpError', e, { root: true });
+            reject(e);
+          });
+      });
+    },
+    stableScriptVersion: function (context, payload) {
+      return new Promise((resolve, reject) => {
+        const parameters = {
+          scriptId: payload.scriptId,
+          version: payload.version,
+        };
+        firebase.functions().httpsCallable('stableScriptVersion')(parameters)
+          .then(function (result) {
+            // update my scripts
+            context.dispatch('getMyScripts');
+            resolve(result);
+          })
+          .catch(function (e) {
+            context.dispatch('httpError', e, { root: true });
+            reject(e);
+          });
+      });
+    },
     newScriptVersion: function (context, payload) {
       return new Promise((resolve, reject) => {
         const storageRef = firebase.storage().ref();
