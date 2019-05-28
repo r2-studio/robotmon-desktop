@@ -31,8 +31,8 @@ func (l *LayoutDevices) UpdateDevices(s []string) {
 }
 
 func (l *LayoutDevices) layout() error {
-	// maxX, maxY := g.Size()
-	if v, err := l.g.SetView(l.viewName, 31, 0, 79, 10); err != nil {
+	width, _ := l.g.Size()
+	if v, err := l.g.SetView(l.viewName, menuWidth+1, 0, width-1, menuHeight); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}

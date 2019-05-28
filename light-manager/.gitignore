@@ -1,0 +1,5 @@
+!.gitignore
+*.orig
+*.swp
+light-manager
+bin
