@@ -1,0 +1,4 @@
+github.com/zach-klippenstein/goadb v0.0.0-20170530005145-029cc6bee481 h1:yVrbGOZZHihWLaa3xpaTKoO5FbYg/vG5hUufn429HAo=
+github.com/zach-klippenstein/goadb v0.0.0-20170530005145-029cc6bee481/go.mod h1:Drd+klC4FSDx0vKNEQDsSpWX5so04NA7l0vzHqkH8AQ=
+golang.org/x/sys v0.0.0-20190909082730-f460065e899a h1:mIzbOulag9/gXacgxKlFVwpCOWSfBT3/pDyyCwGA9as=
+golang.org/x/sys v0.0.0-20190909082730-f460065e899a/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
