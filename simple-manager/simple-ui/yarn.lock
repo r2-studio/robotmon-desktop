@@ -3785,10 +3785,20 @@ globby@^9.2.0:
     pify "^4.0.1"
     slash "^2.0.0"
 
+google-protobuf@^3.10.0-rc.1:
+  version "3.10.0-rc.1"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.10.0-rc.1.tgz#801b5716241a0b93f12e72d722160e3e8cfaba9e"
+  integrity sha512-tgpGwjqSYtHGpTaYBWUnf+T4CE+cjzLLFtouU4Y4iZn3VPiwwQfl/BGq3NzoGQnDqvFTqP9OE68lPwcUNwgdwQ==
+
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.2.tgz#6f0952605d0140c1cfdb138ed005775b92d67b02"
   integrity sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
+
+grpc-web@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/grpc-web/-/grpc-web-1.0.6.tgz#9dc2886b5bff5cee08e51960e33702322890376e"
+  integrity sha512-iwqchQXNsA8bcJwuYEv/A8ScEaf5nA5+vtptEv2KN646KW94tsq7O+Q7hy5+gADOg6XhmJqPhSlvTMdiHlVfcw==
 
 gzip-size@^5.0.0:
   version "5.1.1"

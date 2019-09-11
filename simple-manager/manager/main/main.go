@@ -11,6 +11,7 @@ func main() {
 	fmt.Println(client)
 	client.GetDeviceABI("FA7B81A03059")
 	client.GetRobotmonStartCommand("FA7B81A03059")
+	manager.NewAppService(client)
 	// devices, _ := client.GetDevices()
 	// if len(devices) > 0 {
 	// 	client.Forward(devices[0], "8088", "8088")

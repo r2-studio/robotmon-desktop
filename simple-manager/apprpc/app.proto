@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package apprpc;
+
+message Empty {}
+
+message Message {
+  string message = 1;
+}
+
+message Device {
+  string serial = 1;
+  string serviceIp = 2;
+  string servicePort = 3;
+  bool serviceLaunched = 4;
+}
+
+message Devices {
+  repeated Device devices = 1;
+}
+
+message AdbConnectParams {
+  string ip = 1;
+  string port = 2;
+}
+
+message AdbShellParams {
+  string serial = 1;
+  string command = 2;
+}
+
+service AppService {
+  rpc GetDevices(Empty) returns (Devices) {}
+  rpc AdbConnect(AdbConnectParams) returns (Message) {}
+  rpc AdbShell(AdbShellParams) returns (Message) {}
+}

@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "google-protobuf": "^3.10.0-rc.1",
+    "grpc-web": "^1.0.6",
     "vue": "^2.6.10"
   },
   "devDependencies": {
