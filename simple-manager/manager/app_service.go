@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	rpc "github.com/r2-studio/robotmon-desktop/simple-manager/manager/apprpc"
+	"github.com/r2-studio/robotmon-desktop/simple-manager/manager/proxy"
 	"google.golang.org/grpc"
 )
 
@@ -28,15 +30,22 @@ func (a *AppService) Init() {
 	grpcServer := grpc.NewServer(opt1, opt2)
 
 	rpc.RegisterAppServiceServer(grpcServer, a)
-	lis, err := net.Listen("tcp", ":8081")
+	lis, err := net.Listen("tcp", ":9487")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	fmt.Println("Listen :9487 for gRPC")
 	go grpcServer.Serve(lis)
+
+	time.Sleep(time.Second)
+
+	fmt.Println("Listen :9488 for http")
+	go proxy.RunProxy("0.0.0.0:9488", "localhost:9487")
 }
 
 func (a *AppService) GetDevices(context.Context, *rpc.Empty) (*rpc.Devices, error) {
+	fmt.Println("GetDevices")
 	serials, err := adbClient.GetDevices()
 	if err != nil {
 		return nil, err
