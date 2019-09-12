@@ -12,10 +12,12 @@ import (
 	"google.golang.org/grpc"
 )
 
+// AppService app service struct
 type AppService struct {
 	adbClient *AdbClient
 }
 
+// NewAppService new app service
 func NewAppService(adbClient *AdbClient) *AppService {
 	a := &AppService{
 		adbClient: adbClient,
@@ -24,6 +26,7 @@ func NewAppService(adbClient *AdbClient) *AppService {
 	return a
 }
 
+// Init init app service
 func (a *AppService) Init() {
 	opt1 := grpc.MaxRecvMsgSize(64 * 1024 * 1024)
 	opt2 := grpc.MaxSendMsgSize(64 * 1024 * 1024)
@@ -44,8 +47,8 @@ func (a *AppService) Init() {
 	go proxy.RunProxy("0.0.0.0:9488", "localhost:9487")
 }
 
+// GetDevices get devices
 func (a *AppService) GetDevices(context.Context, *rpc.Empty) (*rpc.Devices, error) {
-	fmt.Println("GetDevices")
 	serials, err := adbClient.GetDevices()
 	if err != nil {
 		return nil, err
@@ -63,10 +66,20 @@ func (a *AppService) GetDevices(context.Context, *rpc.Empty) (*rpc.Devices, erro
 	return result, nil
 }
 
-func (a *AppService) AdbConnect(context.Context, *rpc.AdbConnectParams) (*rpc.Message, error) {
-	return nil, nil
+// AdbConnect call adb connect
+func (a *AppService) AdbConnect(ctx context.Context, req *rpc.AdbConnectParams) (*rpc.Message, error) {
+	result, err := adbClient.Connect(req.Ip, req.Port)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Message{Message: result}, nil
 }
 
-func (a *AppService) AdbShell(context.Context, *rpc.AdbShellParams) (*rpc.Message, error) {
-	return nil, nil
+// AdbShell call adb shell
+func (a *AppService) AdbShell(ctx context.Context, req *rpc.AdbShellParams) (*rpc.Message, error) {
+	result, err := adbClient.Shell(req.Serial, req.Command)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Message{Message: result}, nil
 }

@@ -12,7 +12,9 @@ message Device {
   string serial = 1;
   string serviceIp = 2;
   string servicePort = 3;
-  bool serviceLaunched = 4;
+  string servicePid1 = 4;
+  string servicePid2 = 5;
+  bool serviceLaunched = 6;
 }
 
 message Devices {
@@ -29,8 +31,24 @@ message AdbShellParams {
   string command = 2;
 }
 
+message AdbForwardParams {
+  string serial = 1;
+  string devicePort = 2;
+  string pcPort = 3;
+}
+
+message AdbTCPIPParams {
+  string serial = 1;
+  string port = 2;
+}
+
 service AppService {
   rpc GetDevices(Empty) returns (Devices) {}
+  rpc GetStartCommand(Empty) returns (Message) {}
   rpc AdbConnect(AdbConnectParams) returns (Message) {}
   rpc AdbShell(AdbShellParams) returns (Message) {}
+  rpc AdbForward(AdbForwardParams) returns (Message) {}
+  rpc AdbTCPIP(AdbTCPIPParams) returns (Message) {}
+  rpc StartService(Empty) returns (Message) {}
+  rpc StopService(Empty) returns (Message) {}
 }

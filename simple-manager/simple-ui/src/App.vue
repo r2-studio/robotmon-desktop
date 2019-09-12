@@ -24,7 +24,6 @@ export default {
     HelloWorld
   },
   mounted: async function() {
-    console.log('aa');
     const devices = await c.getDevices(new Empty(), {});
     console.log(devices);
   }

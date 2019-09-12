@@ -112,8 +112,8 @@ func (a *AdbClient) Connect(ip string, port string) (string, error) {
 }
 
 // TCPIP adb tcpip
-func (a *AdbClient) TCPIP(serial string) error {
-	cmd := exec.Command(a.adbPath, "-s", serial, "tcpip", "5555")
+func (a *AdbClient) TCPIP(serial, port string) error {
+	cmd := exec.Command(a.adbPath, "-s", serial, "tcpip", port)
 	hideWindow(cmd)
 	_, err := cmd.Output()
 	if err != nil {
@@ -129,9 +129,6 @@ func (a *AdbClient) Shell(serial, command string) (string, error) {
 	bs, err := cmd.Output()
 	if err != nil {
 		return "", err
-	}
-	if strings.Contains(string(bs), "error") {
-		return "", nil
 	}
 	return string(bytes.Trim(bs, "\r\n ")), nil
 }
@@ -391,4 +388,34 @@ func (a *AdbClient) StopService(serial string) error {
 		time.Sleep(200 * time.Millisecond)
 	}
 	return nil
+}
+
+func (a *AdbClient) GetIPAddress(serial string) string {
+	output, _ := a.Shell(serial, "ifconfig")
+	lines := strings.Split(output, "\n")
+	ip := ""
+	for _, line := range lines {
+		if !strings.Contains(line, "inet ") || strings.Contains(line, "127.0.0.1") || strings.Contains(line, "0.0.0.0") || strings.Contains(line, ":172.") {
+			continue
+		}
+		fmt.Sscanf(strings.Trim(line, " \t"), "inet addr:%s ", &ip)
+		if ip != "" {
+			return ip
+		}
+	}
+	output, _ = a.Shell(serial, "netcfg")
+	lines = strings.Split(output, "\n")
+	for _, line := range lines {
+		ss := strings.Split(line, " ")
+		for _, s := range ss {
+			if len(s) > 10 && strings.Contains(s, "/") {
+				tmpIP := s[0:strings.Index(s, "/")]
+				if tmpIP == "0.0.0.0" || tmpIP == "127.0.0.1" || strings.HasPrefix(tmpIP, "172.") {
+					continue
+				}
+				return ip
+			}
+		}
+	}
+	return ip
 }
