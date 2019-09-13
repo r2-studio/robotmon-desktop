@@ -316,17 +316,17 @@ func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, er
 	return command, details, err
 }
 
-func (a *AdbClient) StartRobotmonService(serial string) error {
+func (a *AdbClient) StartRobotmonService(serial string) ([]string, error) {
 	pids, err := a.GetPids(serial, "app_process")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(pids) > 0 {
-		return nil
+		return pids, nil
 	}
 	command, _, err := a.GetRobotmonStartCommand(serial)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// try 3 times
 	for i := 0; i < 3; i++ {
@@ -350,14 +350,14 @@ func (a *AdbClient) StartRobotmonService(serial string) error {
 		// check pids
 		pids, err := a.GetPids(serial, "app_process")
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if len(pids) > 0 {
-			return nil
+			return pids, nil
 		}
 		time.Sleep(1000 * time.Millisecond)
 	}
-	return fmt.Errorf("Start service failed")
+	return nil, fmt.Errorf("Start service failed")
 }
 
 func (a *AdbClient) StopService(serial string) error {

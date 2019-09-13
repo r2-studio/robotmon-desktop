@@ -98,7 +98,9 @@ type Device struct {
 	Serial               string   `protobuf:"bytes,1,opt,name=serial,proto3" json:"serial,omitempty"`
 	ServiceIp            string   `protobuf:"bytes,2,opt,name=serviceIp,proto3" json:"serviceIp,omitempty"`
 	ServicePort          string   `protobuf:"bytes,3,opt,name=servicePort,proto3" json:"servicePort,omitempty"`
-	ServiceLaunched      bool     `protobuf:"varint,4,opt,name=serviceLaunched,proto3" json:"serviceLaunched,omitempty"`
+	ServicePid1          string   `protobuf:"bytes,4,opt,name=servicePid1,proto3" json:"servicePid1,omitempty"`
+	ServicePid2          string   `protobuf:"bytes,5,opt,name=servicePid2,proto3" json:"servicePid2,omitempty"`
+	ServiceLaunched      bool     `protobuf:"varint,6,opt,name=serviceLaunched,proto3" json:"serviceLaunched,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -150,6 +152,20 @@ func (m *Device) GetServicePort() string {
 	return ""
 }
 
+func (m *Device) GetServicePid1() string {
+	if m != nil {
+		return m.ServicePid1
+	}
+	return ""
+}
+
+func (m *Device) GetServicePid2() string {
+	if m != nil {
+		return m.ServicePid2
+	}
+	return ""
+}
+
 func (m *Device) GetServiceLaunched() bool {
 	if m != nil {
 		return m.ServiceLaunched
@@ -196,6 +212,116 @@ func (m *Devices) GetDevices() []*Device {
 	return nil
 }
 
+type DeviceSerial struct {
+	Serial               string   `protobuf:"bytes,1,opt,name=serial,proto3" json:"serial,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DeviceSerial) Reset()         { *m = DeviceSerial{} }
+func (m *DeviceSerial) String() string { return proto.CompactTextString(m) }
+func (*DeviceSerial) ProtoMessage()    {}
+func (*DeviceSerial) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{4}
+}
+
+func (m *DeviceSerial) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeviceSerial.Unmarshal(m, b)
+}
+func (m *DeviceSerial) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeviceSerial.Marshal(b, m, deterministic)
+}
+func (m *DeviceSerial) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeviceSerial.Merge(m, src)
+}
+func (m *DeviceSerial) XXX_Size() int {
+	return xxx_messageInfo_DeviceSerial.Size(m)
+}
+func (m *DeviceSerial) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeviceSerial.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeviceSerial proto.InternalMessageInfo
+
+func (m *DeviceSerial) GetSerial() string {
+	if m != nil {
+		return m.Serial
+	}
+	return ""
+}
+
+type GetStartCommandResult struct {
+	LdPath               string   `protobuf:"bytes,1,opt,name=ldPath,proto3" json:"ldPath,omitempty"`
+	ClassPath            string   `protobuf:"bytes,2,opt,name=classPath,proto3" json:"classPath,omitempty"`
+	AppProcess           string   `protobuf:"bytes,3,opt,name=appProcess,proto3" json:"appProcess,omitempty"`
+	BaseCommand          string   `protobuf:"bytes,4,opt,name=baseCommand,proto3" json:"baseCommand,omitempty"`
+	FullCommand          string   `protobuf:"bytes,5,opt,name=fullCommand,proto3" json:"fullCommand,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetStartCommandResult) Reset()         { *m = GetStartCommandResult{} }
+func (m *GetStartCommandResult) String() string { return proto.CompactTextString(m) }
+func (*GetStartCommandResult) ProtoMessage()    {}
+func (*GetStartCommandResult) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{5}
+}
+
+func (m *GetStartCommandResult) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetStartCommandResult.Unmarshal(m, b)
+}
+func (m *GetStartCommandResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetStartCommandResult.Marshal(b, m, deterministic)
+}
+func (m *GetStartCommandResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetStartCommandResult.Merge(m, src)
+}
+func (m *GetStartCommandResult) XXX_Size() int {
+	return xxx_messageInfo_GetStartCommandResult.Size(m)
+}
+func (m *GetStartCommandResult) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetStartCommandResult.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetStartCommandResult proto.InternalMessageInfo
+
+func (m *GetStartCommandResult) GetLdPath() string {
+	if m != nil {
+		return m.LdPath
+	}
+	return ""
+}
+
+func (m *GetStartCommandResult) GetClassPath() string {
+	if m != nil {
+		return m.ClassPath
+	}
+	return ""
+}
+
+func (m *GetStartCommandResult) GetAppProcess() string {
+	if m != nil {
+		return m.AppProcess
+	}
+	return ""
+}
+
+func (m *GetStartCommandResult) GetBaseCommand() string {
+	if m != nil {
+		return m.BaseCommand
+	}
+	return ""
+}
+
+func (m *GetStartCommandResult) GetFullCommand() string {
+	if m != nil {
+		return m.FullCommand
+	}
+	return ""
+}
+
 type AdbConnectParams struct {
 	Ip                   string   `protobuf:"bytes,1,opt,name=ip,proto3" json:"ip,omitempty"`
 	Port                 string   `protobuf:"bytes,2,opt,name=port,proto3" json:"port,omitempty"`
@@ -208,7 +334,7 @@ func (m *AdbConnectParams) Reset()         { *m = AdbConnectParams{} }
 func (m *AdbConnectParams) String() string { return proto.CompactTextString(m) }
 func (*AdbConnectParams) ProtoMessage()    {}
 func (*AdbConnectParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{4}
+	return fileDescriptor_e0f9056a14b86d47, []int{6}
 }
 
 func (m *AdbConnectParams) XXX_Unmarshal(b []byte) error {
@@ -255,7 +381,7 @@ func (m *AdbShellParams) Reset()         { *m = AdbShellParams{} }
 func (m *AdbShellParams) String() string { return proto.CompactTextString(m) }
 func (*AdbShellParams) ProtoMessage()    {}
 func (*AdbShellParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e0f9056a14b86d47, []int{5}
+	return fileDescriptor_e0f9056a14b86d47, []int{7}
 }
 
 func (m *AdbShellParams) XXX_Unmarshal(b []byte) error {
@@ -290,39 +416,208 @@ func (m *AdbShellParams) GetCommand() string {
 	return ""
 }
 
+type AdbForwardParams struct {
+	Serial               string   `protobuf:"bytes,1,opt,name=serial,proto3" json:"serial,omitempty"`
+	DevicePort           string   `protobuf:"bytes,2,opt,name=devicePort,proto3" json:"devicePort,omitempty"`
+	PcPort               string   `protobuf:"bytes,3,opt,name=pcPort,proto3" json:"pcPort,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AdbForwardParams) Reset()         { *m = AdbForwardParams{} }
+func (m *AdbForwardParams) String() string { return proto.CompactTextString(m) }
+func (*AdbForwardParams) ProtoMessage()    {}
+func (*AdbForwardParams) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{8}
+}
+
+func (m *AdbForwardParams) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AdbForwardParams.Unmarshal(m, b)
+}
+func (m *AdbForwardParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AdbForwardParams.Marshal(b, m, deterministic)
+}
+func (m *AdbForwardParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AdbForwardParams.Merge(m, src)
+}
+func (m *AdbForwardParams) XXX_Size() int {
+	return xxx_messageInfo_AdbForwardParams.Size(m)
+}
+func (m *AdbForwardParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_AdbForwardParams.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AdbForwardParams proto.InternalMessageInfo
+
+func (m *AdbForwardParams) GetSerial() string {
+	if m != nil {
+		return m.Serial
+	}
+	return ""
+}
+
+func (m *AdbForwardParams) GetDevicePort() string {
+	if m != nil {
+		return m.DevicePort
+	}
+	return ""
+}
+
+func (m *AdbForwardParams) GetPcPort() string {
+	if m != nil {
+		return m.PcPort
+	}
+	return ""
+}
+
+type AdbTCPIPParams struct {
+	Serial               string   `protobuf:"bytes,1,opt,name=serial,proto3" json:"serial,omitempty"`
+	Port                 string   `protobuf:"bytes,2,opt,name=port,proto3" json:"port,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *AdbTCPIPParams) Reset()         { *m = AdbTCPIPParams{} }
+func (m *AdbTCPIPParams) String() string { return proto.CompactTextString(m) }
+func (*AdbTCPIPParams) ProtoMessage()    {}
+func (*AdbTCPIPParams) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{9}
+}
+
+func (m *AdbTCPIPParams) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AdbTCPIPParams.Unmarshal(m, b)
+}
+func (m *AdbTCPIPParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AdbTCPIPParams.Marshal(b, m, deterministic)
+}
+func (m *AdbTCPIPParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AdbTCPIPParams.Merge(m, src)
+}
+func (m *AdbTCPIPParams) XXX_Size() int {
+	return xxx_messageInfo_AdbTCPIPParams.Size(m)
+}
+func (m *AdbTCPIPParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_AdbTCPIPParams.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AdbTCPIPParams proto.InternalMessageInfo
+
+func (m *AdbTCPIPParams) GetSerial() string {
+	if m != nil {
+		return m.Serial
+	}
+	return ""
+}
+
+func (m *AdbTCPIPParams) GetPort() string {
+	if m != nil {
+		return m.Port
+	}
+	return ""
+}
+
+type StartServiceResult struct {
+	Pid1                 string   `protobuf:"bytes,1,opt,name=pid1,proto3" json:"pid1,omitempty"`
+	Pid2                 string   `protobuf:"bytes,2,opt,name=pid2,proto3" json:"pid2,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *StartServiceResult) Reset()         { *m = StartServiceResult{} }
+func (m *StartServiceResult) String() string { return proto.CompactTextString(m) }
+func (*StartServiceResult) ProtoMessage()    {}
+func (*StartServiceResult) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e0f9056a14b86d47, []int{10}
+}
+
+func (m *StartServiceResult) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StartServiceResult.Unmarshal(m, b)
+}
+func (m *StartServiceResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StartServiceResult.Marshal(b, m, deterministic)
+}
+func (m *StartServiceResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StartServiceResult.Merge(m, src)
+}
+func (m *StartServiceResult) XXX_Size() int {
+	return xxx_messageInfo_StartServiceResult.Size(m)
+}
+func (m *StartServiceResult) XXX_DiscardUnknown() {
+	xxx_messageInfo_StartServiceResult.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StartServiceResult proto.InternalMessageInfo
+
+func (m *StartServiceResult) GetPid1() string {
+	if m != nil {
+		return m.Pid1
+	}
+	return ""
+}
+
+func (m *StartServiceResult) GetPid2() string {
+	if m != nil {
+		return m.Pid2
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*Empty)(nil), "apprpc.Empty")
 	proto.RegisterType((*Message)(nil), "apprpc.Message")
 	proto.RegisterType((*Device)(nil), "apprpc.Device")
 	proto.RegisterType((*Devices)(nil), "apprpc.Devices")
+	proto.RegisterType((*DeviceSerial)(nil), "apprpc.DeviceSerial")
+	proto.RegisterType((*GetStartCommandResult)(nil), "apprpc.GetStartCommandResult")
 	proto.RegisterType((*AdbConnectParams)(nil), "apprpc.AdbConnectParams")
 	proto.RegisterType((*AdbShellParams)(nil), "apprpc.AdbShellParams")
+	proto.RegisterType((*AdbForwardParams)(nil), "apprpc.AdbForwardParams")
+	proto.RegisterType((*AdbTCPIPParams)(nil), "apprpc.AdbTCPIPParams")
+	proto.RegisterType((*StartServiceResult)(nil), "apprpc.StartServiceResult")
 }
 
 func init() { proto.RegisterFile("app.proto", fileDescriptor_e0f9056a14b86d47) }
 
 var fileDescriptor_e0f9056a14b86d47 = []byte{
-	// 318 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x92, 0x4f, 0x6b, 0xf2, 0x40,
-	0x10, 0xc6, 0x5d, 0xf5, 0xcd, 0xea, 0xc8, 0xab, 0x65, 0x0e, 0xb2, 0x94, 0x1e, 0xc2, 0xf6, 0x92,
-	0x53, 0x0e, 0x4a, 0x0b, 0x3d, 0xda, 0x3f, 0x94, 0x42, 0x0b, 0xa2, 0x9f, 0x60, 0x4d, 0x96, 0x1a,
-	0x30, 0xc9, 0xb0, 0x9b, 0x16, 0xfa, 0x15, 0xfa, 0x61, 0xfa, 0x19, 0x8b, 0xd9, 0x5d, 0xb4, 0xd2,
-	0xde, 0xe6, 0x99, 0x99, 0x27, 0x3c, 0xbf, 0xcc, 0xc2, 0x50, 0x11, 0xa5, 0x64, 0xea, 0xa6, 0xc6,
-	0x48, 0x11, 0x19, 0xca, 0x24, 0x87, 0x7f, 0x0f, 0x25, 0x35, 0x1f, 0xf2, 0x12, 0xf8, 0x8b, 0xb6,
-	0x56, 0xbd, 0x6a, 0x14, 0xc0, 0x4b, 0x57, 0x0a, 0x16, 0xb3, 0x64, 0xb8, 0x0a, 0x52, 0x7e, 0x32,
-	0x88, 0xee, 0xf5, 0x7b, 0x91, 0x69, 0x9c, 0x42, 0x64, 0xb5, 0x29, 0xd4, 0xce, 0xef, 0x78, 0x85,
-	0x17, 0x30, 0xb4, 0xda, 0xec, 0x57, 0x9e, 0x48, 0x74, 0xdb, 0xd1, 0xa1, 0x81, 0x31, 0x8c, 0xbc,
-	0x58, 0xd6, 0xa6, 0x11, 0xbd, 0x76, 0x7e, 0xdc, 0xc2, 0x04, 0x26, 0x5e, 0x3e, 0xab, 0xb7, 0x2a,
-	0xdb, 0xea, 0x5c, 0xf4, 0x63, 0x96, 0x0c, 0x56, 0xa7, 0x6d, 0x39, 0x07, 0xee, 0xb2, 0x58, 0x4c,
-	0x80, 0xe7, 0xae, 0x14, 0x2c, 0xee, 0x25, 0xa3, 0xd9, 0x38, 0x75, 0x7c, 0xa9, 0xdb, 0x58, 0x85,
-	0xb1, 0xbc, 0x86, 0xb3, 0x45, 0xbe, 0xb9, 0xab, 0xab, 0x4a, 0x67, 0xcd, 0x52, 0x19, 0x55, 0x5a,
-	0x1c, 0x43, 0xb7, 0x20, 0x8f, 0xd1, 0x2d, 0x08, 0x11, 0xfa, 0xb4, 0x4f, 0xe7, 0xd2, 0xb7, 0xb5,
-	0xbc, 0x85, 0xf1, 0x22, 0xdf, 0xac, 0xb7, 0x7a, 0xb7, 0xf3, 0xae, 0xbf, 0x7e, 0x80, 0x00, 0x9e,
-	0xd5, 0x65, 0xa9, 0xaa, 0xdc, 0x7f, 0x20, 0xc8, 0xd9, 0x17, 0x03, 0x58, 0x10, 0xad, 0x1d, 0x07,
-	0xa6, 0x00, 0x8f, 0xba, 0x09, 0x08, 0xff, 0x43, 0xe2, 0xf6, 0x1c, 0xe7, 0x93, 0x9f, 0x00, 0x56,
-	0x76, 0xf0, 0x06, 0xe0, 0x10, 0x1d, 0x45, 0x58, 0x38, 0xc5, 0x39, 0x58, 0xfd, 0x3d, 0x65, 0x07,
-	0xaf, 0x60, 0x10, 0xd2, 0xe3, 0xf4, 0xc8, 0x78, 0xc4, 0xf3, 0x8b, 0x6d, 0x13, 0xb5, 0x6f, 0x65,
-	0xfe, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x1f, 0xc9, 0x18, 0xf6, 0x38, 0x02, 0x00, 0x00,
+	// 552 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0xed, 0x6a, 0xdb, 0x30,
+	0x14, 0x8d, 0x93, 0x36, 0x6e, 0x6e, 0xba, 0x64, 0x5c, 0xb6, 0x62, 0xc2, 0x56, 0x82, 0x06, 0x23,
+	0xbf, 0x02, 0x75, 0x59, 0x61, 0xd0, 0x3f, 0x69, 0xb6, 0x75, 0x85, 0x0d, 0x4c, 0xb2, 0x17, 0x50,
+	0x6c, 0x6d, 0x31, 0x38, 0xb1, 0xb0, 0x94, 0x8d, 0x3d, 0xd6, 0x5e, 0x64, 0x8f, 0xb1, 0xe7, 0x18,
+	0xfa, 0x6a, 0xe4, 0x34, 0x69, 0xff, 0xe9, 0x1e, 0x9d, 0xab, 0x2b, 0x9d, 0x73, 0x6c, 0xe8, 0x50,
+	0xce, 0xc7, 0xbc, 0x2a, 0x65, 0x89, 0x6d, 0xca, 0x79, 0xc5, 0x53, 0x12, 0xc2, 0xf1, 0xc7, 0x15,
+	0x97, 0xbf, 0xc9, 0x1b, 0x08, 0xbf, 0x32, 0x21, 0xe8, 0x0f, 0x86, 0x11, 0x84, 0x2b, 0xb3, 0x8c,
+	0x82, 0x61, 0x30, 0xea, 0xcc, 0x5c, 0x49, 0xfe, 0x06, 0xd0, 0xfe, 0xc0, 0x7e, 0xe6, 0x29, 0xc3,
+	0x33, 0x68, 0x0b, 0x56, 0xe5, 0xb4, 0xb0, 0x1c, 0x5b, 0xe1, 0x2b, 0xe8, 0x08, 0x56, 0x29, 0xca,
+	0x1d, 0x8f, 0x9a, 0x7a, 0x6b, 0x0b, 0xe0, 0x10, 0xba, 0xb6, 0x48, 0xca, 0x4a, 0x46, 0x2d, 0xbd,
+	0xef, 0x43, 0x3e, 0x23, 0xcf, 0x2e, 0xa2, 0xa3, 0x3a, 0x23, 0xcf, 0x2e, 0xea, 0x8c, 0x38, 0x3a,
+	0xde, 0x65, 0xc4, 0x38, 0x82, 0xbe, 0x2d, 0xbf, 0xd0, 0xcd, 0x3a, 0x5d, 0xb2, 0x2c, 0x6a, 0x0f,
+	0x83, 0xd1, 0xc9, 0x6c, 0x17, 0x26, 0x97, 0x10, 0x9a, 0xf7, 0x08, 0x1c, 0x41, 0x98, 0x99, 0x65,
+	0x14, 0x0c, 0x5b, 0xa3, 0x6e, 0xdc, 0x1b, 0x1b, 0x8d, 0xc6, 0x86, 0x31, 0x73, 0xdb, 0xe4, 0x2d,
+	0x9c, 0x1a, 0x68, 0x6e, 0x9e, 0x7c, 0x40, 0x0a, 0xf2, 0x27, 0x80, 0x97, 0xb7, 0x4c, 0xce, 0x25,
+	0xad, 0xe4, 0xb4, 0x5c, 0xad, 0xe8, 0x3a, 0x9b, 0x31, 0xb1, 0x29, 0xa4, 0xea, 0x28, 0xb2, 0x84,
+	0xca, 0xa5, 0xeb, 0x30, 0x95, 0x12, 0x2f, 0x2d, 0xa8, 0x10, 0x7a, 0xcb, 0x8a, 0x77, 0x0f, 0xe0,
+	0x39, 0x00, 0xe5, 0x3c, 0xa9, 0xca, 0x94, 0x09, 0x61, 0xb5, 0xf3, 0x10, 0x25, 0xcc, 0x82, 0x0a,
+	0x66, 0x47, 0x39, 0xe9, 0x3c, 0x48, 0x31, 0xbe, 0x6f, 0x8a, 0xc2, 0x31, 0xac, 0x74, 0x1e, 0x44,
+	0xae, 0xe0, 0xf9, 0x24, 0x5b, 0x4c, 0xcb, 0xf5, 0x9a, 0xa5, 0x32, 0xa1, 0x15, 0x5d, 0x09, 0xec,
+	0x41, 0x33, 0xe7, 0xf6, 0xa6, 0xcd, 0x9c, 0x23, 0xc2, 0x11, 0x57, 0xee, 0x99, 0x0b, 0xea, 0x35,
+	0xb9, 0x81, 0xde, 0x24, 0x5b, 0xcc, 0x97, 0xac, 0x28, 0x6c, 0xd7, 0xa1, 0x80, 0x44, 0x10, 0xa6,
+	0x76, 0xbe, 0x39, 0xc0, 0x95, 0x64, 0xa1, 0x67, 0x7f, 0x2a, 0xab, 0x5f, 0xb4, 0xca, 0x9e, 0x38,
+	0xe5, 0x1c, 0xc0, 0xd8, 0x91, 0x6c, 0x6f, 0xe2, 0x21, 0xaa, 0x8f, 0xa7, 0x5e, 0xc6, 0x6c, 0x45,
+	0xae, 0xf5, 0x3d, 0xbf, 0x4d, 0x93, 0xbb, 0xe4, 0x89, 0x09, 0xfb, 0x5e, 0x79, 0x0d, 0xa8, 0xdd,
+	0x9c, 0x9b, 0x18, 0x59, 0x37, 0x15, 0x53, 0x65, 0x35, 0xb0, 0x4c, 0x15, 0x52, 0x83, 0xc5, 0xf7,
+	0xdd, 0x79, 0x16, 0xc7, 0xff, 0x5a, 0x00, 0x13, 0xce, 0x6d, 0x33, 0x8e, 0x01, 0x6e, 0x99, 0x74,
+	0xf1, 0x7b, 0xe6, 0xd2, 0xa6, 0x3f, 0xc7, 0x41, 0xbf, 0x1e, 0x3e, 0x41, 0x1a, 0xf8, 0x19, 0xfa,
+	0x3b, 0x69, 0xc2, 0x17, 0x75, 0x96, 0xc9, 0xe3, 0xe0, 0xb5, 0x43, 0xf7, 0x86, 0x8f, 0x34, 0xf0,
+	0x3d, 0xc0, 0xd6, 0x64, 0x8c, 0x1c, 0x7d, 0xd7, 0xf8, 0xed, 0x25, 0xec, 0x9f, 0x81, 0x34, 0xf0,
+	0x1d, 0x9c, 0x38, 0x9f, 0xf1, 0xcc, 0x6b, 0xf4, 0x9c, 0xdf, 0xd7, 0x66, 0x26, 0x5a, 0x6b, 0x6b,
+	0x13, 0x6b, 0x76, 0x1f, 0x9e, 0xa8, 0x1d, 0xab, 0x4d, 0xf4, 0x3c, 0xdc, 0xd7, 0x76, 0x03, 0xa7,
+	0xbe, 0x55, 0x07, 0xa4, 0x1a, 0x38, 0xf4, 0xa1, 0xad, 0xa4, 0x81, 0x57, 0xd0, 0x9d, 0xcb, 0x92,
+	0x3f, 0x7e, 0xc4, 0xc3, 0xd9, 0x8b, 0xb6, 0xfe, 0xc7, 0x5e, 0xfe, 0x0f, 0x00, 0x00, 0xff, 0xff,
+	0x1c, 0x1b, 0x43, 0x2e, 0x70, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -338,8 +633,13 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AppServiceClient interface {
 	GetDevices(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Devices, error)
+	GetStartCommand(ctx context.Context, in *DeviceSerial, opts ...grpc.CallOption) (*GetStartCommandResult, error)
 	AdbConnect(ctx context.Context, in *AdbConnectParams, opts ...grpc.CallOption) (*Message, error)
 	AdbShell(ctx context.Context, in *AdbShellParams, opts ...grpc.CallOption) (*Message, error)
+	AdbForward(ctx context.Context, in *AdbForwardParams, opts ...grpc.CallOption) (*Message, error)
+	AdbTCPIP(ctx context.Context, in *AdbTCPIPParams, opts ...grpc.CallOption) (*Message, error)
+	StartService(ctx context.Context, in *DeviceSerial, opts ...grpc.CallOption) (*StartServiceResult, error)
+	StopService(ctx context.Context, in *DeviceSerial, opts ...grpc.CallOption) (*Message, error)
 }
 
 type appServiceClient struct {
@@ -353,6 +653,15 @@ func NewAppServiceClient(cc *grpc.ClientConn) AppServiceClient {
 func (c *appServiceClient) GetDevices(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Devices, error) {
 	out := new(Devices)
 	err := c.cc.Invoke(ctx, "/apprpc.AppService/GetDevices", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appServiceClient) GetStartCommand(ctx context.Context, in *DeviceSerial, opts ...grpc.CallOption) (*GetStartCommandResult, error) {
+	out := new(GetStartCommandResult)
+	err := c.cc.Invoke(ctx, "/apprpc.AppService/GetStartCommand", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -377,11 +686,52 @@ func (c *appServiceClient) AdbShell(ctx context.Context, in *AdbShellParams, opt
 	return out, nil
 }
 
+func (c *appServiceClient) AdbForward(ctx context.Context, in *AdbForwardParams, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/apprpc.AppService/AdbForward", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appServiceClient) AdbTCPIP(ctx context.Context, in *AdbTCPIPParams, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/apprpc.AppService/AdbTCPIP", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appServiceClient) StartService(ctx context.Context, in *DeviceSerial, opts ...grpc.CallOption) (*StartServiceResult, error) {
+	out := new(StartServiceResult)
+	err := c.cc.Invoke(ctx, "/apprpc.AppService/StartService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appServiceClient) StopService(ctx context.Context, in *DeviceSerial, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/apprpc.AppService/StopService", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppServiceServer is the server API for AppService service.
 type AppServiceServer interface {
 	GetDevices(context.Context, *Empty) (*Devices, error)
+	GetStartCommand(context.Context, *DeviceSerial) (*GetStartCommandResult, error)
 	AdbConnect(context.Context, *AdbConnectParams) (*Message, error)
 	AdbShell(context.Context, *AdbShellParams) (*Message, error)
+	AdbForward(context.Context, *AdbForwardParams) (*Message, error)
+	AdbTCPIP(context.Context, *AdbTCPIPParams) (*Message, error)
+	StartService(context.Context, *DeviceSerial) (*StartServiceResult, error)
+	StopService(context.Context, *DeviceSerial) (*Message, error)
 }
 
 // UnimplementedAppServiceServer can be embedded to have forward compatible implementations.
@@ -391,11 +741,26 @@ type UnimplementedAppServiceServer struct {
 func (*UnimplementedAppServiceServer) GetDevices(ctx context.Context, req *Empty) (*Devices, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevices not implemented")
 }
+func (*UnimplementedAppServiceServer) GetStartCommand(ctx context.Context, req *DeviceSerial) (*GetStartCommandResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStartCommand not implemented")
+}
 func (*UnimplementedAppServiceServer) AdbConnect(ctx context.Context, req *AdbConnectParams) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdbConnect not implemented")
 }
 func (*UnimplementedAppServiceServer) AdbShell(ctx context.Context, req *AdbShellParams) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AdbShell not implemented")
+}
+func (*UnimplementedAppServiceServer) AdbForward(ctx context.Context, req *AdbForwardParams) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdbForward not implemented")
+}
+func (*UnimplementedAppServiceServer) AdbTCPIP(ctx context.Context, req *AdbTCPIPParams) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdbTCPIP not implemented")
+}
+func (*UnimplementedAppServiceServer) StartService(ctx context.Context, req *DeviceSerial) (*StartServiceResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartService not implemented")
+}
+func (*UnimplementedAppServiceServer) StopService(ctx context.Context, req *DeviceSerial) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopService not implemented")
 }
 
 func RegisterAppServiceServer(s *grpc.Server, srv AppServiceServer) {
@@ -416,6 +781,24 @@ func _AppService_GetDevices_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppServiceServer).GetDevices(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppService_GetStartCommand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceSerial)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServiceServer).GetStartCommand(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apprpc.AppService/GetStartCommand",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServiceServer).GetStartCommand(ctx, req.(*DeviceSerial))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -456,6 +839,78 @@ func _AppService_AdbShell_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AppService_AdbForward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdbForwardParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServiceServer).AdbForward(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apprpc.AppService/AdbForward",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServiceServer).AdbForward(ctx, req.(*AdbForwardParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppService_AdbTCPIP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdbTCPIPParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServiceServer).AdbTCPIP(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apprpc.AppService/AdbTCPIP",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServiceServer).AdbTCPIP(ctx, req.(*AdbTCPIPParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppService_StartService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceSerial)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServiceServer).StartService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apprpc.AppService/StartService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServiceServer).StartService(ctx, req.(*DeviceSerial))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppService_StopService_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceSerial)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServiceServer).StopService(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apprpc.AppService/StopService",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServiceServer).StopService(ctx, req.(*DeviceSerial))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _AppService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "apprpc.AppService",
 	HandlerType: (*AppServiceServer)(nil),
@@ -465,12 +920,32 @@ var _AppService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AppService_GetDevices_Handler,
 		},
 		{
+			MethodName: "GetStartCommand",
+			Handler:    _AppService_GetStartCommand_Handler,
+		},
+		{
 			MethodName: "AdbConnect",
 			Handler:    _AppService_AdbConnect_Handler,
 		},
 		{
 			MethodName: "AdbShell",
 			Handler:    _AppService_AdbShell_Handler,
+		},
+		{
+			MethodName: "AdbForward",
+			Handler:    _AppService_AdbForward_Handler,
+		},
+		{
+			MethodName: "AdbTCPIP",
+			Handler:    _AppService_AdbTCPIP_Handler,
+		},
+		{
+			MethodName: "StartService",
+			Handler:    _AppService_StartService_Handler,
+		},
+		{
+			MethodName: "StopService",
+			Handler:    _AppService_StopService_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

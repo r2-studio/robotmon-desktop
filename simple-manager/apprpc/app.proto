@@ -21,6 +21,18 @@ message Devices {
   repeated Device devices = 1;
 }
 
+message DeviceSerial {
+  string serial = 1;
+}
+
+message GetStartCommandResult {
+  string ldPath = 1;
+  string classPath = 2;
+  string appProcess = 3;
+  string baseCommand = 4;
+  string fullCommand = 5;
+}
+
 message AdbConnectParams {
   string ip = 1;
   string port = 2;
@@ -42,13 +54,18 @@ message AdbTCPIPParams {
   string port = 2;
 }
 
+message StartServiceResult {
+  string pid1 = 1;
+  string pid2 = 2;
+}
+
 service AppService {
   rpc GetDevices(Empty) returns (Devices) {}
-  rpc GetStartCommand(Empty) returns (Message) {}
+  rpc GetStartCommand(DeviceSerial) returns (GetStartCommandResult) {}
   rpc AdbConnect(AdbConnectParams) returns (Message) {}
   rpc AdbShell(AdbShellParams) returns (Message) {}
   rpc AdbForward(AdbForwardParams) returns (Message) {}
   rpc AdbTCPIP(AdbTCPIPParams) returns (Message) {}
-  rpc StartService(Empty) returns (Message) {}
-  rpc StopService(Empty) returns (Message) {}
+  rpc StartService(DeviceSerial) returns (StartServiceResult) {}
+  rpc StopService(DeviceSerial) returns (Message) {}
 }

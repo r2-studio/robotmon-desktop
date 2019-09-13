@@ -66,6 +66,24 @@ func (a *AppService) GetDevices(context.Context, *rpc.Empty) (*rpc.Devices, erro
 	return result, nil
 }
 
+// GetStartCommand get devices
+func (a *AppService) GetStartCommand(ctx context.Context, req *rpc.DeviceSerial) (*rpc.GetStartCommandResult, error) {
+	_, details, err := adbClient.GetRobotmonStartCommand(req.Serial)
+	if err != nil {
+		return nil, err
+	}
+	if len(details) != 5 {
+		return nil, fmt.Errorf("Get start command failed: %v", details)
+	}
+	return &rpc.GetStartCommandResult{
+		LdPath:      details[0],
+		ClassPath:   details[1],
+		AppProcess:  details[2],
+		BaseCommand: details[3],
+		FullCommand: details[4],
+	}, nil
+}
+
 // AdbConnect call adb connect
 func (a *AppService) AdbConnect(ctx context.Context, req *rpc.AdbConnectParams) (*rpc.Message, error) {
 	result, err := adbClient.Connect(req.Ip, req.Port)
@@ -82,4 +100,53 @@ func (a *AppService) AdbShell(ctx context.Context, req *rpc.AdbShellParams) (*rp
 		return nil, err
 	}
 	return &rpc.Message{Message: result}, nil
+}
+
+// AdbForward call adb shell
+func (a *AppService) AdbForward(ctx context.Context, req *rpc.AdbForwardParams) (*rpc.Message, error) {
+	result, err := adbClient.Forward(req.Serial, req.DevicePort, req.PcPort)
+	if err != nil {
+		return nil, err
+	}
+	if result {
+		return &rpc.Message{Message: fmt.Sprintf("Forward success %s -> %s", req.DevicePort, req.PcPort)}, nil
+	}
+	return &rpc.Message{Message: "Forward failed"}, nil
+}
+
+// AdbTCPIP call adb shell
+func (a *AppService) AdbTCPIP(ctx context.Context, req *rpc.AdbTCPIPParams) (*rpc.Message, error) {
+	err := adbClient.TCPIP(req.Serial, req.Port)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Message{Message: fmt.Sprintf("Forward success port: %s", req.Port)}, nil
+}
+
+// StartService get devices
+func (a *AppService) StartService(ctx context.Context, req *rpc.DeviceSerial) (*rpc.StartServiceResult, error) {
+	pids, err := adbClient.StartRobotmonService(req.Serial)
+	if pids == nil || err != nil {
+		return nil, err
+	}
+	var pid1, pid2 string
+	if len(pids) > 0 {
+		pid1 = pids[0]
+	}
+	if len(pids) > 1 {
+		pid2 = pids[1]
+	}
+	return &rpc.StartServiceResult{
+		Pid1: pid1,
+		Pid2: pid2,
+	}, nil
+}
+
+// StopService get devices
+func (a *AppService) StopService(ctx context.Context, req *rpc.DeviceSerial) (*rpc.Message, error) {
+	err := adbClient.StopService(req.Serial)
+	if err != nil {
+		return nil, err
+	}
+	return &rpc.Message{Message: "StopService success"}, nil
 }

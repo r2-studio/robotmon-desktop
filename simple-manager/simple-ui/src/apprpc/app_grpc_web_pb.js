@@ -1,4 +1,3 @@
-/* eslint-disable */
 /**
  * @fileoverview gRPC-Web generated client stub for apprpc
  * @enhanceable
@@ -164,6 +163,80 @@ proto.apprpc.AppServicePromiseClient.prototype.getDevices =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.DeviceSerial,
+ *   !proto.apprpc.GetStartCommandResult>}
+ */
+const methodDescriptor_AppService_GetStartCommand = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/GetStartCommand',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.DeviceSerial,
+  proto.apprpc.GetStartCommandResult,
+  /** @param {!proto.apprpc.DeviceSerial} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.GetStartCommandResult.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.DeviceSerial,
+ *   !proto.apprpc.GetStartCommandResult>}
+ */
+const methodInfo_AppService_GetStartCommand = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.GetStartCommandResult,
+  /** @param {!proto.apprpc.DeviceSerial} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.GetStartCommandResult.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.DeviceSerial} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.GetStartCommandResult)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.GetStartCommandResult>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.getStartCommand =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/GetStartCommand',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_GetStartCommand,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.DeviceSerial} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.GetStartCommandResult>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.getStartCommand =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/GetStartCommand',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_GetStartCommand);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.apprpc.AdbConnectParams,
  *   !proto.apprpc.Message>}
  */
@@ -306,6 +379,302 @@ proto.apprpc.AppServicePromiseClient.prototype.adbShell =
       request,
       metadata || {},
       methodDescriptor_AppService_AdbShell);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.AdbForwardParams,
+ *   !proto.apprpc.Message>}
+ */
+const methodDescriptor_AppService_AdbForward = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/AdbForward',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.AdbForwardParams,
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.AdbForwardParams} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.AdbForwardParams,
+ *   !proto.apprpc.Message>}
+ */
+const methodInfo_AppService_AdbForward = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.AdbForwardParams} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.AdbForwardParams} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.Message)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.Message>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.adbForward =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/AdbForward',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbForward,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.AdbForwardParams} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.Message>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.adbForward =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/AdbForward',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbForward);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.AdbTCPIPParams,
+ *   !proto.apprpc.Message>}
+ */
+const methodDescriptor_AppService_AdbTCPIP = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/AdbTCPIP',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.AdbTCPIPParams,
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.AdbTCPIPParams} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.AdbTCPIPParams,
+ *   !proto.apprpc.Message>}
+ */
+const methodInfo_AppService_AdbTCPIP = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.AdbTCPIPParams} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.AdbTCPIPParams} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.Message)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.Message>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.adbTCPIP =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/AdbTCPIP',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbTCPIP,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.AdbTCPIPParams} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.Message>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.adbTCPIP =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/AdbTCPIP',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbTCPIP);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.DeviceSerial,
+ *   !proto.apprpc.StartServiceResult>}
+ */
+const methodDescriptor_AppService_StartService = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/StartService',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.DeviceSerial,
+  proto.apprpc.StartServiceResult,
+  /** @param {!proto.apprpc.DeviceSerial} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.StartServiceResult.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.DeviceSerial,
+ *   !proto.apprpc.StartServiceResult>}
+ */
+const methodInfo_AppService_StartService = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.StartServiceResult,
+  /** @param {!proto.apprpc.DeviceSerial} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.StartServiceResult.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.DeviceSerial} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.StartServiceResult)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.StartServiceResult>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.startService =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/StartService',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_StartService,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.DeviceSerial} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.StartServiceResult>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.startService =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/StartService',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_StartService);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.DeviceSerial,
+ *   !proto.apprpc.Message>}
+ */
+const methodDescriptor_AppService_StopService = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/StopService',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.DeviceSerial,
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.DeviceSerial} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.DeviceSerial,
+ *   !proto.apprpc.Message>}
+ */
+const methodInfo_AppService_StopService = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.DeviceSerial} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.DeviceSerial} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.Message)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.Message>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.stopService =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/StopService',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_StopService,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.DeviceSerial} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.Message>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.stopService =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/StopService',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_StopService);
 };
 
 
