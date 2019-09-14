@@ -1,12 +1,13 @@
 <template>
   <v-container>
+    <AlertDialog v-model="alert" :title="alertTitle" :message="alertMessage"></AlertDialog>
     <v-card class="mx-auto" tile>
       <v-card-title>Add Device</v-card-title>
       <v-card-text>adb connect to devices</v-card-text>
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>
-            <v-text-field label="IP:PORT" placeholder="127.0.0.1:62001" v-model="connectIp"></v-text-field>
+            <v-text-field label="IP:PORT" placeholder="127.0.0.1:62001" v-model="connectIpPort"></v-text-field>
           </v-list-item-title>
         </v-list-item-content>
 
@@ -30,7 +31,7 @@
       </v-list-item>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn outlined color="primary">Add</v-btn>
+        <v-btn outlined color="primary" @click="connect">Add</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -44,28 +45,70 @@
 </template>
 
 <script>
-import { Empty } from "../apprpc/app_pb";
+import validate from "../utils/validate";
+
+import { Empty, AdbConnectParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
+import AlertDialog from "./Alert";
 import Device from "./Device";
 
 export default {
   components: {
+    AlertDialog,
     Device
   },
   data: () => ({
-    connectIp: '127.0.0.1:62001',
+    alert: false,
+    alertTitle: "",
+    alertMessage: "",
+    connectIpPort: "127.0.0.1:62001",
     devices: []
   }),
-  mounted: async function() {
-    try {
-      const devicesProto = await AppService.getInstence().getDevices(
-        new Empty()
-      );
-      const devices = devicesProto.getDevicesList();
-      this.$set(this, "devices", devices);
-    } catch (e) {
-      console.log(e.message);
+  methods: {
+    popAlert: function(title, message) {
+      this.alert = true;
+      this.alertTitle = title;
+      this.alertMessage = message;
+    },
+    updateDevices: async function() {
+      try {
+        const devicesProto = await AppService.getInstence().getDevices(
+          new Empty()
+        );
+        const devices = devicesProto.getDevicesList();
+        this.$set(this, "devices", devices);
+      } catch (e) {
+        console.log(e.message);
+      }
+    },
+    connect: async function() {
+      if (!validate.validateIpAndPort(this.connectIpPort)) {
+        return this.popAlert(
+          "Address Format Error",
+          `"${this.connectIpPort}" should be "ip:port"`
+        );
+      }
+      const parts = this.connectIpPort.split(":");
+      const request = new AdbConnectParams();
+      request.setIp(parts[0]);
+      request.setPort(parts[1]);
+      try {
+        const result = await AppService.getInstence().adbConnect(request);
+        this.popAlert(
+          "Add Device Success",
+          `New Device: ${result.getMessage()}`
+        );
+        this.updateDevices();
+      } catch (e) {
+        this.popAlert(
+          "Add Device Error",
+          `"${this.connectIpPort}": ${e.message}`
+        );
+      }
     }
+  },
+  mounted: function() {
+    this.updateDevices();
   }
 };
 </script>
