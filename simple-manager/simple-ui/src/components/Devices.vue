@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <LoadingDialog v-model="loading" :title="loadingTitle" :message="loadingMessage"></LoadingDialog>
     <AlertDialog v-model="alert" :title="alertTitle" :message="alertMessage"></AlertDialog>
     <v-card class="mx-auto" tile>
       <v-card-title>Add Device</v-card-title>
@@ -30,6 +31,7 @@
         </v-list-item-icon>
       </v-list-item>
       <v-card-actions>
+        <v-btn outlined color="error" @click="restart">Restart ADB</v-btn>
         <v-spacer></v-spacer>
         <v-btn outlined color="primary" @click="connect">Add</v-btn>
         <v-spacer></v-spacer>
@@ -50,14 +52,19 @@ import validate from "../utils/validate";
 import { Empty, AdbConnectParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
 import AlertDialog from "./Alert";
+import LoadingDialog from "./Loading";
 import Device from "./Device";
 
 export default {
   components: {
+    LoadingDialog,
     AlertDialog,
     Device
   },
   data: () => ({
+    loading: false,
+    loadingTitle: "",
+    loadingMessage: "",
     alert: false,
     alertTitle: "",
     alertMessage: "",
@@ -65,6 +72,14 @@ export default {
     devices: []
   }),
   methods: {
+    showLoading: function(title, message) {
+      this.loading = true;
+      this.loadingTitle = title;
+      this.loadingMessage = message;
+    },
+    hideLoading: function() {
+      this.loading = false;
+    },
     popAlert: function(title, message) {
       this.alert = true;
       this.alertTitle = title;
@@ -72,13 +87,28 @@ export default {
     },
     updateDevices: async function() {
       try {
+        this.showLoading("Getting devices", `adb devices`);
         const devicesProto = await AppService.getInstence().getDevices(
           new Empty()
         );
+        this.hideLoading();
         const devices = devicesProto.getDevicesList();
         this.$set(this, "devices", devices);
       } catch (e) {
         console.log(e.message);
+      }
+    },
+    restart: async function() {
+      try {
+        this.showLoading(
+          "Restart ADB server",
+          `adb kill-server; adb start-server`
+        );
+        await AppService.getInstence().adbRestart(new Empty())
+        this.hideLoading();
+        this.updateDevices();
+      } catch (e) {
+        this.popAlert("Add Device Error", `${e.message}`);
       }
     },
     connect: async function() {
@@ -93,7 +123,12 @@ export default {
       request.setIp(parts[0]);
       request.setPort(parts[1]);
       try {
+        this.showLoading(
+          "Adding device...",
+          `adb connect ${this.connectIpPort}`
+        );
         const result = await AppService.getInstence().adbConnect(request);
+        this.hideLoading();
         this.popAlert(
           "Add Device Success",
           `New Device: ${result.getMessage()}`

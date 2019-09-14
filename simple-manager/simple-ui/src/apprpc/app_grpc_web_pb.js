@@ -311,6 +311,80 @@ proto.apprpc.AppServicePromiseClient.prototype.adbConnect =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.Empty,
+ *   !proto.apprpc.Empty>}
+ */
+const methodDescriptor_AppService_AdbRestart = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/AdbRestart',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.Empty,
+  proto.apprpc.Empty,
+  /** @param {!proto.apprpc.Empty} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Empty.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.Empty,
+ *   !proto.apprpc.Empty>}
+ */
+const methodInfo_AppService_AdbRestart = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.Empty,
+  /** @param {!proto.apprpc.Empty} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.adbRestart =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/AdbRestart',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbRestart,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.Empty>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.adbRestart =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/AdbRestart',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbRestart);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.apprpc.AdbShellParams,
  *   !proto.apprpc.Message>}
  */

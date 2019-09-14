@@ -84,6 +84,12 @@ func (a *AppService) GetStartCommand(ctx context.Context, req *rpc.DeviceSerial)
 	}, nil
 }
 
+// AdbRestart call adb kill-server then adb start-server
+func (a *AppService) AdbRestart(context.Context, *rpc.Empty) (*rpc.Empty, error) {
+	adbClient.Restart()
+	return &rpc.Empty{}, nil
+}
+
 // AdbConnect call adb connect
 func (a *AppService) AdbConnect(ctx context.Context, req *rpc.AdbConnectParams) (*rpc.Message, error) {
 	result, err := adbClient.Connect(req.Ip, req.Port)

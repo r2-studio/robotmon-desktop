@@ -63,6 +63,7 @@ service AppService {
   rpc GetDevices(Empty) returns (Devices) {}
   rpc GetStartCommand(DeviceSerial) returns (GetStartCommandResult) {}
   rpc AdbConnect(AdbConnectParams) returns (Message) {}
+  rpc AdbRestart(Empty) returns (Empty) {}
   rpc AdbShell(AdbShellParams) returns (Message) {}
   rpc AdbForward(AdbForwardParams) returns (Message) {}
   rpc AdbTCPIP(AdbTCPIPParams) returns (Message) {}

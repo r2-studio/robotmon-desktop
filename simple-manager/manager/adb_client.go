@@ -111,6 +111,17 @@ func (a *AdbClient) Connect(ip string, port string) (string, error) {
 	return "", nil
 }
 
+// Restart adb kill-server then adb start-server
+func (a *AdbClient) Restart() {
+	cmd := exec.Command(a.adbPath, "kill-server")
+	hideWindow(cmd)
+	cmd.Output()
+	time.Sleep(time.Second)
+	cmd = exec.Command(a.adbPath, "start-server")
+	hideWindow(cmd)
+	cmd.Output()
+}
+
 // TCPIP adb tcpip
 func (a *AdbClient) TCPIP(serial, port string) error {
 	cmd := exec.Command(a.adbPath, "-s", serial, "tcpip", port)
