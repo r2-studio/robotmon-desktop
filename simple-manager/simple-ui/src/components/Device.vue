@@ -27,7 +27,7 @@
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-share-outline</v-icon>
-          <v-btn outlined color="success" small class="mr-1">Forward</v-btn>(adb forward)
+          <v-btn outlined color="success" small class="mr-1" @click="forward">Forward</v-btn>(adb forward)
         </v-list-item-subtitle>
 
         <v-list-item-subtitle v-if="serviceLaunched">
@@ -48,7 +48,7 @@
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-lan-disconnect</v-icon>
           <v-btn outlined color="primary" small class="mr-1">Connect</v-btn>
-          <span>Service disconnected</span>
+          <span>Service not connected</span>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-icon>
@@ -59,6 +59,14 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+import {
+  SHOW_LOADING,
+  HIDE_LOADING,
+  SHOW_ALERT,
+  HIDE_ALERT
+} from "../store/types";
+import { Empty, AdbForwardParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
 import Device from "./Device";
 
@@ -78,6 +86,7 @@ export default {
     connected: false
   }),
   methods: {
+    ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT]),
     initDevice: function() {
       this.serial = this.device.getSerial();
       this.servicePid1 = this.device.getServicepid1();
@@ -94,12 +103,61 @@ export default {
       // parse forward
       if (serviceForward !== undefined) {
         const forwards = serviceForward.split(" ");
-        console.log(forwards);
         if (forwards.length > 2) {
           this.forwardPortFrom = forwards[1];
           this.forwardPortTo = forwards[2];
         }
       }
+    },
+    forward: async function() {
+      try {
+        this[SHOW_LOADING]({
+          title: "Forwarding Device",
+          message: `adb -s ${this.serial} forward tcp:8081 tcp:`
+        });
+        let message = await AppService.getInstence().adbForwardList(
+          new Empty()
+        );
+        const forwardResult = message.getMessage();
+        const port = this.findNextPort(forwardResult);
+
+        this[SHOW_LOADING]({
+          title: "Forwarding Device",
+          message: `adb -s ${this.serial} forward tcp:8081 tcp:${port}`
+        });
+
+        const param = new AdbForwardParams();
+        param.setSerial(this.serial);
+        param.setDeviceport("8081");
+        param.setPcport(`${port}`);
+
+        message = await AppService.getInstence().adbForward(param);
+        const result = message.getMessage();
+        this[HIDE_LOADING]();
+        this[SHOW_ALERT]({ title: "Add Forwaed Done", message: result });
+        this.forwardPortFrom = '8081';
+        this.forwardPortTo = `${port}`;
+      } catch (e) {
+        this[HIDE_LOADING]();
+        this[SHOW_ALERT]({ title: "Add Forwaed Error", message: e.message });
+      }
+    },
+    findNextPort: function(forwardResult) {
+      let port = 8080;
+      const forwards = forwardResult.split("\n");
+      for (const forward of forwards) {
+        if (forward === "" || forward.find("tcp:8081") === -1) {
+          continue;
+        }
+        const values = forward.split(" ");
+        if (values.length > 2) {
+          const ports = values[2].split(":");
+          if (ports.length === 2) {
+            port = +ports[1] > port ? +ports[1] : port;
+          }
+        }
+      }
+      return port + 1;
     }
   },
   mounted: async function() {

@@ -83,8 +83,9 @@ export default {
         const devices = devicesProto.getDevicesList();
         this.$set(this, "devices", devices);
       } catch (e) {
+        this[HIDE_LOADING]();
         console.log(e)
-        console.log(e.message);
+        this[SHOW_ALERT]({ title: "Add Devices Error", message: e.message });
       }
     },
     restart: async function() {
@@ -97,6 +98,7 @@ export default {
         this[HIDE_LOADING]();
         this.updateDevices();
       } catch (e) {
+        this[HIDE_LOADING]();
         this[SHOW_ALERT]({ title: "Add Device Error", message: e.message });
       }
     },
@@ -125,6 +127,7 @@ export default {
         });
         this.updateDevices();
       } catch (e) {
+        this[HIDE_LOADING]();
         this[SHOW_ALERT]({
           title: "Add Device Error",
           message: `"${this.connectIpPort}": ${e.message}`
