@@ -21,7 +21,7 @@ export default {
   }),
   methods: {
     done: function() {
-      this.$emit('input', false);
+      this.$emit('close');
     }
   }
 };

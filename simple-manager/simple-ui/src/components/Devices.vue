@@ -1,7 +1,5 @@
 <template>
   <v-container>
-    <LoadingDialog v-model="loading" :title="loadingTitle" :message="loadingMessage"></LoadingDialog>
-    <AlertDialog v-model="alert" :title="alertTitle" :message="alertMessage"></AlertDialog>
     <v-card class="mx-auto" tile>
       <v-card-title>Add Device</v-card-title>
       <v-card-text>adb connect to devices</v-card-text>
@@ -49,98 +47,88 @@
 </template>
 
 <script>
-import validate from "../utils/validate";
+import { mapMutations } from "vuex";
+import {
+  SHOW_LOADING,
+  HIDE_LOADING,
+  SHOW_ALERT,
+  HIDE_ALERT
+} from "../store/types";
 
+import validate from "../utils/validate";
 import { Empty, AdbConnectParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
-import AlertDialog from "./Alert";
-import LoadingDialog from "./Loading";
 import Device from "./Device";
 
 export default {
   components: {
-    LoadingDialog,
-    AlertDialog,
     Device
   },
   data: () => ({
-    loading: false,
-    loadingTitle: "",
-    loadingMessage: "",
-    alert: false,
-    alertTitle: "",
-    alertMessage: "",
     connectIpPort: "127.0.0.1:62001",
     devices: []
   }),
   methods: {
-    showLoading: function(title, message) {
-      this.loading = true;
-      this.loadingTitle = title;
-      this.loadingMessage = message;
-    },
-    hideLoading: function() {
-      this.loading = false;
-    },
-    popAlert: function(title, message) {
-      this.alert = true;
-      this.alertTitle = title;
-      this.alertMessage = message;
-    },
+    ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT]),
     updateDevices: async function() {
       try {
-        this.showLoading("Getting devices", `adb devices`);
+        this[SHOW_LOADING]({
+          title: "Getting devices",
+          message: "adb devices"
+        });
         const devicesProto = await AppService.getInstence().getDevices(
           new Empty()
         );
-        this.hideLoading();
+        this[HIDE_LOADING]();
         const devices = devicesProto.getDevicesList();
         this.$set(this, "devices", devices);
       } catch (e) {
+        console.log(e)
         console.log(e.message);
       }
     },
     restart: async function() {
       try {
-        this.showLoading(
-          "Restart ADB server",
-          `adb kill-server; adb start-server`
-        );
+        this[SHOW_LOADING]({
+          title: "Restart ADB server",
+          message: "adb kill-server; adb start-server"
+        });
         await AppService.getInstence().adbRestart(new Empty());
-        this.hideLoading();
+        this[HIDE_LOADING]();
         this.updateDevices();
       } catch (e) {
-        this.popAlert("Add Device Error", `${e.message}`);
+        this[SHOW_ALERT]({ title: "Add Device Error", message: e.message });
       }
     },
     connect: async function() {
       if (!validate.validateIpAndPort(this.connectIpPort)) {
-        return this.popAlert(
-          "Address Format Error",
-          `"${this.connectIpPort}" should be "ip:port"`
-        );
+        this[SHOW_ALERT]({
+          title: "Address Format Error",
+          message: `"${this.connectIpPort}" should be "ip:port"`
+        });
+        return;
       }
       const parts = this.connectIpPort.split(":");
       const request = new AdbConnectParams();
       request.setIp(parts[0]);
       request.setPort(parts[1]);
       try {
-        this.showLoading(
-          "Adding device...",
-          `adb connect ${this.connectIpPort}`
-        );
+        this[SHOW_LOADING]({
+          title:  "Adding device...",
+          message: `adb connect ${this.connectIpPort}`
+        });
         const result = await AppService.getInstence().adbConnect(request);
-        this.hideLoading();
-        this.popAlert(
-          "Add Device Success",
-          `New Device: ${result.getMessage()}`
-        );
+        this[HIDE_LOADING]();
+        this[SHOW_ALERT]({
+          title: "Add Device Success",
+          message: `New Device: ${result.getMessage()}`
+        });
         this.updateDevices();
       } catch (e) {
-        this.popAlert(
-          "Add Device Error",
-          `"${this.connectIpPort}": ${e.message}`
-        );
+        this[SHOW_ALERT]({
+          title: "Add Device Error",
+          message: `"${this.connectIpPort}": ${e.message}`
+        });
       }
     }
   },
