@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-layout wrap>
-      <v-flex xs4>
+      <v-flex xs12 md5>
         <Devices></Devices>
       </v-flex>
-      <v-flex xs8></v-flex>
+      <v-flex xs12 md7></v-flex>
     </v-layout>  
   </v-container>
 </template>

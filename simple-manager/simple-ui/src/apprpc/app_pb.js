@@ -512,6 +512,7 @@ proto.apprpc.Device.toObject = function(includeInstance, msg) {
     serviceport: jspb.Message.getFieldWithDefault(msg, 3, ""),
     servicepid1: jspb.Message.getFieldWithDefault(msg, 4, ""),
     servicepid2: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    serviceforward: jspb.Message.getFieldWithDefault(msg, 7, ""),
     servicelaunched: jspb.Message.getFieldWithDefault(msg, 6, false)
   };
 
@@ -568,6 +569,10 @@ proto.apprpc.Device.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setServicepid2(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setServiceforward(value);
       break;
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -634,6 +639,13 @@ proto.apprpc.Device.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getServiceforward();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
       f
     );
   }
@@ -719,6 +731,21 @@ proto.apprpc.Device.prototype.getServicepid2 = function() {
 /** @param {string} value */
 proto.apprpc.Device.prototype.setServicepid2 = function(value) {
   jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string serviceForward = 7;
+ * @return {string}
+ */
+proto.apprpc.Device.prototype.getServiceforward = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/** @param {string} value */
+proto.apprpc.Device.prototype.setServiceforward = function(value) {
+  jspb.Message.setProto3StringField(this, 7, value);
 };
 
 

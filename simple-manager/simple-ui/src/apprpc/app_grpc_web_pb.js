@@ -533,6 +533,80 @@ proto.apprpc.AppServicePromiseClient.prototype.adbForward =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.Empty,
+ *   !proto.apprpc.Message>}
+ */
+const methodDescriptor_AppService_AdbForwardList = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/AdbForwardList',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.Empty,
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.Empty} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.Empty,
+ *   !proto.apprpc.Message>}
+ */
+const methodInfo_AppService_AdbForwardList = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.Empty} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.Message)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.Message>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.adbForwardList =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/AdbForwardList',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbForwardList,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.Message>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.adbForwardList =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/AdbForwardList',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_AdbForwardList);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.apprpc.AdbTCPIPParams,
  *   !proto.apprpc.Message>}
  */

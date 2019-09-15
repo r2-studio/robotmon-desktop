@@ -94,6 +94,17 @@ func (a *AdbClient) Forward(serial string, devicePort, pcPort string) (bool, err
 	return true, nil
 }
 
+// ForwardList adb forward
+func (a *AdbClient) ForwardList() string {
+	cmd := exec.Command(a.adbPath, "forward", "--list")
+	hideWindow(cmd)
+	bs, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	return strings.Trim(string(bs), "\n \t")
+}
+
 // Connect adb connect
 func (a *AdbClient) Connect(ip string, port string) (string, error) {
 	cmd := exec.Command(a.adbPath, "connect", ip+":"+port)

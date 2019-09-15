@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 	"time"
 
 	rpc "github.com/r2-studio/robotmon-desktop/simple-manager/manager/apprpc"
@@ -49,14 +50,46 @@ func (a *AppService) Init() {
 
 // GetDevices get devices
 func (a *AppService) GetDevices(context.Context, *rpc.Empty) (*rpc.Devices, error) {
+	forwardResult := adbClient.ForwardList()
+	forwards := strings.Split(forwardResult, "\n")
+
 	serials, err := adbClient.GetDevices()
 	if err != nil {
 		return nil, err
 	}
 	devices := make([]*rpc.Device, 0, len(serials))
 	for _, serial := range serials {
+		// find forward port
+		forward := ""
+		for _, f := range forwards {
+			if strings.Contains(f, serial) && strings.Contains(f, "tcp:8081") {
+				forward = f
+				break
+			}
+		}
+		// find ip
+		ip := adbClient.GetIPAddress(serial)
+		launched := false
+		pid1 := ""
+		pid2 := ""
+		pids, err := adbClient.GetPids(serial, "app_process")
+		if err == nil {
+			if len(pids) > 0 {
+				pid1 = pids[0]
+			}
+			if len(pids) > 1 {
+				pid2 = pids[1]
+				launched = true
+			}
+		}
 		device := &rpc.Device{
-			Serial: serial,
+			Serial:          serial,
+			ServiceIp:       ip,
+			ServicePort:     "8081",
+			ServicePid1:     pid1,
+			ServicePid2:     pid2,
+			ServiceForward:  forward,
+			ServiceLaunched: launched,
 		}
 		devices = append(devices, device)
 	}
@@ -118,6 +151,12 @@ func (a *AppService) AdbForward(ctx context.Context, req *rpc.AdbForwardParams) 
 		return &rpc.Message{Message: fmt.Sprintf("Forward success %s -> %s", req.DevicePort, req.PcPort)}, nil
 	}
 	return &rpc.Message{Message: "Forward failed"}, nil
+}
+
+// AdbForwardList call adb shell
+func (a *AppService) AdbForwardList(context.Context, *rpc.Empty) (*rpc.Message, error) {
+	result := adbClient.ForwardList()
+	return &rpc.Message{Message: result}, nil
 }
 
 // AdbTCPIP call adb shell

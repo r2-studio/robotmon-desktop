@@ -40,7 +40,9 @@
 
     <v-card class="mx-auto mt-5" tile>
       <v-card-title>Connected Devices</v-card-title>
-      <v-card-text>adb devices</v-card-text>
+      <v-card-text>
+        <v-btn outlined color="primary" small class="mr-1" @click="updateDevices">Update</v-btn>adb devices
+      </v-card-text>
       <Device v-for="device in devices" :device="device" :key="device.serial"></Device>
     </v-card>
   </v-container>
@@ -104,7 +106,7 @@ export default {
           "Restart ADB server",
           `adb kill-server; adb start-server`
         );
-        await AppService.getInstence().adbRestart(new Empty())
+        await AppService.getInstence().adbRestart(new Empty());
         this.hideLoading();
         this.updateDevices();
       } catch (e) {
