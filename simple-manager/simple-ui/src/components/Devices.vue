@@ -41,7 +41,7 @@
       <v-card-text>
         <v-btn outlined color="primary" small class="mr-1" @click="updateDevices">Update</v-btn>adb devices
       </v-card-text>
-      <Device v-for="device in devices" :device="device" :key="device.getSerial()"></Device>
+      <Device v-for="device in devices" :device="device" :key="device.getSerial()" @update="updateDevices"></Device>
     </v-card>
   </v-container>
 </template>
@@ -72,6 +72,7 @@ export default {
     ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT]),
     updateDevices: async function() {
       try {
+        this.$set(this, "devices", []);
         this[SHOW_LOADING]({
           title: "Getting devices",
           message: "adb devices"

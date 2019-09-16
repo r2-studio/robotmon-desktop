@@ -160,6 +160,15 @@ export default {
         }
       }
       return 8081;
+    },
+    getStartServiceCommand: async function() {
+
+    },
+    startService: async function() {
+
+    },
+    stopService: async function() {
+
     }
   },
   mounted: async function() {
