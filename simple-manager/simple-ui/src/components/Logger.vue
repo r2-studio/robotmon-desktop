@@ -20,16 +20,36 @@
       <v-layout>
         <v-flex xs12 :[adbLoggerWidth]="true">
           <v-card class="mx-auto mr-1" tile :height="loggerHeight" hide-overlay dark>
-            <div class="text-center font-weight-bold grey--text text--lighten-1 caption">ADB LOGGER</div>
+            <div class="text-center font-weight-bold grey--text text--lighten-1 caption">
+              ADB LOGGER
+              <v-btn x-small color="grey" class="mr-1" style="float:right;" @click="adbLoggerTop">
+                <v-icon dart small>mdi-arrow-expand-up</v-icon>
+              </v-btn>
+            </div>
             <v-divider></v-divider>
+            <div id="adb-logger-text" class="overflow-y-auto pl-2 pr-2" style="height: 90%;">
+              <pre class="font-weight-light caption" style="line-height: 12px">{{adbLoggerBuf.join('\n')}}</pre>
+            </div>
           </v-card>
         </v-flex>
         <v-flex xs12 :[serviceLoggerWidth]="true">
           <v-card class="mx-auto ml-1" tile :height="loggerHeight" hide-overlay dark>
-            <div
-              class="text-center font-weight-bold grey--text text--lighten-1 caption"
-            >SERVICE LOGGER</div>
+            <div class="text-center font-weight-bold grey--text text--lighten-1 caption">
+              SERVICE LOGGER
+              <v-btn
+                x-small
+                color="grey"
+                class="mr-1"
+                style="float:right;"
+                @click="serviceLoggerTop"
+              >
+                <v-icon dart small>mdi-arrow-expand-up</v-icon>
+              </v-btn>
+            </div>
             <v-divider></v-divider>
+            <div id="service-logger-text" class="overflow-y-auto pl-2 pr-2" style="height: 90%;">
+              <pre class="font-weight-light caption" style="line-height: 12px">{{serviceLoggerBuf.join('\n')}}</pre>
+            </div>
           </v-card>
         </v-flex>
       </v-layout>
@@ -38,10 +58,12 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+
 export default {
   data: () => ({
     height: 160,
-    loggerWidth: 6,
+    loggerWidth: 6
   }),
   methods: {
     expandHeight: function(dv) {
@@ -56,8 +78,15 @@ export default {
       }
       this.loggerWidth += dv;
     },
+    adbLoggerTop: function() {
+      this.$el.querySelector("#adb-logger-text").scrollTop = 0;
+    },
+    serviceLoggerTop: function() {
+      this.$el.querySelector("#service-logger-text").scrollTop = 0;
+    }
   },
   computed: {
+    ...mapState("ui", ["adbLoggerBuf", "serviceLoggerBuf"]),
     footerHeight: function() {
       return this.height;
     },
