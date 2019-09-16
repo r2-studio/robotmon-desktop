@@ -16,12 +16,15 @@ import (
 // AppService app service struct
 type AppService struct {
 	adbClient *AdbClient
+	// grpcAddress -> httpBindingAddress
+	proxyTable map[string]string
 }
 
 // NewAppService new app service
 func NewAppService(adbClient *AdbClient) *AppService {
 	a := &AppService{
-		adbClient: adbClient,
+		adbClient:  adbClient,
+		proxyTable: make(map[string]string),
 	}
 	a.Init()
 	return a
@@ -194,4 +197,21 @@ func (a *AppService) StopService(ctx context.Context, req *rpc.DeviceSerial) (*r
 		return nil, err
 	}
 	return &rpc.Message{Message: "StopService success"}, nil
+}
+
+// CreateProxy get devices
+func (a *AppService) CreateProxy(ctx context.Context, req *rpc.CreateGRPCProxy) (*rpc.Message, error) {
+	httpAddress := req.HttpAddress
+	grpcAddress := req.GrpcAddress
+	_, ok := a.proxyTable[httpAddress]
+	if ok {
+		return &rpc.Message{Message: "Proxy already created"}, nil
+	}
+	a.proxyTable[httpAddress] = grpcAddress
+	go func() {
+		proxy.RunProxy(req.HttpAddress, req.GrpcAddress)
+		delete(a.proxyTable, httpAddress)
+	}()
+	time.Sleep(time.Second)
+	return &rpc.Message{Message: "Proxy server created"}, nil
 }

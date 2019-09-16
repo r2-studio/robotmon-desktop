@@ -60,6 +60,11 @@ message StartServiceResult {
   string pid2 = 2;
 }
 
+message CreateGRPCProxy {
+  string grpcAddress = 1;
+  string httpAddress = 2;
+}
+
 service AppService {
   rpc GetDevices(Empty) returns (Devices) {}
   rpc GetStartCommand(DeviceSerial) returns (GetStartCommandResult) {}
@@ -71,4 +76,5 @@ service AppService {
   rpc AdbTCPIP(AdbTCPIPParams) returns (Message) {}
   rpc StartService(DeviceSerial) returns (StartServiceResult) {}
   rpc StopService(DeviceSerial) returns (Message) {}
+  rpc CreateProxy(CreateGRPCProxy) returns (Message) {}
 }

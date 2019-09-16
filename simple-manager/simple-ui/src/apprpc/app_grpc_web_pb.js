@@ -826,5 +826,79 @@ proto.apprpc.AppServicePromiseClient.prototype.stopService =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.apprpc.CreateGRPCProxy,
+ *   !proto.apprpc.Message>}
+ */
+const methodDescriptor_AppService_CreateProxy = new grpc.web.MethodDescriptor(
+  '/apprpc.AppService/CreateProxy',
+  grpc.web.MethodType.UNARY,
+  proto.apprpc.CreateGRPCProxy,
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.CreateGRPCProxy} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.apprpc.CreateGRPCProxy,
+ *   !proto.apprpc.Message>}
+ */
+const methodInfo_AppService_CreateProxy = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.apprpc.Message,
+  /** @param {!proto.apprpc.CreateGRPCProxy} request */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.apprpc.Message.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.apprpc.CreateGRPCProxy} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.apprpc.Message)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.apprpc.Message>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.apprpc.AppServiceClient.prototype.createProxy =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/apprpc.AppService/CreateProxy',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_CreateProxy,
+      callback);
+};
+
+
+/**
+ * @param {!proto.apprpc.CreateGRPCProxy} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.apprpc.Message>}
+ *     A native promise that resolves to the response
+ */
+proto.apprpc.AppServicePromiseClient.prototype.createProxy =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/apprpc.AppService/CreateProxy',
+      request,
+      metadata || {},
+      methodDescriptor_AppService_CreateProxy);
+};
+
+
 module.exports = proto.apprpc;
 

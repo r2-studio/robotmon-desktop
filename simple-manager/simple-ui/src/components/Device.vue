@@ -47,13 +47,10 @@
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-lan-disconnect</v-icon>
-          <v-btn outlined color="primary" small class="mr-1">Connect</v-btn>
+          <v-btn outlined color="primary" small class="mr-1" @click="connect">Connect</v-btn>
           <span>Service not connected</span>
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-icon>
-        <v-icon>mdi-clock</v-icon>
-      </v-list-item-icon>
     </v-list-item>
   </div>
 </template>
@@ -67,7 +64,12 @@ import {
   HIDE_ALERT,
   APPEND_ADB_LOGGER
 } from "../store/types";
-import { Empty, AdbForwardParams, DeviceSerial } from "../apprpc/app_pb";
+import {
+  Empty,
+  AdbForwardParams,
+  DeviceSerial,
+  CreateGRPCProxy
+} from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
 import { AppServiceClient } from "../apprpc/app_grpc_web_pb";
 
@@ -221,16 +223,17 @@ export default {
         this.servicePid2 = startResult.getPid2();
         if (this.servicePid2 !== "") {
           this.serviceLaunched = true;
-          this[APPEND_ADB_LOGGER](`Start Service Success: ${this.servicePid1}, ${this.servicePid2}`);
+          this[APPEND_ADB_LOGGER](
+            `Start Service Success: ${this.servicePid1}, ${this.servicePid2}`
+          );
         } else {
-          this[APPEND_ADB_LOGGER](`Start Service Unknown Error, pids: ${this.servicePid1}, ${this.servicePid2}`);
+          this[APPEND_ADB_LOGGER](
+            `Start Service Unknown Error, pids: ${this.servicePid1}, ${this.servicePid2}`
+          );
         }
       } catch (e) {
         this[HIDE_LOADING]();
-        this[SHOW_ALERT]({
-          title: "Start Service Error",
-          message: e.message
-        });
+        this[SHOW_ALERT]({ title: "Start Service Error", message: e.message });
         this[APPEND_ADB_LOGGER](`Start Service Failed`);
       }
     },
@@ -253,6 +256,58 @@ export default {
         });
       }
       this[HIDE_LOADING]();
+    },
+    connect: async function() {
+      if (!this.serviceLaunched) {
+        this[SHOW_ALERT]({
+          title: "Warning Service Not Started",
+          message: "Please start service."
+        });
+        return;
+      }
+      if (this.serviceAddress !== "") {
+        this.connectImpl(this.serviceAddress);
+      } else if (this.forwardPortDevice !== "") {
+        const taps = this.forwardPortPC.split(":");
+        this.connectImpl(`127.0.0.1:${taps[1]}`);
+      } else {
+        this[SHOW_ALERT]({
+          title: "No Address available",
+          message:
+            "Please check network or FORWARD it (Create connection via adb)."
+        });
+      }
+    },
+    connectImpl: async function(grpcAddress) {
+      this[SHOW_LOADING]({ title: "Connect to Service", message: "..." });
+      // create grcp <-> http proxy
+      const taps = grpcAddress.split(":");
+      const httpPort = `${10000 + +taps[1]}`;
+      const httpBindAddress = `0.0.0.0:${httpPort}`;
+      try {
+        this[SHOW_LOADING]({
+          title: "Connect to Service",
+          message: `Creating grpc to http proxy: ${grpcAddress} <-> ${httpBindAddress}`
+        });
+        await this.createProxy(grpcAddress, httpBindAddress);
+        this[APPEND_ADB_LOGGER](`Proxy created: ${grpcAddress} <-> ${httpBindAddress}`);
+      } catch (e) {
+        this[HIDE_LOADING]();
+        this[SHOW_ALERT]({
+          title: "Can not create grpc <-> http proxy",
+          message: e.message
+        });
+        this[APPEND_ADB_LOGGER](`Proxy create failed: ${grpcAddress} <-> ${httpBindAddress}`);
+        return;
+      }
+
+      this[HIDE_LOADING]();
+    },
+    createProxy: function(grpcAddress, httpBindAddress) {
+      const createProxyParams = new CreateGRPCProxy();
+      createProxyParams.setGrpcaddress(grpcAddress);
+      createProxyParams.setHttpaddress(httpBindAddress);
+      return AppService.getInstence().createProxy(createProxyParams);
     }
   },
   mounted: async function() {
