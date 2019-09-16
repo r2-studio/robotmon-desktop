@@ -27,7 +27,7 @@
               </v-btn>
             </div>
             <v-divider></v-divider>
-            <div id="adb-logger-text" class="overflow-y-auto pl-2 pr-2" style="height: 90%;">
+            <div id="adb-logger-text" class="overflow-y-auto pl-2 pr-2" style="height: 80%;">
               <pre class="font-weight-light caption" style="line-height: 12px">{{adbLoggerBuf.join('\n')}}</pre>
             </div>
           </v-card>
@@ -47,7 +47,7 @@
               </v-btn>
             </div>
             <v-divider></v-divider>
-            <div id="service-logger-text" class="overflow-y-auto pl-2 pr-2" style="height: 90%;">
+            <div id="service-logger-text" class="overflow-y-auto pl-2 pr-2" style="height: 80%;">
               <pre class="font-weight-light caption" style="line-height: 12px">{{serviceLoggerBuf.join('\n')}}</pre>
             </div>
           </v-card>

@@ -32,12 +32,12 @@
 
         <v-list-item-subtitle v-if="serviceLaunched">
           <v-icon class="mr-3">mdi-play-circle-outline</v-icon>
-          <v-btn outlined color="error" small class="mr-1">Stop</v-btn>
+          <v-btn outlined color="error" small class="mr-1" @click="stopService">Stop</v-btn>
           <span>Service Launched pid1: {{servicePid1}}, pid2: {{servicePid2}}</span>
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-stop-circle-outline</v-icon>
-          <v-btn outlined color="primary" small class="mr-1">Start</v-btn>
+          <v-btn outlined color="primary" small class="mr-1" @click="startService">Start</v-btn>
           <span>Service Stopped</span>
         </v-list-item-subtitle>
 
@@ -67,8 +67,9 @@ import {
   HIDE_ALERT,
   APPEND_ADB_LOGGER
 } from "../store/types";
-import { Empty, AdbForwardParams } from "../apprpc/app_pb";
+import { Empty, AdbForwardParams, DeviceSerial } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
+import { AppServiceClient } from "../apprpc/app_grpc_web_pb";
 
 export default {
   components: {},
@@ -173,9 +174,86 @@ export default {
       }
       return 8081;
     },
-    getStartServiceCommand: async function() {},
-    startService: async function() {},
-    stopService: async function() {}
+    printStartServiceCommand: async function() {
+      try {
+        const deviceSerial = new DeviceSerial();
+        deviceSerial.setSerial(this.serial);
+        const commandResult = await AppService.getInstence().getStartCommand(
+          deviceSerial
+        );
+        const ldPath = commandResult.getLdpath();
+        const classPath = commandResult.getClasspath();
+        const appProcess = commandResult.getAppprocess();
+        const baseCommand = commandResult.getBasecommand();
+        const fullCommand = commandResult.getFullcommand();
+        this[APPEND_ADB_LOGGER](`fullCommand: ${fullCommand}`);
+        this[APPEND_ADB_LOGGER](`baseCommand: ${baseCommand}`);
+        this[APPEND_ADB_LOGGER](`ldPath     : ${ldPath}`);
+        this[APPEND_ADB_LOGGER](`classPath  : ${classPath}`);
+        this[APPEND_ADB_LOGGER](`appProcess : ${appProcess}`);
+        return fullCommand;
+      } catch (e) {
+        this[SHOW_ALERT]({
+          title: "Get Start Command Error",
+          message: e.message
+        });
+      }
+      return "";
+    },
+    startService: async function() {
+      this[SHOW_LOADING]({
+        title: "Starting service...",
+        message: "..."
+      });
+      const fullCommand = await this.printStartServiceCommand();
+      this[SHOW_LOADING]({
+        title: "Starting service...",
+        message: fullCommand
+      });
+      try {
+        const deviceSerial = new DeviceSerial();
+        deviceSerial.setSerial(this.serial);
+        const startResult = await AppService.getInstence().startService(
+          deviceSerial
+        );
+        this[HIDE_LOADING]();
+        this.servicePid1 = startResult.getPid1();
+        this.servicePid2 = startResult.getPid2();
+        if (this.servicePid2 !== "") {
+          this.serviceLaunched = true;
+          this[APPEND_ADB_LOGGER](`Start Service Success: ${this.servicePid1}, ${this.servicePid2}`);
+        } else {
+          this[APPEND_ADB_LOGGER](`Start Service Unknown Error, pids: ${this.servicePid1}, ${this.servicePid2}`);
+        }
+      } catch (e) {
+        this[HIDE_LOADING]();
+        this[SHOW_ALERT]({
+          title: "Start Service Error",
+          message: e.message
+        });
+        this[APPEND_ADB_LOGGER](`Start Service Failed`);
+      }
+    },
+    stopService: async function() {
+      this[SHOW_LOADING]({
+        title: "Stop service...",
+        message: "..."
+      });
+      try {
+        const deviceSerial = new DeviceSerial();
+        deviceSerial.setSerial(this.serial);
+        await AppService.getInstence().stopService(deviceSerial);
+        this.servicePid1 = "";
+        this.servicePid2 = "";
+        this.serviceLaunched = false;
+      } catch (e) {
+        this[SHOW_ALERT]({
+          title: "Stop Service Error",
+          message: e.message
+        });
+      }
+      this[HIDE_LOADING]();
+    }
   },
   mounted: async function() {
     this.initDevice();

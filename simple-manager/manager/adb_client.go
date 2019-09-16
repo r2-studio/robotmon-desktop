@@ -309,7 +309,7 @@ func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, er
 		}
 	} else if abi == "x86" {
 		ldPath += "/system/lib"
-		ldPath += apkDir + "/lib:" + apkDir + "/lib/x84"
+		ldPath += apkDir + "/lib:" + apkDir + "/lib/x86"
 		if app32 {
 			appProcess = "app_process32"
 		} else {
