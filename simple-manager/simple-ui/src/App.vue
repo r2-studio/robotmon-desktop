@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <AppBar></AppBar>
-
     <v-content>
      <Main></Main>
     </v-content>

@@ -8,34 +8,37 @@
       </v-flex>
       <v-flex xs12 md7></v-flex>
     </v-layout>
+    <Logger></Logger>
   </v-container>
 </template>
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import Logger from './Logger';
 import AlertDialog from "./Alert";
 import LoadingDialog from "./Loading";
 import Devices from "./Devices";
 
 export default {
   components: {
+    Logger,
     AlertDialog,
     LoadingDialog,
     Devices
   },
   data: () => ({}),
   computed: {
-    ...mapState('ui', [
+    ...mapState("ui", [
       "loading",
       "loadingTitle",
       "loadingMessage",
       "alert",
       "alertTitle",
       "alertMessage"
-    ]),
+    ])
   },
   methods: {
-    ...mapMutations('ui', ['hideAlert']),
-  },
+    ...mapMutations("ui", ["hideAlert"])
+  }
 };
 </script>
