@@ -41,7 +41,7 @@
       <v-card-text>
         <v-btn outlined color="primary" small class="mr-1" @click="updateDevices">Update</v-btn>adb devices
       </v-card-text>
-      <Device v-for="device in devices" :device="device" :key="device.serial"></Device>
+      <Device v-for="device in devices" :device="device" :key="device.getSerial()"></Device>
     </v-card>
   </v-container>
 </template>
@@ -84,7 +84,6 @@ export default {
         this.$set(this, "devices", devices);
       } catch (e) {
         this[HIDE_LOADING]();
-        console.log(e)
         this[SHOW_ALERT]({ title: "Add Devices Error", message: e.message });
       }
     },

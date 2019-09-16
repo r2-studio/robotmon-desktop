@@ -82,7 +82,7 @@ func (a *AdbClient) GetDevices() ([]string, error) {
 
 // Forward adb forward
 func (a *AdbClient) Forward(serial string, devicePort, pcPort string) (bool, error) {
-	cmd := exec.Command(a.adbPath, "-s", serial, "forward", "--no-rebind", "tcp:"+devicePort, "tcp:"+pcPort)
+	cmd := exec.Command(a.adbPath, "-s", serial, "forward", "--no-rebind", "tcp:"+pcPort, "tcp:"+devicePort)
 	hideWindow(cmd)
 	bs, err := cmd.Output()
 	if err != nil {

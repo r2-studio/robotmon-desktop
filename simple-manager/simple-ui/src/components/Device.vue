@@ -17,13 +17,13 @@
           <span>Can not connect via network</span>
         </v-list-item-subtitle>
 
-        <v-list-item-subtitle v-if="forwardPortFrom != ''">
+        <v-list-item-subtitle v-if="forwardPortDevice != ''">
           <v-icon class="mr-3">mdi-share-outline</v-icon>
           <span>Forward:</span>
           <v-icon class="ml-1">mdi-cellphone-android</v-icon>
-          {{forwardPortFrom}}
+          {{forwardPortDevice}}
           <v-icon class="ml-1">mdi-laptop</v-icon>
-          {{forwardPortTo}}
+          {{forwardPortPC}}
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-share-outline</v-icon>
@@ -68,12 +68,9 @@ import {
 } from "../store/types";
 import { Empty, AdbForwardParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
-import Device from "./Device";
 
 export default {
-  components: {
-    Device
-  },
+  components: {},
   props: ["device"],
   data: () => ({
     serial: "",
@@ -81,8 +78,8 @@ export default {
     servicePid1: "",
     servicePid2: "",
     serviceLaunched: false,
-    forwardPortFrom: "",
-    forwardPortTo: "",
+    forwardPortDevice: "",
+    forwardPortPC: "",
     connected: false
   }),
   methods: {
@@ -104,8 +101,8 @@ export default {
       if (serviceForward !== undefined) {
         const forwards = serviceForward.split(" ");
         if (forwards.length > 2) {
-          this.forwardPortFrom = forwards[1];
-          this.forwardPortTo = forwards[2];
+          this.forwardPortDevice = forwards[2];
+          this.forwardPortPC = forwards[1];
         }
       }
     },
@@ -123,7 +120,7 @@ export default {
 
         this[SHOW_LOADING]({
           title: "Forwarding Device",
-          message: `adb -s ${this.serial} forward tcp:8081 tcp:${port}`
+          message: `adb -s ${this.serial} forward tcp:${port} tcp:8081`
         });
 
         const param = new AdbForwardParams();
@@ -135,29 +132,34 @@ export default {
         const result = message.getMessage();
         this[HIDE_LOADING]();
         this[SHOW_ALERT]({ title: "Add Forwaed Done", message: result });
-        this.forwardPortFrom = '8081';
-        this.forwardPortTo = `${port}`;
+        this.forwardPortDevice = "tcp:8081";
+        this.forwardPortPC = `tcp:${port}`;
       } catch (e) {
         this[HIDE_LOADING]();
         this[SHOW_ALERT]({ title: "Add Forwaed Error", message: e.message });
       }
     },
     findNextPort: function(forwardResult) {
-      let port = 8080;
       const forwards = forwardResult.split("\n");
+      const usedPorts = {};
       for (const forward of forwards) {
-        if (forward === "" || forward.find("tcp:8081") === -1) {
+        if (forward === "" || forward.search("tcp:8081") === -1) {
           continue;
         }
         const values = forward.split(" ");
         if (values.length > 2) {
-          const ports = values[2].split(":");
+          const ports = values[1].split(":");
           if (ports.length === 2) {
-            port = +ports[1] > port ? +ports[1] : port;
+            usedPorts[+ports[1]] = true;
           }
         }
       }
-      return port + 1;
+      for (let port = 8081; port < 8109; port++) {
+        if (usedPorts[port] === undefined) {
+          return port;
+        }
+      }
+      return 8081;
     }
   },
   mounted: async function() {
