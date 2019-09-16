@@ -64,7 +64,8 @@ import {
   SHOW_LOADING,
   HIDE_LOADING,
   SHOW_ALERT,
-  HIDE_ALERT
+  HIDE_ALERT,
+  APPEND_ADB_LOGGER
 } from "../store/types";
 import { Empty, AdbForwardParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
@@ -83,7 +84,13 @@ export default {
     connected: false
   }),
   methods: {
-    ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT]),
+    ...mapMutations("ui", [
+      SHOW_LOADING,
+      HIDE_LOADING,
+      SHOW_ALERT,
+      HIDE_ALERT,
+      APPEND_ADB_LOGGER
+    ]),
     initDevice: function() {
       this.serial = this.device.getSerial();
       this.servicePid1 = this.device.getServicepid1();
@@ -108,6 +115,7 @@ export default {
     },
     forward: async function() {
       try {
+        this[APPEND_ADB_LOGGER](`adb forward --list`);
         this[SHOW_LOADING]({
           title: "Forwarding Device",
           message: `adb -s ${this.serial} forward tcp:8081 tcp:`
@@ -116,11 +124,15 @@ export default {
           new Empty()
         );
         const forwardResult = message.getMessage();
+        this[APPEND_ADB_LOGGER](forwardResult);
         const port = this.findNextPort(forwardResult);
 
+        this[APPEND_ADB_LOGGER](
+          `adb -s ${this.serial} forward --no-rebind tcp:${port} tcp:8081`
+        );
         this[SHOW_LOADING]({
           title: "Forwarding Device",
-          message: `adb -s ${this.serial} forward tcp:${port} tcp:8081`
+          message: `adb -s ${this.serial} forward --no-rebind tcp:${port} tcp:8081`
         });
 
         const param = new AdbForwardParams();
@@ -161,15 +173,9 @@ export default {
       }
       return 8081;
     },
-    getStartServiceCommand: async function() {
-
-    },
-    startService: async function() {
-
-    },
-    stopService: async function() {
-
-    }
+    getStartServiceCommand: async function() {},
+    startService: async function() {},
+    stopService: async function() {}
   },
   mounted: async function() {
     this.initDevice();

@@ -52,7 +52,8 @@ import {
   SHOW_LOADING,
   HIDE_LOADING,
   SHOW_ALERT,
-  HIDE_ALERT
+  HIDE_ALERT,
+  APPEND_ADB_LOGGER,
 } from "../store/types";
 
 import validate from "../utils/validate";
@@ -69,9 +70,10 @@ export default {
     devices: []
   }),
   methods: {
-    ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT]),
+    ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT, APPEND_ADB_LOGGER]),
     updateDevices: async function() {
       try {
+        this[APPEND_ADB_LOGGER]('adb devices');
         this.$set(this, "devices", []);
         this[SHOW_LOADING]({
           title: "Getting devices",
@@ -90,6 +92,7 @@ export default {
     },
     restart: async function() {
       try {
+        this[APPEND_ADB_LOGGER]('adb kill-server; adb start-server');
         this[SHOW_LOADING]({
           title: "Restart ADB server",
           message: "adb kill-server; adb start-server"
@@ -110,11 +113,13 @@ export default {
         });
         return;
       }
+      
       const parts = this.connectIpPort.split(":");
       const request = new AdbConnectParams();
       request.setIp(parts[0]);
       request.setPort(parts[1]);
       try {
+        this[APPEND_ADB_LOGGER](`adb connect ${this.connectIpPort}`);
         this[SHOW_LOADING]({
           title:  "Adding device...",
           message: `adb connect ${this.connectIpPort}`
