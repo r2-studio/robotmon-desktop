@@ -43,7 +43,8 @@
 
         <v-list-item-subtitle v-if="connected">
           <v-icon class="mr-3">mdi-lan-connect</v-icon>
-          <v-btn outlined color="error" small class="mr-1">Disconnect</v-btn>
+          <v-btn outlined color="error" small class="mr-1" @click="disconnect">Disconnect</v-btn>
+          <span>{{proxyAddress}}</span>
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-lan-disconnect</v-icon>
@@ -71,6 +72,7 @@ import {
   CreateGRPCProxy
 } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
+import ServiceClient from "../plugins/ServiceClient";
 import { AppServiceClient } from "../apprpc/app_grpc_web_pb";
 
 export default {
@@ -84,7 +86,8 @@ export default {
     serviceLaunched: false,
     forwardPortDevice: "",
     forwardPortPC: "",
-    connected: false
+    connected: false,
+    proxyAddress: '',
   }),
   methods: {
     ...mapMutations("ui", [
@@ -114,6 +117,12 @@ export default {
           this.forwardPortDevice = forwards[2];
           this.forwardPortPC = forwards[1];
         }
+      }
+      // is connected
+      const client = ServiceClient.GetClient(this.serial);
+      if (client !== undefined) {
+        this.connected = true;
+        this.proxyAddress = client.getHost();
       }
     },
     forward: async function() {
@@ -257,6 +266,11 @@ export default {
       }
       this[HIDE_LOADING]();
     },
+    disconnect: function() {
+      ServiceClient.DeleteClient(this.serial);
+      this[APPEND_ADB_LOGGER](`Disconnect to service ${this.serial}`);
+      this.connected = false;
+    },
     connect: async function() {
       if (!this.serviceLaunched) {
         this[SHOW_ALERT]({
@@ -290,17 +304,40 @@ export default {
           message: `Creating grpc to http proxy: ${grpcAddress} <-> ${httpBindAddress}`
         });
         await this.createProxy(grpcAddress, httpBindAddress);
-        this[APPEND_ADB_LOGGER](`Proxy created: ${grpcAddress} <-> ${httpBindAddress}`);
+        this[APPEND_ADB_LOGGER](
+          `Proxy created: ${grpcAddress} <-> ${httpBindAddress}`
+        );
       } catch (e) {
         this[HIDE_LOADING]();
         this[SHOW_ALERT]({
           title: "Can not create grpc <-> http proxy",
           message: e.message
         });
-        this[APPEND_ADB_LOGGER](`Proxy create failed: ${grpcAddress} <-> ${httpBindAddress}`);
+        this[APPEND_ADB_LOGGER](
+          `Proxy create failed: ${grpcAddress} <-> ${httpBindAddress}`
+        );
         return;
       }
 
+      // connect to proxy to grpc service
+      const address = `http://127.0.0.1:${httpPort}`;
+      try {
+        const client = ServiceClient.NetClient(this.serial, address);
+        const size = await client.getScreenSize();
+        this[APPEND_ADB_LOGGER](
+          `Connect to ${this.serial}(${address} -> ${grpcAddress}) success. ScreenSize: ${size.width}, ${size.height}`
+        );
+        this.connected = true;
+        this.proxyAddress = address;
+      } catch (e) {
+        this[SHOW_ALERT]({
+          title: `Connect to service failed: ${address} -> ${grpcAddress}`,
+          message: e.message
+        });
+        this[APPEND_ADB_LOGGER](
+          `Connect to service failed: ${address} -> ${grpcAddress}`
+        );
+      }
       this[HIDE_LOADING]();
     },
     createProxy: function(grpcAddress, httpBindAddress) {

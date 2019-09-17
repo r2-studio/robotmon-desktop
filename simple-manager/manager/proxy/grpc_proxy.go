@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -93,14 +92,7 @@ func makeWebsocketOriginFunc() func(req *http.Request) bool {
 
 func buildServer(wrappedGrpc *grpcweb.WrappedGrpcServer) *http.Server {
 	return &http.Server{
-		WriteTimeout: 10 * time.Second,
-		ReadTimeout:  10 * time.Second,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			// w.Header().Set("Access-Control-Allow-Origin", "*")
-			// w.Header().Set("Access-Control-Allow-Origin", "*")
-			// w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-			// w.Header().Set("Access-Control-Expose-Headers", "grpc-status, grpc-message")
-			// w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, XMLHttpRequest, x-user-agent, x-grpc-web, grpc-status, grpc-message")
 			wrappedGrpc.ServeHTTP(w, req)
 		}),
 	}
