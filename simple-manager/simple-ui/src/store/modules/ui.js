@@ -1,4 +1,4 @@
-import { SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT, APPEND_ADB_LOGGER, APPEND_SERVICE_LOGGER } from '../types';
+import { SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT, APPEND_ADB_LOGGER, APPEND_SERVICE_LOGGER, PUSH_CODE } from '../types';
 
 const bufLimit = 500;
 function appendLineToBuf(buf, line) {
@@ -17,6 +17,7 @@ const state = {
   alertMessage: '',
   adbLoggerBuf: ['Hello, this is adb logger'],
   serviceLoggerBuf: ['Hello, this is service logger'],
+  currentCode: '',
 };
 
 const getters = {};
@@ -48,6 +49,9 @@ const mutations = {
   [APPEND_SERVICE_LOGGER]: (state, payload) => {
     appendLineToBuf(state.serviceLoggerBuf, payload);
   },
+  [PUSH_CODE]: (state, payload) => {
+    state.currentCode = payload;
+  }
 };
 
 const actions = {};

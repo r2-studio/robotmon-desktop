@@ -11,7 +11,10 @@
     "core-js": "^2.6.5",
     "google-protobuf": "^3.10.0-rc.1",
     "grpc-web": "^1.0.6",
+    "prismjs": "^1.17.1",
     "vue": "^2.6.10",
+    "vue-localstorage": "^0.6.2",
+    "vue-prism-editor": "^0.3.0",
     "vuetify": "^2.0.0",
     "vuex": "^3.1.1"
   },

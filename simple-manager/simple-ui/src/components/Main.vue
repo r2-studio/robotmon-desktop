@@ -6,7 +6,9 @@
       <v-flex xs12 md5>
         <Devices></Devices>
       </v-flex>
-      <v-flex xs12 md7></v-flex>
+      <v-flex xs12 md7>
+        <Editor></Editor>
+      </v-flex>
     </v-layout>
     <Logger></Logger>
   </v-container>
@@ -14,17 +16,19 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import Logger from './Logger';
+import Logger from "./Logger";
 import AlertDialog from "./Alert";
 import LoadingDialog from "./Loading";
 import Devices from "./Devices";
+import Editor from "./Editor";
 
 export default {
   components: {
     Logger,
     AlertDialog,
     LoadingDialog,
-    Devices
+    Devices,
+    Editor
   },
   data: () => ({}),
   computed: {

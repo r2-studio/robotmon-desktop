@@ -44,7 +44,9 @@
         <v-list-item-subtitle v-if="connected">
           <v-icon class="mr-3">mdi-lan-connect</v-icon>
           <v-btn outlined color="error" small class="mr-1" @click="disconnect">Disconnect</v-btn>
-          <span>{{proxyAddress}}</span>
+          <v-btn outlined color="primary" small class="mr-1" @click="runScript(false)">RunScript</v-btn>
+          <v-btn outlined color="primary" small class="mr-1" @click="runScript(true)">RunScriptAsync</v-btn>
+          <!-- <span>{{proxyAddress}}</span> -->
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-lan-disconnect</v-icon>
@@ -57,7 +59,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import {
   SHOW_LOADING,
   HIDE_LOADING,
@@ -90,6 +92,9 @@ export default {
     connected: false,
     proxyAddress: ""
   }),
+  computed: {
+    ...mapState("ui", ["currentCode"])
+  },
   methods: {
     ...mapMutations("ui", [
       SHOW_LOADING,
@@ -352,7 +357,35 @@ export default {
       createProxyParams.setGrpcaddress(grpcAddress);
       createProxyParams.setHttpaddress(httpBindAddress);
       return AppService.getInstence().createProxy(createProxyParams);
-    }
+    },
+    runScript: async function(async) {
+      if (this.currentCode === "") {
+        this[SHOW_ALERT]({
+          title: "Empty Code",
+          message: "Please write some code ^^"
+        });
+        return;
+      }
+      const client = ServiceClient.GetClient(this.serial);
+      if (client === undefined) {
+        this[SHOW_ALERT]({
+          title: "Not connected",
+          message: "Please connect to service"
+        });
+        return;
+      }
+      try {
+        if (async) {
+          const result = await client.runScriptAsync(this.currentCode);
+          this[APPEND_ADB_LOGGER](`Run Script Success. Result: ${result}`);
+        } else {
+          const result = await client.runScriptSync(this.currentCode);
+          this[APPEND_ADB_LOGGER](`Run Script Success. Result: ${result}`);
+        }
+      } catch (e) {
+        this[APPEND_ADB_LOGGER](`Run Script Failed: ${e.message}`);
+      }
+    },
   },
   mounted: async function() {
     this.initDevice();

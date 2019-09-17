@@ -55,14 +55,14 @@ class Client {
   async runScriptSync(script) {
     const scriptReq = new RequestRunScript();
     scriptReq.setScript(script);
-    const resp = await this.client.runScript();
+    const resp = await this.client.runScript(scriptReq);
     return resp.getMessage();
   }
 
   async runScriptAsync(script) {
     const scriptReq = new RequestRunScript();
     scriptReq.setScript(script);
-    const resp = await this.client.runScriptAsync();
+    const resp = await this.client.runScriptAsync(scriptReq);
     return resp.getMessage();
   }
 
