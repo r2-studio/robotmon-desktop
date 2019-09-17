@@ -69,23 +69,23 @@ class Client {
   init() {
     // init logger
     this.logStream = this.client.logs(new Empty());
-    this.logStream.on('data', function (response) {
+    this.logStream.on('data', (response) => {
       if (this.logListener !== undefined) {
         this.logListener(this.serial, this.address, response.getMessage());
       }
     });
-    this.logStream.on('status', function (status) {
+    this.logStream.on('status', (status) => {
       if (this.logListener !== undefined) {
         this.logListener(this.serial, this.address, `${status.code} ${status.details} ${status.metadata}`);
       }
     });
-    this.logStream.on('error', function (e) {
+    this.logStream.on('error', (e) => {
       if (this.logListener !== undefined) {
         this.logListener(this.serial, this.address, `Error: ${e.message}`);
       }
       this.logStream = undefined;
     });
-    this.logStream.on('end', function () {
+    this.logStream.on('end', () => {
       if (this.logListener !== undefined) {
         this.logListener(this.serial, this.address, `Disconnected`);
       }
@@ -97,6 +97,7 @@ class Client {
     if (this.logStream !== undefined) {
       this.logStream.cancel();
     }
+    this.logListener = undefined;
   }
 
   setLogListener(listener) {

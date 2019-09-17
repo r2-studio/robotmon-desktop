@@ -63,7 +63,8 @@ import {
   HIDE_LOADING,
   SHOW_ALERT,
   HIDE_ALERT,
-  APPEND_ADB_LOGGER
+  APPEND_ADB_LOGGER,
+  APPEND_SERVICE_LOGGER
 } from "../store/types";
 import {
   Empty,
@@ -87,7 +88,7 @@ export default {
     forwardPortDevice: "",
     forwardPortPC: "",
     connected: false,
-    proxyAddress: '',
+    proxyAddress: ""
   }),
   methods: {
     ...mapMutations("ui", [
@@ -95,7 +96,8 @@ export default {
       HIDE_LOADING,
       SHOW_ALERT,
       HIDE_ALERT,
-      APPEND_ADB_LOGGER
+      APPEND_ADB_LOGGER,
+      APPEND_SERVICE_LOGGER
     ]),
     initDevice: function() {
       this.serial = this.device.getSerial();
@@ -323,6 +325,11 @@ export default {
       const address = `http://127.0.0.1:${httpPort}`;
       try {
         const client = ServiceClient.NetClient(this.serial, address);
+        client.setLogListener((serial, address, msg) => {
+          this[APPEND_SERVICE_LOGGER](
+            `[${serial}][${new Date().toTimeString().substr(0, 8)}] ${msg}`
+          );
+        });
         const size = await client.getScreenSize();
         this[APPEND_ADB_LOGGER](
           `Connect to ${this.serial}(${address} -> ${grpcAddress}) success. ScreenSize: ${size.width}, ${size.height}`
