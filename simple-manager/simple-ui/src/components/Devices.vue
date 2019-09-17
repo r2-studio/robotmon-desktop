@@ -41,7 +41,12 @@
       <v-card-text>
         <v-btn outlined color="primary" small class="mr-1" @click="updateDevices">Update</v-btn>adb devices
       </v-card-text>
-      <Device v-for="device in devices" :device="device" :key="device.getSerial()" @update="updateDevices"></Device>
+      <Device
+        v-for="device in devices"
+        :device="device"
+        :key="device.getSerial()"
+        @update="updateDevices"
+      ></Device>
     </v-card>
   </v-container>
 </template>
@@ -53,7 +58,7 @@ import {
   HIDE_LOADING,
   SHOW_ALERT,
   HIDE_ALERT,
-  APPEND_ADB_LOGGER,
+  APPEND_ADB_LOGGER
 } from "../store/types";
 
 import validate from "../utils/validate";
@@ -70,10 +75,16 @@ export default {
     devices: []
   }),
   methods: {
-    ...mapMutations("ui", [SHOW_LOADING, HIDE_LOADING, SHOW_ALERT, HIDE_ALERT, APPEND_ADB_LOGGER]),
+    ...mapMutations("ui", [
+      SHOW_LOADING,
+      HIDE_LOADING,
+      SHOW_ALERT,
+      HIDE_ALERT,
+      APPEND_ADB_LOGGER
+    ]),
     updateDevices: async function() {
       try {
-        this[APPEND_ADB_LOGGER]('adb devices');
+        this[APPEND_ADB_LOGGER]("adb devices");
         this.$set(this, "devices", []);
         this[SHOW_LOADING]({
           title: "Getting devices",
@@ -92,7 +103,7 @@ export default {
     },
     restart: async function() {
       try {
-        this[APPEND_ADB_LOGGER]('adb kill-server; adb start-server');
+        this[APPEND_ADB_LOGGER]("adb kill-server; adb start-server");
         this[SHOW_LOADING]({
           title: "Restart ADB server",
           message: "adb kill-server; adb start-server"
@@ -113,7 +124,7 @@ export default {
         });
         return;
       }
-      
+
       const parts = this.connectIpPort.split(":");
       const request = new AdbConnectParams();
       request.setIp(parts[0]);
@@ -121,15 +132,22 @@ export default {
       try {
         this[APPEND_ADB_LOGGER](`adb connect ${this.connectIpPort}`);
         this[SHOW_LOADING]({
-          title:  "Adding device...",
+          title: "Adding device...",
           message: `adb connect ${this.connectIpPort}`
         });
         const result = await AppService.getInstence().adbConnect(request);
         this[HIDE_LOADING]();
-        this[SHOW_ALERT]({
-          title: "Add Device Success",
-          message: `New Device: ${result.getMessage()}`
-        });
+        if (result.getMessage() !== "") {
+          this[SHOW_ALERT]({
+            title: "Add Device Success",
+            message: `New Device: ${result.getMessage()}`
+          });
+        } else {
+          this[SHOW_ALERT]({
+            title: "No Device Found",
+            message: `Device: ${result.getMessage()}`
+          });
+        }
         this.updateDevices();
       } catch (e) {
         this[HIDE_LOADING]();
