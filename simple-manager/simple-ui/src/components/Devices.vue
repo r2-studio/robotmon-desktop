@@ -191,7 +191,6 @@ export default {
       try {
         const result = await AppService.getInstence().adbShell(shellReq);
         const message = result.getMessage();
-        console.log(message.length);
         this.download('robotmon.txt', message);
       } catch (e) {
         this[SHOW_ALERT]({

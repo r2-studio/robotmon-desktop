@@ -6,7 +6,13 @@
         <v-list-item-subtitle>
           <v-icon class="mr-3">mdi-cellphone-link</v-icon>
           <span>{{serial}}</span>
-          <v-btn outlined color="success" small class="ml-3" @click="$emit('runShell', serial)">ADB Shell</v-btn>
+          <v-btn
+            outlined
+            color="success"
+            small
+            class="ml-3"
+            @click="$emit('runShell', serial)"
+          >ADB Shell</v-btn>
           <v-btn outlined color="success" small class="ml-3" @click="$emit('log', serial)">Log</v-btn>
         </v-list-item-subtitle>
 
@@ -46,9 +52,35 @@
         <v-list-item-subtitle v-if="connected && serviceLaunched">
           <v-icon class="mr-3">mdi-lan-connect</v-icon>
           <v-btn outlined color="error" small class="mr-1" @click="disconnect">Disconnect</v-btn>
-          <v-btn outlined color="primary" small class="mr-1" @click="runScript(false)">RunScript</v-btn>
-          <v-btn outlined color="primary" small class="mr-1" @click="runScript(true)">RunScriptAsync</v-btn>
-          <!-- <span>{{proxyAddress}}</span> -->
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                v-on="on"
+                outlined
+                color="primary"
+                small
+                class="mr-1"
+                @click="runScript(false)"
+              >RunScript</v-btn>
+            </template>
+            <div>Run script with Interrupt mode. Origin running script will keep running.</div>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                v-on="on"
+                outlined
+                color="primary"
+                small
+                class="mr-1"
+                @click="runScript(true)"
+              >RunScriptAsync</v-btn>
+            </template>
+            <div>
+              <div>Run script with Async and Override mode. Origin running script will be reset.</div>
+              <div>You can stop running loop with simple script like: console.log('stop');</div>
+            </div>
+          </v-tooltip>
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-lan-disconnect</v-icon>
@@ -78,7 +110,6 @@ import {
 } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
 import ServiceClient from "../plugins/ServiceClient";
-import { AppServiceClient } from "../apprpc/app_grpc_web_pb";
 
 export default {
   components: {},
@@ -390,7 +421,7 @@ export default {
       } catch (e) {
         this[APPEND_ADB_LOGGER](`Run Script Failed: ${e.message}`);
       }
-    },
+    }
   },
   mounted: async function() {
     this.initDevice();
