@@ -6,6 +6,8 @@
         <v-list-item-subtitle>
           <v-icon class="mr-3">mdi-cellphone-link</v-icon>
           <span>{{serial}}</span>
+          <v-btn outlined color="success" small class="ml-3" @click="$emit('runShell', serial)">ADB Shell</v-btn>
+          <v-btn outlined color="success" small class="ml-3" @click="$emit('log', serial)">Log</v-btn>
         </v-list-item-subtitle>
 
         <v-list-item-subtitle v-if="serviceAddress != ''">

@@ -104,11 +104,6 @@ func buildListenerOrFail(httpHost string) net.Listener {
 		log.Fatalf("failed listening on %v: %v", httpHost, err)
 	}
 	return listener
-	// return conntrack.NewListener(listener,
-	// 	conntrack.TrackWithName("http"),
-	// 	conntrack.TrackWithTcpKeepAlive(20*time.Second),
-	// 	conntrack.TrackWithTracing(),
-	// )
 }
 
 func serveServer(server *http.Server, listener net.Listener, errChan chan error) {

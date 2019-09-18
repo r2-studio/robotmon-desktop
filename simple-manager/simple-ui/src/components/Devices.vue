@@ -41,11 +41,16 @@
       <v-card-text>
         <v-btn outlined color="primary" small class="mr-1" @click="updateDevices">Update</v-btn>adb devices
       </v-card-text>
+      <v-card-text>
+        <v-textarea outlined label="adb shell" rows="8" class="caption" v-model="shell"></v-textarea>
+      </v-card-text>
       <Device
         v-for="device in devices"
         :device="device"
         :key="device.getSerial()"
         @update="updateDevices"
+        @runShell="runShell"
+        @log="downloadLog"
       ></Device>
     </v-card>
   </v-container>
@@ -62,7 +67,7 @@ import {
 } from "../store/types";
 
 import validate from "../utils/validate";
-import { Empty, AdbConnectParams } from "../apprpc/app_pb";
+import { Empty, AdbConnectParams, AdbShellParams } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
 import Device from "./Device";
 
@@ -72,7 +77,8 @@ export default {
   },
   data: () => ({
     connectIpPort: "127.0.0.1:62001",
-    devices: []
+    devices: [],
+    shell: "ls -al /sdcard/Robotmon/"
   }),
   methods: {
     ...mapMutations("ui", [
@@ -155,6 +161,56 @@ export default {
           title: "Add Device Error",
           message: `"${this.connectIpPort}": ${e.message}`
         });
+      }
+    },
+    runShell: async function(serial) {
+      const shellReq = new AdbShellParams();
+      shellReq.setSerial(serial);
+      shellReq.setCommand(this.shell);
+      this[APPEND_ADB_LOGGER](`adb shell -s ${serial} '${this.shell}'`);
+      this[SHOW_LOADING]({
+        title: "Adb Shell Command",
+        message: `adb shell -s ${serial} '${this.shell}'`
+      });
+      try {
+        const result = await AppService.getInstence().adbShell(shellReq);
+        const message = result.getMessage();
+        this[APPEND_ADB_LOGGER](message);
+      } catch (e) {
+        this[SHOW_ALERT]({
+          title: "Add Shell Error",
+          message: `"${serial}": ${e.message}`
+        });
+      }
+      this[HIDE_LOADING]();
+    },
+    downloadLog: async function(serial) {
+      const shellReq = new AdbShellParams();
+      shellReq.setSerial(serial);
+      shellReq.setCommand("cat /sdcard/Robotmon/robotmon.log");
+      try {
+        const result = await AppService.getInstence().adbShell(shellReq);
+        const message = result.getMessage();
+        console.log(message.length);
+        this.download('robotmon.txt', message);
+      } catch (e) {
+        this[SHOW_ALERT]({
+          title: "Download Robotmon Log Failed",
+          message: `"${serial}": ${e.message}`
+        });
+      }
+    },
+    download: function(filename, data) {
+      var blob = new Blob([data], { type: "text/plain" });
+      if (window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+      } else {
+        var elem = window.document.createElement("a");
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = filename;
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
       }
     }
   },

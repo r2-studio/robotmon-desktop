@@ -40,7 +40,7 @@
         v-model="code"
         language="js"
         lineNumbers
-        style="height: 440px; box-shadow: none;"
+        style="height: 600px; box-shadow: none;"
         class="font-weight-bold caption mt-2"
         @change="codeChanged"
       ></PrismEditor>
