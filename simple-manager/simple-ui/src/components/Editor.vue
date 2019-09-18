@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="mx-auto" tile>
       <v-card-title>Script Editor</v-card-title>
-      <div>
+      <div class="pl-2">
         <v-icon large style="float:right;" :color="saved?'green':'red'">mdi-content-save</v-icon>
         <v-btn small @click="changeCode(0)" :dark="codeIdx==0">
           <v-icon>mdi-numeric-0-box-outline</v-icon>
