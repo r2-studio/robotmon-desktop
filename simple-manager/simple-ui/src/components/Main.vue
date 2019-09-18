@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <LoadingDialog :value="loading" :title="loadingTitle" :message="loadingMessage"></LoadingDialog>
     <AlertDialog :value="alert" :title="alertTitle" :message="alertMessage" v-on:close="hideAlert"></AlertDialog>
     <v-layout wrap>

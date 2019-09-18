@@ -1,6 +1,6 @@
 // +build windows !linux !darwin !freebsd
 
-package managet
+package manager
 
 import (
 	"os/exec"

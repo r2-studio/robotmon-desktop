@@ -47,7 +47,7 @@ func (a *AppService) Init() {
 
 	time.Sleep(time.Second)
 
-	fmt.Println("Listen :9488 for http")
+	fmt.Println("Listen :9488 for http proxy")
 	go proxy.RunProxy("0.0.0.0:9488", "localhost:9487")
 }
 
