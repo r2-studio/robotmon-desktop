@@ -43,7 +43,7 @@
           <span>Service Stopped</span>
         </v-list-item-subtitle>
 
-        <v-list-item-subtitle v-if="connected">
+        <v-list-item-subtitle v-if="connected && serviceLaunched">
           <v-icon class="mr-3">mdi-lan-connect</v-icon>
           <v-btn outlined color="error" small class="mr-1" @click="disconnect">Disconnect</v-btn>
           <v-btn outlined color="primary" small class="mr-1" @click="runScript(false)">RunScript</v-btn>
@@ -261,6 +261,9 @@ export default {
         message: "..."
       });
       try {
+        if (this.connected) {
+          this.disconnect();
+        }
         const deviceSerial = new DeviceSerial();
         deviceSerial.setSerial(this.serial);
         await AppService.getInstence().stopService(deviceSerial);
