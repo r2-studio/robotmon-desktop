@@ -18,7 +18,6 @@ func main() {
 	go serveUI()
 	time.Sleep(time.Second)
 	openbrowser("http://localhost:8888")
-
 	select {}
 }
 

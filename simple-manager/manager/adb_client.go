@@ -252,7 +252,7 @@ func (a *AdbClient) GetAppProcess(serial string) (bool, bool, bool) {
 
 // GetApkPath get apk installed path (com.r2studio.robotmon)
 func (a *AdbClient) GetApkPath(serial, packageName string) (string, error) {
-	cmd := exec.Command(a.adbPath, "-s", serial, "shell", "pm path ", packageName)
+	cmd := exec.Command(a.adbPath, "-s", serial, "shell", "pm path "+packageName)
 	hideWindow(cmd)
 	bs, err := cmd.Output()
 	if err != nil {
@@ -279,6 +279,31 @@ func (a *AdbClient) getNohubPath(serial string) string {
 	return nohup
 }
 
+// GetApkAbi get apk abi
+func (a *AdbClient) GetApkAbi(serial, packageName string) string {
+	cmd := exec.Command(a.adbPath, "-s", serial, "shell", "pm dump "+packageName)
+	hideWindow(cmd)
+	bs, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	result := string(bs)
+	lines := strings.Split(result, "\n")
+	for _, line := range lines {
+		if !strings.Contains(line, "primaryCpuAbi") {
+			continue
+		}
+		if strings.Contains(line, "x86") {
+			return "x86"
+		} else if strings.Contains(line, "arm64-v8a") {
+			return "arm64-v8a"
+		} else {
+			return "armeabi-v7a"
+		}
+	}
+	return ""
+}
+
 // GetRobotmonStartCommand getRobotmonStartCommand
 func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, error) {
 	nohup := a.getNohubPath(serial)
@@ -288,10 +313,11 @@ func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, er
 	}
 	apkDir := path.Dir(apk)
 
-	abi, err := a.GetDeviceABI(serial)
-	if err != nil {
-		return "", nil, err
-	}
+	// abi, err := a.GetDeviceABI(serial)
+	// if err != nil {
+	// 	return "", nil, err
+	// }
+	abi := a.GetApkAbi(serial, "com.r2studio.robotmon")
 
 	app, app32, app64 := a.GetAppProcess(serial)
 	classPath := "CLASSPATH=" + apk
