@@ -400,7 +400,7 @@ func (a *AdbClient) StartRobotmonService(serial string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(pids) > 0 {
+		if len(pids) > 1 {
 			return pids, nil
 		}
 		time.Sleep(1000 * time.Millisecond)
