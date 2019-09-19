@@ -5,6 +5,7 @@
       :bytes="screenshotBS"
       :deviceWidth="screenshotDeviceWidth"
       :deviceHeight="screenshotDeviceHeight"
+      @refresh="screenshot"
     ></Screenshot>
     <v-divider></v-divider>
     <v-list-item three-line>

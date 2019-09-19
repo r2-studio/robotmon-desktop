@@ -7,6 +7,9 @@
         </v-flex>
         <v-flex xs7 style="min-width: 250px;">{x:{{x}}, y:{{y}}, r: {{r}}, g: {{g}}, b: {{b}}}</v-flex>
         <v-flex xs4>
+          <v-btn color="pink" class="ml-0" text @click="$emit('refresh')" small>
+            <v-icon small>mdi-refresh</v-icon>
+          </v-btn>
           <v-btn color="pink" class="ml-0" text @click="collapse" small>
             <v-icon small>mdi-arrow-collapse</v-icon>
           </v-btn>
