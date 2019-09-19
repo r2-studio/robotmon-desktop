@@ -150,10 +150,32 @@ export default {
       this.$copyText(msg);
     },
     collapse: function() {
-
+      const maxWidth = window.innerWidth * this.windowWidthRatio;
+      const maxHeight = window.innerHeight * this.windowHeightRatio;
+      if (this.deviceWidth / maxWidth > this.deviceHeight / maxHeight) {
+        // collapse width
+        this.windowWidthRatio = Math.max(0.2, this.windowWidthRatio-0.1);
+      } else {
+        // collapse height
+        this.windowHeightRatio = Math.max(0.2, this.windowHeightRatio-0.1);
+      }
+      this.shouldUpdate = true;
+      this.resizeWindow();
+      this.updateCanvas();
     },
     expand: function() {
-      
+      const maxWidth = window.innerWidth * this.windowWidthRatio;
+      const maxHeight = window.innerHeight * this.windowHeightRatio;
+      if (this.deviceWidth / maxWidth > this.deviceHeight / maxHeight) {
+        // expand width
+        this.windowWidthRatio = Math.max(0.2, this.windowWidthRatio+0.1);
+      } else {
+        // expand height
+        this.windowHeightRatio = Math.max(0.2, this.windowHeightRatio+0.1);
+      }
+      this.shouldUpdate = true;
+      this.resizeWindow();
+      this.updateCanvas();
     }
   },
   updated: function() {
