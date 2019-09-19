@@ -282,7 +282,10 @@ export default {
         }
       } catch (e) {
         this[HIDE_LOADING]();
-        this[SHOW_ALERT]({ title: "Start Service Error", message: e.message });
+        this[SHOW_ALERT]({
+          title: "Start Service Error",
+          message: `${e.message}<br />If still has problem, please reboot device.`
+        });
         this[APPEND_ADB_LOGGER](`Start Service Failed`);
       }
     },
