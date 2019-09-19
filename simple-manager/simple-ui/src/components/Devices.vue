@@ -1,9 +1,8 @@
 <template>
   <v-container>
     <v-card class="mx-auto" tile>
-      <v-card-title>Add Device</v-card-title>
-      <v-card-text>adb connect to devices</v-card-text>
-      <v-list-item>
+      <v-card-title>Add Device (adb connect)</v-card-title>
+      <v-list-item dense>
         <v-list-item-content>
           <v-list-item-title>
             <v-text-field label="IP:PORT" placeholder="127.0.0.1:62001" v-model="connectIpPort"></v-text-field>
@@ -42,7 +41,7 @@
         <v-btn outlined color="primary" small class="mr-1" @click="updateDevices">Update</v-btn>adb devices
       </v-card-text>
       <v-card-text>
-        <v-textarea outlined label="adb shell" rows="8" class="caption" v-model="shell"></v-textarea>
+        <v-textarea outlined label="adb shell" rows="6" class="caption" v-model="shell"></v-textarea>
       </v-card-text>
       <Device
         v-for="device in devices"

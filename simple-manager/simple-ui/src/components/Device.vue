@@ -1,5 +1,11 @@
 <template>
   <div>
+    <Screenshot
+      v-model="screenshotShow"
+      :bytes="screenshotBS"
+      :deviceWidth="screenshotDeviceWidth"
+      :deviceHeight="screenshotDeviceHeight"
+    ></Screenshot>
     <v-divider></v-divider>
     <v-list-item three-line>
       <v-list-item-content>
@@ -61,7 +67,7 @@
                 small
                 class="mr-1"
                 @click="runScript(false)"
-              >RunScript</v-btn>
+              >Run</v-btn>
             </template>
             <div>Run script with Interrupt mode. Origin running script will keep running.</div>
           </v-tooltip>
@@ -74,13 +80,14 @@
                 small
                 class="mr-1"
                 @click="runScript(true)"
-              >RunScriptAsync</v-btn>
+              >RunAsync</v-btn>
             </template>
             <div>
               <div>Run script with Async and Override mode. Origin running script will be reset.</div>
               <div>You can stop running loop with simple script like: console.log('stop');</div>
             </div>
           </v-tooltip>
+          <v-btn outlined color="primary" small class="mr-1" @click="screenshot()">Screen</v-btn>
         </v-list-item-subtitle>
         <v-list-item-subtitle v-else>
           <v-icon class="mr-3">mdi-lan-disconnect</v-icon>
@@ -110,9 +117,12 @@ import {
 } from "../apprpc/app_pb";
 import AppService from "../plugins/AppService";
 import ServiceClient from "../plugins/ServiceClient";
+import Screenshot from "./Screenshot";
 
 export default {
-  components: {},
+  components: {
+    Screenshot
+  },
   props: ["device"],
   data: () => ({
     serial: "",
@@ -123,7 +133,11 @@ export default {
     forwardPortDevice: "",
     forwardPortPC: "",
     connected: false,
-    proxyAddress: ""
+    proxyAddress: "",
+    screenshotShow: false,
+    screenshotBS: null,
+    screenshotDeviceWidth: 0,
+    screenshotDeviceHeight: 0
   }),
   computed: {
     ...mapState("ui", ["currentCode"])
@@ -423,6 +437,18 @@ export default {
         }
       } catch (e) {
         this[APPEND_ADB_LOGGER](`Run Script Failed: ${e.message}`);
+      }
+    },
+    screenshot: async function() {
+      try {
+        const client = ServiceClient.GetClient(this.serial);
+        const result = await client.getScreenshot();
+        this.screenshotBS = result.bytes;
+        this.screenshotDeviceWidth = result.deviceWidth;
+        this.screenshotDeviceHeight = result.deviceHeight;
+        this.screenshotShow = true;
+      } catch (e) {
+        this[APPEND_ADB_LOGGER](`Screenshot Failed: ${e.message}`);
       }
     }
   },
