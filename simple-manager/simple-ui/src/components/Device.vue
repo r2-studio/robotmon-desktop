@@ -81,7 +81,7 @@
                 small
                 class="mr-1"
                 @click="runScript(true)"
-              >RunAsync</v-btn>
+              >RunOverride</v-btn>
             </template>
             <div>
               <div>Run script with Async and Override mode. Origin running script will be reset.</div>

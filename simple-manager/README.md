@@ -2,6 +2,14 @@
 
 ## Release Log
 
+### v1.4
+
+New functions:
+* Screenshot Panel for getting pixel color. (It is transfer by JPEG and Resize on canvas, so there is some blur effect on the image)
+
+Bug fixed:
+* Double click to run on mac and linux
+
 ### v1.3
 
 New Robotmon Service Manager (Simple Manager)

@@ -21,7 +21,7 @@ Another old version: (discarded)
 
 ## SimpleManager (USER)
 
-<img alt='Robotmon Logo' width='800' src='./images/simple-manager.png'/>
+<img alt='Robotmon Logo' width='800' src='./images/simple-manager.gif'/>
 
 ## EditorVSCode (DEVELOPER)
 
