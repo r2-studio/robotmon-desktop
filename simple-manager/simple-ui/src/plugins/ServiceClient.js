@@ -1,5 +1,5 @@
 import { GrpcServicePromiseClient } from '../apprpc/grpc_grpc_web_pb';
-import { Empty, RequestRunScript } from "../apprpc/grpc_pb";
+import { Empty, RequestRunScript, RequestScreenshot } from "../apprpc/grpc_pb";
 
 class Client {
 
@@ -50,6 +50,24 @@ class Client {
   async getScreenSize() {
     const screenSize = await this.client.getScreenSize(new Empty());
     return {width: screenSize.getWidth(), height: screenSize.getHeight()};
+  }
+
+  async getScreenshot() {
+    const size = await this.getScreenSize();
+    const req = new RequestScreenshot();
+    req.setCropx(0);
+    req.setCropy(0);
+    req.setCropwidth(size.width);
+    req.setCropheight(size.height);
+    req.setResizewidth(size.width);
+    req.setResizeheight(size.height);
+    req.setQuality(100);
+    
+    const result = await this.client.getScreenshot(req);
+    const bytes = result.getImage();
+    const deviceWidth = result.getDevicewidth();
+    const deviceHeight = result.getDeviceheight();
+    return {bytes, deviceWidth, deviceHeight};
   }
 
   async runScriptSync(script) {

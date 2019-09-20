@@ -1,4 +1,4 @@
-tag=`git describe --tags HEAD`
+tag=`git describe --tags HEAD | sed -e 's/\./-/g'`
 
 rm -r releases
 mkdir releases

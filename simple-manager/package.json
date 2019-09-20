@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "vue-clipboard2": "^0.3.1"
+  }
+}
