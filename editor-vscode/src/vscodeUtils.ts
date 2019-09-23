@@ -21,4 +21,13 @@ export class VSCodeUtils {
     return matchEditor;
   }
 
+  static getFirstWorkspaceFolder(): string | undefined {
+    if (vscode.workspace.workspaceFolders !== undefined) {
+      for (const workPath of vscode.workspace.workspaceFolders) {
+        return workPath.uri.path;
+      }
+    }
+    return undefined;
+  }
+
 }

@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 import { Message } from './constVariables';
+import { VSCodeUtils } from './vscodeUtils';
 
 export class Config {
 
@@ -81,7 +82,7 @@ export class Config {
   }
 
   private getSettingPath(): string {
-    const localPath = vscode.workspace.rootPath;
+    const localPath = VSCodeUtils.getFirstWorkspaceFolder();
     if (localPath === undefined) {
       return "";
     }

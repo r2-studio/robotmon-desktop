@@ -18,8 +18,8 @@ export class LocalDevice extends vscode.TreeItem {
   public runAdbCommandSync(cmd: string): string {
     let result = "";
     try {
-      result = execSync(`${this.adbPath} -s ${this.id} shell "${cmd}"`, {timeout: 3000}).toString().trim();
-    } catch(e) {
+      result = execSync(`${this.adbPath} -s ${this.id} shell "${cmd}"`, { timeout: 3000 }).toString().trim();
+    } catch (e) {
       // ignore error
     }
     return result;
@@ -27,7 +27,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   public runAdbCommand(cmd: string): Thenable<string> {
     return new Promise((resolve, reject) => {
-      exec(`${this.adbPath} -s ${this.id} shell "${cmd}"`, {timeout: 3000}, (error, stdout, stderr) => {
+      exec(`${this.adbPath} -s ${this.id} shell "${cmd}"`, { timeout: 3000 }, (error, stdout, stderr) => {
         if (error !== null) {
           return reject(error.message);
         }
@@ -50,12 +50,11 @@ export class LocalDevice extends vscode.TreeItem {
     }
   }
 
-  private getAppProcess(): string {
-    const app32 = this.runAdbCommandSync("ls /system/bin/app_process32");
-    if (app32.search("No") === -1) {
-      return "app_process32";
-    }
-    return "app_process";
+  private getAppProcess(): [boolean, boolean, boolean] {
+    const app = this.runAdbCommandSync("ls /system/bin/app_process").search("No") === -1;
+    const app32 = this.runAdbCommandSync("ls /system/bin/app_process32").search("No") === -1;
+    const app64 = this.runAdbCommandSync("ls /system/bin/app_process64").search("No") === -1;
+    return [app, app32, app64];
   }
 
   private getNohub(): string {
@@ -87,29 +86,6 @@ export class LocalDevice extends vscode.TreeItem {
     return result.substr(result.search("/"));
   }
 
-  private getLibPath(apkPath: string): string {
-    const libs = [
-      `${path.dirname(apkPath)}/lib`,
-      `${path.dirname(apkPath)}/lib/arm`,
-      `${path.dirname(apkPath)}/lib/x86`,
-      "/data/app/lib",
-      "/data/app/lib/arm",
-      "/data/data/com.r2studio.robotmon/lib",
-      `/data/app-lib/${path.basename(apkPath).replace(".apk", "")}`,
-    ];
-    let libPath = "";
-    for (let lib of libs) {
-      const result = this.runAdbCommandSync(`ls ${lib}`);
-      if (result.search("No") === -1) {
-        libPath += `:${lib}`;
-      }
-    }
-    if (libPath !== "") {
-      libPath = "/system/lib" + libPath;
-    }
-    return libPath;
-  }
-
   private getProcessPid(): Array<string> {
     let result = this.runAdbCommandSync("ps | grep app_process");
     if (result === "") {
@@ -126,10 +102,26 @@ export class LocalDevice extends vscode.TreeItem {
         if (parseInt(tmps[i]) > 0) {
           pids.push(tmps[i]);
           break;
-        } 
+        }
       }
     }
     return pids;
+  }
+
+  private getABI(): string {
+    const result = this.runAdbCommandSync("pm dump com.r2studio.robotmon");
+    const lines = result.split("\n");
+    for (const line of lines) {
+      if (line.indexOf("primaryCpuAbi") === -1) {
+        continue;
+      }
+      if (line.indexOf("x86") !== -1) {
+        return "x86";
+      } else if (line.indexOf("arm64-v8a") !== -1) {
+        return "arm64-v8a";
+      }
+    }
+    return "armeabi-v7a";
   }
 
   public startRobotmonService(): Thenable<Array<string>> {
@@ -148,23 +140,56 @@ export class LocalDevice extends vscode.TreeItem {
       }
       OutputLogger.default.debug(`apkPath: ${apkPath}`);
 
-      const appProcess = this.getAppProcess();
-      if (appProcess === "") {
+      const apkDir = path.dirname(apkPath);
+      const abi = this.getABI();
+      OutputLogger.default.debug(`apkABI: ${abi}`);
+
+      const [app, app32, app64] = this.getAppProcess();
+      if (!app && !app32 && !app64) {
         return reject(Message.appProcessNotFound);
       }
-      OutputLogger.default.debug(`process: ${appProcess}`);
+      OutputLogger.default.debug(`process: app_process: ${app}, app_process32: ${app32}, app_process64: ${app64}`);
 
-      const libPath = this.getLibPath(apkPath);
-      if (libPath === "") {
-        return reject(Message.libPathNotFound);
+      let classPath = "CLASSPATH=" + apkPath;
+      let ldPath = "LD_LIBRARY_PATH=";
+      let appProcess = "";
+
+      if (abi === "arm64-v8a") {
+        ldPath += "/system/lib64:/system/lib:";
+        ldPath += apkDir + "/lib:" + apkDir + "/lib/arm64";
+        if (app64) {
+          appProcess = "app_process64";
+        } else if (app) {
+          appProcess = "app_process";
+        } else {
+          appProcess = "app_process32";
+        }
+      } else if (abi === "x86") {
+        ldPath += "/system/lib";
+        ldPath += apkDir + "/lib:" + apkDir + "/lib/x86";
+        if (app32) {
+          appProcess = "app_process32";
+        } else {
+          appProcess = "app_process";
+        }
+      } else {
+        ldPath += "/system/lib"
+        ldPath += apkDir + "/lib:" + apkDir + "/lib/arm";
+        if (app32) {
+          appProcess = "app_process32";
+        } else {
+          appProcess = "app_process";
+        }
       }
-      OutputLogger.default.debug(`libPath: ${libPath}`);
+      OutputLogger.default.debug(`classPath: ${classPath}`);
+      OutputLogger.default.debug(`ldPath: ${ldPath}`);
 
-      const baseCommand = `LD_LIBRARY_PATH=${libPath} CLASSPATH=${apkPath} ${appProcess} /system/bin com.r2studio.robotmon.Main $@`;
+      const baseCommand = `${ldPath} ${classPath} ${appProcess} /system/bin com.r2studio.robotmon.Main $@`;
       const cmd = `${nohup} sh -c '${baseCommand}' > /dev/null 2> /dev/null && sleep 1 &`;
+
       OutputLogger.default.debug(`baseCommand: ${baseCommand}`);
       OutputLogger.default.debug(`fullCommand: ${cmd}`);
-      
+
       const printPid = () => {
         const pids = this.getProcessPid();
         if (pids.length === 0) {
@@ -204,11 +229,11 @@ export class LocalDevice extends vscode.TreeItem {
     for (let p = port; p < port + 10; p++) {
       OutputLogger.default.debug(`Test forward port: ${p}`);
       try {
-        const result = execSync(`${this.adbPath} -s ${this.id} forward --no-rebind tcp:${p} tcp:8080`, {timeout: 3000}).toString().trim();
+        const result = execSync(`${this.adbPath} -s ${this.id} forward --no-rebind tcp:${p} tcp:8080`, { timeout: 3000 }).toString().trim();
         if (result.search("error") === NotFound) {
           return `${p}`;
         }
-      } catch(e) {
+      } catch (e) {
         // ignore error
       }
     }
@@ -217,11 +242,11 @@ export class LocalDevice extends vscode.TreeItem {
 
   public tcpip(): boolean {
     try {
-      const result = execSync(`${this.adbPath} -s ${this.id} tcpip 5555`, {timeout: 3000}).toString().trim();
+      const result = execSync(`${this.adbPath} -s ${this.id} tcpip 5555`, { timeout: 3000 }).toString().trim();
       if (result.search("error") === NotFound) {
         return true;
       }
-    } catch(e) {
+    } catch (e) {
       return false;
     }
     return false;

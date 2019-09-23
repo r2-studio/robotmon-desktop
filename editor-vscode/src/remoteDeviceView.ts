@@ -7,6 +7,7 @@ import { RemoteDeviceProvider } from './remoteDeviceProvider';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
 import { ScreenUtilsPanel } from './screenUtilsPanel';
+import { VSCodeUtils } from './vscodeUtils';
 
 export class RemoteDeviceView {
 
@@ -298,7 +299,7 @@ export class RemoteDeviceView {
 
   static screenshot(device: RemoteDevice): Thenable<string> {
     return new Promise<string>((resolve, reject) => {
-      const localPath = vscode.workspace.rootPath;
+      const localPath = VSCodeUtils.getFirstWorkspaceFolder();
       if (localPath === undefined) {
         return reject(Message.notifyOpenFolder);
       }
