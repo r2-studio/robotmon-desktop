@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as https from 'https';
 import * as process from 'process';
 import * as AdmZip from 'adm-zip';
+import * as lookpath from 'lookpath';
 
 import { Message, NotFound, ADBDownloadURL } from './constVariables';
 import { Config } from './config';
@@ -18,17 +19,20 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
   private mAdbPath: string = "";
 
   constructor() {
-    this.findAdb();
+    this.init();
+  }
+
+  private async init() {
+    await this.findAdb();
     if (this.mAdbPath === "") {
       OutputLogger.default.debug(`adb currently not found`);
-      this.downloadAdb().then(() => {
-        this.findAdb();
-        if (this.mAdbPath !== "") {
-          OutputLogger.default.debug(`Found adb path: ${this.mAdbPath}`);
-        } else {
-          OutputLogger.default.debug(`adb not found, you should install adb your self`);
-        }
-      });
+      await this.downloadAdb();
+      await this.findAdb();
+      if (this.mAdbPath !== "") {
+        OutputLogger.default.debug(`Found adb path: ${this.mAdbPath}`);
+      } else {
+        OutputLogger.default.debug(`adb not found, you should install adb your self`);
+      }
     } else {
       OutputLogger.default.debug(`Found adb path: ${this.mAdbPath}`);
     }
@@ -45,34 +49,41 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     return Promise.resolve([]);
   }
 
-  private findAdb() {
-    if (vscode.workspace.rootPath !== undefined) {
-      let adbPath;
-      if (process.platform === 'win32') {
-        adbPath = path.join(vscode.workspace.rootPath, 'bin', 'adb.exe');
-      } else {
-        adbPath = path.join(vscode.workspace.rootPath, 'bin', 'adb');
-      }
-      if (fs.existsSync(adbPath)) {
-        this.mAdbPath = adbPath;
-        return;
-      }
-    }
+  private async findAdb() {
+    let additionalPaths: string[] = [];
     if (fs.existsSync(Config.getConfig().adbPath)) {
-      return Config.getConfig().adbPath;
+      additionalPaths.push(Config.getConfig().adbPath);
     }
-    try {
-      if (process.platform === 'win32') {
-        this.mAdbPath = execSync("which adb.exe").toString().trim();
-      } else {
-        this.mAdbPath = execSync("which adb").toString().trim();
+    if (process.platform === 'win32') {
+      additionalPaths.push("C:\\Program Files\\Nox\\bin");
+      additionalPaths.push("D:\\Program Files\\Nox\\bin");
+      additionalPaths.push("C:\\Program Files (x86)\\Nox\\bin");
+      additionalPaths.push("D:\\Program Files (x86)\\Nox\\bin");
+    }
+    if (vscode.workspace.workspaceFolders !== undefined) {
+      for (const workPath of vscode.workspace.workspaceFolders) {
+        additionalPaths.push(path.join(workPath.uri.path, 'bin'));
       }
-    } catch(e) {}
+    }
+    const adbPath = await lookpath.lookpath("adb", {path: additionalPaths});
+    if (adbPath !== "undefined") {
+      this.mAdbPath = adbPath;
+    }
+  }
+
+  private getFirstWorkspaceFolder(): string | undefined {
+    if (vscode.workspace.workspaceFolders !== undefined) {
+      for (const workPath of vscode.workspace.workspaceFolders) {
+        return workPath.uri.path;
+      }
+    }
+    return undefined;
   }
 
   private downloadAdb() {
-    return new Promise(function(resolve, reject) {
-      if (vscode.workspace.rootPath === undefined) {
+    return new Promise((resolve, reject) => {
+      const workPath = this.getFirstWorkspaceFolder();
+      if (workPath === undefined) {
         return reject();
       }
       const platform = process.platform;
@@ -84,7 +95,7 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
       } else if (platform === 'linux') {
         downloadURL = ADBDownloadURL.linux;
       }
-      const binPath = path.join(vscode.workspace.rootPath, 'bin');
+      const binPath = path.join(workPath, 'bin');
       if (!fs.existsSync(binPath)) {
         fs.mkdirSync(binPath);
       }
