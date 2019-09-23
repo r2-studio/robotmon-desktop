@@ -4,7 +4,7 @@
     "repository": "https://github.com/r2-studio/robotmon-desktop/robotmon-vscode",
     "description": "Robotmon developing tool with VSCode",
     "publisher": "r2-studio",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "engines": {
         "vscode": "^1.30.0"
     },
@@ -217,13 +217,7 @@
             ]
         },
         "menus": {
-            "editor/title": [
-                {
-                    "command": "screenUtilsPanel.syncScreen",
-                    "group": "navigation",
-                    "when": "resourceScheme == webview-panel"
-                }
-            ],
+            "editor/title": [],
             "view/title": [
                 {
                     "command": "localDeviceView.scan",
@@ -313,6 +307,7 @@
         ]
     },
     "scripts": {
+        "build": "vsce package",
         "vscode:prepublish": "yarn run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",

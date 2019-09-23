@@ -297,11 +297,9 @@ func (a *AdbClient) GetApkAbi(serial, packageName string) string {
 			return "x86"
 		} else if strings.Contains(line, "arm64-v8a") {
 			return "arm64-v8a"
-		} else {
-			return "armeabi-v7a"
 		}
 	}
-	return ""
+	return "armeabi-v7a"
 }
 
 // GetRobotmonStartCommand getRobotmonStartCommand
