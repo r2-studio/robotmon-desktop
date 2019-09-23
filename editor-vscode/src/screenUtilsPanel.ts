@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import { Config } from './config';
 import { Message } from './constVariables';
 import { RemoteDevice } from './remoteDevice';
+import { VSCodeUtils } from './vscodeUtils';
 
 export class ScreenUtilsPanel {
 
@@ -51,7 +52,7 @@ export class ScreenUtilsPanel {
         this.mIsSyncing = false;
         break;
       case 'corpImage':
-        const localPath = vscode.workspace.rootPath;
+        const localPath = VSCodeUtils.getFirstWorkspaceFolder();
         if (localPath === undefined) {
           return vscode.window.showWarningMessage(Message.notifyOpenFolder);
         }

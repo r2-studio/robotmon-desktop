@@ -2,6 +2,7 @@ import * as dgram from 'dgram';
 import * as vscode from 'vscode';
 import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
+import { VSCodeUtils } from './vscodeUtils';
 
 export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevice> {
 
@@ -12,7 +13,8 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
   private mDevices: Array<RemoteDevice> = [];
 
   constructor() {
-    if (vscode.workspace.rootPath === undefined) {
+    const workPath = VSCodeUtils.getFirstWorkspaceFolder();
+    if (workPath === undefined) {
       vscode.window.showWarningMessage(Message.notifyOpenFolder);
     }
     this.startScanBroadcast();

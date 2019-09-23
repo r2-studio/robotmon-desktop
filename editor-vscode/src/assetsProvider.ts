@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { NotFound, ImageExtenstions } from './constVariables';
+import { VSCodeUtils } from './vscodeUtils';
 
 export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
@@ -30,10 +31,11 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
 
   public getAssetsFilenames(extFilters: Array<string> | undefined = undefined): Array<string> {
     const files: Array<string> = [];
-    if (vscode.workspace.rootPath === undefined) {
+    const workPath = VSCodeUtils.getFirstWorkspaceFolder();
+    if (workPath === undefined) {
       return files;
     }
-    const assetsPath = path.join(vscode.workspace.rootPath, 'assets');
+    const assetsPath = path.join(workPath, 'assets');
     if (!fs.existsSync(assetsPath)) {
       return files;
     }

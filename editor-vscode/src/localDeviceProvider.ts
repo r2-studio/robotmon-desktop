@@ -11,6 +11,7 @@ import { Message, NotFound, ADBDownloadURL } from './constVariables';
 import { Config } from './config';
 import { LocalDevice } from './localDevice';
 import { OutputLogger } from './logger';
+import { VSCodeUtils } from './vscodeUtils';
 
 export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>  {
 
@@ -71,18 +72,9 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     }
   }
 
-  private getFirstWorkspaceFolder(): string | undefined {
-    if (vscode.workspace.workspaceFolders !== undefined) {
-      for (const workPath of vscode.workspace.workspaceFolders) {
-        return workPath.uri.path;
-      }
-    }
-    return undefined;
-  }
-
   private downloadAdb() {
     return new Promise((resolve, reject) => {
-      const workPath = this.getFirstWorkspaceFolder();
+      const workPath = VSCodeUtils.getFirstWorkspaceFolder();
       if (workPath === undefined) {
         return reject();
       }
