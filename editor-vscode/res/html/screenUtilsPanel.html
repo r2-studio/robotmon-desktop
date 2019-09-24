@@ -3,7 +3,7 @@
   <head>
       <meta charset="UTF-8">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.6.1/css/all.min.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
       <style>
         html, body {
           height: 100%;
@@ -90,6 +90,7 @@
           <span id="startSyncScreen"><i class="fas fa-play-circle"></i></span>
           <span id="stopSyncScreen" style="display: none;"><i class="fas fa-stop-circle"></i></span>
           <span id="cropImage" class="disable"><i class="fas fa-crop-alt"></i></span>
+          <br />
           Crop Resize Ratio 
           <input type="text" id="resizeRatio" class="cropText" value="1.0" placeholder="0~1" />
           Image Prefix
@@ -98,6 +99,8 @@
         <br />
         <div class="mouseEvent">
           Mouse:
+          XY: (<span id="mx">0</span>, <span id="my">0</span>)
+          <br />
           <input type="radio" name="mouseMode" value="colorMode" checked /> Color Info
           <input type="radio" name="mouseMode" value="controlMode" /> Control
           <input type="radio" name="mouseMode" value="cropMode" /> Crop Image
@@ -105,11 +108,10 @@
           <input type="text" id="cropY1" class="cropText" value="" placeholder="Y" />
           <input type="text" id="cropX2" class="cropText" value="" placeholder="to X" />
           <input type="text" id="cropY2" class="cropText" value="" placeholder="to Y" />
-          XY: (<span id="mx">0</span>, <span id="my">0</span>)
         </div>
       </div>
       <!-- <div style="height: 40px;"></div> -->
-      <div id="preview" style="padding-top: 40px;">
+      <div id="preview" style="padding-top: 76px;">
         <div id="screenImageContainer">
           <img id="screenImage" draggable="false"/>
           <div id="positionCol"></div>
@@ -171,11 +173,11 @@
           if (x != 0) {posX = x;}
           if (y != 0) {posY = y;}
           updateMousePos();
-          $("#positionRow").offset({top: e.target.y + e.offsetY - 1, left: e.target.x});
-          $("#positionCol").offset({top: e.target.y, left: e.target.x + e.offsetX - 1});
+          $("#positionRow").offset({top: e.target.offsetTop + e.offsetY - 1, left: e.target.x});
+          $("#positionCol").offset({top: e.target.offsetTop, left: e.target.x + e.offsetX - 1});
           if (isMouseDown && mouseMode == 'cropMode') {
             $("#rectXY").width(e.target.x + e.offsetX - $("#rectXY").offset().left - 2);
-            $("#rectXY").height(e.target.y + e.offsetY - $("#rectXY").offset().top - 2);
+            $("#rectXY").height(e.target.offsetTop + e.offsetY - $("#rectXY").offset().top - 2);
           } else if (isMouseDown && mouseMode == 'controlMode') {
             vscode.postMessage({command: 'moveTo', x: +posX, y: +posY});
           }
@@ -191,7 +193,7 @@
             $("#cropY1").val(posY);
             $("#cropX2").val("");
             $("#cropY2").val("");
-            $("#rectXY").offset({top: e.target.y + e.offsetY - 1, left: e.target.x + e.offsetX - 1});
+            $("#rectXY").offset({top: e.target.offsetTop + e.offsetY - 1, left: e.target.x + e.offsetX - 1});
             $("#rectXY").width(0);
             $("#rectXY").height(0);
           }
