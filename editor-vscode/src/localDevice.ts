@@ -165,7 +165,7 @@ export class LocalDevice extends vscode.TreeItem {
           appProcess = "app_process32";
         }
       } else if (abi === "x86") {
-        ldPath += "/system/lib";
+        ldPath += "/system/lib:/data/data/com.r2studio.robotmon/lib:";
         ldPath += apkDir + "/lib:" + apkDir + "/lib/x86";
         if (app32) {
           appProcess = "app_process32";
@@ -173,7 +173,7 @@ export class LocalDevice extends vscode.TreeItem {
           appProcess = "app_process";
         }
       } else {
-        ldPath += "/system/lib"
+        ldPath += "/system/lib:/data/data/com.r2studio.robotmon/lib:";
         ldPath += apkDir + "/lib:" + apkDir + "/lib/arm";
         if (app32) {
           appProcess = "app_process32";
