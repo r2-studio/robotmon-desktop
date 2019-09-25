@@ -2,6 +2,11 @@
 
 ## Release Log
 
+### v1.5
+
+Bug fixed:
+* Fix can not start robotmon service on Android 4.1
+
 ### v1.4
 
 New functions:
