@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
-import { exec, execSync } from 'child_process';
+import { execFile, execFileSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as https from 'https';
 import * as process from 'process';
 import * as AdmZip from 'adm-zip';
-import * as lookpath from 'lookpath';
 
 import { Message, NotFound, ADBDownloadURL } from './constVariables';
 import { Config } from './config';
@@ -63,11 +62,11 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     }
     if (vscode.workspace.workspaceFolders !== undefined) {
       for (const workPath of vscode.workspace.workspaceFolders) {
-        additionalPaths.push(path.join(workPath.uri.path, 'bin'));
+        additionalPaths.push(path.join(workPath.uri.fsPath, 'bin'));
       }
     }
-    const adbPath = await lookpath.lookpath("adb", {path: additionalPaths});
-    if (adbPath !== "undefined") {
+    const adbPath = VSCodeUtils.lookupPath("adb", additionalPaths);
+    if (adbPath !== undefined) {
       this.mAdbPath = adbPath;
     }
   }
@@ -135,7 +134,7 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
     }
     return new Promise((resolve, reject) => {
       const deviceIds: Array<LocalDevice> = [];
-      exec(`${this.mAdbPath} devices`, (error, stdout, stderr) => {
+      execFile(this.mAdbPath, ['devices'], (error, stdout, stderr) => {
         if (error !== null) {
           OutputLogger.default.error(error.message);
           return reject();
@@ -163,7 +162,7 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
   public tcpConnect(ip: string, fromPort: string): Thenable<undefined> {
     let port = parseInt(fromPort);
     return new Promise((resolve, reject) => {
-      exec(`${this.mAdbPath} connect ${ip}:${port};`, (error, stdout, stderr) => {
+      execFile(this.mAdbPath, ['connect', `${ip}:${port}`], (error, stdout, stderr) => {
         let errMsg = "";
         if (error !== null) {
           errMsg = error.message;
@@ -181,7 +180,7 @@ export class LocalDeviceProvider implements vscode.TreeDataProvider<LocalDevice>
             return resolve();
           }
         }
-        execSync(`${this.mAdbPath} disconnect ${ip}:${port};`);
+        execFileSync(this.mAdbPath, ['disconnect', `${ip}:${port}`]);
         return reject(errMsg);
       });
     });

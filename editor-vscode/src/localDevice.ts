@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { exec, execSync } from 'child_process';
+import { execFile, execFileSync } from 'child_process';
 
 import { Message, NotFound } from './constVariables';
 import { OutputLogger } from './logger';
@@ -18,7 +18,7 @@ export class LocalDevice extends vscode.TreeItem {
   public runAdbCommandSync(cmd: string): string {
     let result = "";
     try {
-      result = execSync(`${this.adbPath} -s ${this.id} shell "${cmd}"`, { timeout: 3000 }).toString().trim();
+      result = execFileSync(this.adbPath, ['-s', this.id, 'shell', cmd], { timeout: 3000 }).toString().trim();
     } catch (e) {
       // ignore error
     }
@@ -27,7 +27,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   public runAdbCommand(cmd: string): Thenable<string> {
     return new Promise((resolve, reject) => {
-      exec(`${this.adbPath} -s ${this.id} shell "${cmd}"`, { timeout: 3000 }, (error, stdout, stderr) => {
+      execFile(this.adbPath, ['-s', this.id, 'shell', cmd], { timeout: 3000 }, (error, stdout, stderr) => {
         if (error !== null) {
           return reject(error.message);
         }
@@ -229,7 +229,7 @@ export class LocalDevice extends vscode.TreeItem {
     for (let p = port; p < port + 10; p++) {
       OutputLogger.default.debug(`Test forward port: ${p}`);
       try {
-        const result = execSync(`${this.adbPath} -s ${this.id} forward --no-rebind tcp:${p} tcp:8080`, { timeout: 3000 }).toString().trim();
+        const result = execFileSync(this.adbPath, ['-s', this.id, 'forward', '--no-rebind', `tcp:${p}`, 'tcp:8080'], { timeout: 3000 }).toString().trim();
         if (result.search("error") === NotFound) {
           return `${p}`;
         }
@@ -242,7 +242,7 @@ export class LocalDevice extends vscode.TreeItem {
 
   public tcpip(): boolean {
     try {
-      const result = execSync(`${this.adbPath} -s ${this.id} tcpip 5555`, { timeout: 3000 }).toString().trim();
+      const result = execFileSync(this.adbPath, ['-s', this.id, 'tcpip', '5555'], { timeout: 3000 }).toString().trim();
       if (result.search("error") === NotFound) {
         return true;
       }
