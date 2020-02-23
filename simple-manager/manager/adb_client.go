@@ -18,7 +18,6 @@ type AdbClient struct {
 }
 
 func GetAdbClient() *AdbClient {
-
 	if adbClient == nil {
 		adbClient = newAdbClient()
 	}
