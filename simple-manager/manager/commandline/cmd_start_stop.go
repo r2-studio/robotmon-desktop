@@ -43,7 +43,6 @@ func StartService(client *manager.AdbClient, serial string) {
 		if serial == "" {
 			startService(client, device.Serial)
 			success = true
-			break
 		}
 	}
 	if serial != "" && !success {
