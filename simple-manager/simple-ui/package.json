@@ -12,7 +12,7 @@
     "google-protobuf": "^3.10.0-rc.1",
     "grpc-web": "^1.0.6",
     "prismjs": "^1.17.1",
-    "vue": "^2.6.10",
+    "vue": "2.6.10",
     "vue-clipboard2": "^0.3.1",
     "vue-localstorage": "^0.6.2",
     "vue-prism-editor": "^0.3.0",
@@ -30,7 +30,7 @@
     "sass": "^1.17.4",
     "sass-loader": "^7.1.0",
     "vue-cli-plugin-vuetify": "^0.6.3",
-    "vue-template-compiler": "^2.6.10",
+    "vue-template-compiler": "2.6.10",
     "vuetify-loader": "^1.2.2"
   },
   "eslintConfig": {
