@@ -5,11 +5,12 @@ import { Message } from './constVariables';
 import { VSCodeUtils } from './vscodeUtils';
 
 export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevice> {
+  private _onDidChangeTreeData: vscode.EventEmitter<RemoteDevice | undefined> = new vscode.EventEmitter<
+    RemoteDevice | undefined
+  >();
+  readonly onDidChangeTreeData: vscode.Event<RemoteDevice | undefined> = this._onDidChangeTreeData.event;
 
-  private _onDidChangeTreeData: vscode.EventEmitter<RemoteDevice | undefined> = new vscode.EventEmitter<RemoteDevice | undefined>();
-	readonly onDidChangeTreeData: vscode.Event<RemoteDevice | undefined> = this._onDidChangeTreeData.event;
-  
-  private mReceiver = dgram.createSocket('udp4');
+  private mReceiver = dgram.createSocket({ type: 'udp4', reuseAddr: true });
   private mDevices: Array<RemoteDevice> = [];
 
   constructor() {
@@ -37,7 +38,7 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
   }
 
   public refresh() {
-    this._onDidChangeTreeData.fire();
+    this._onDidChangeTreeData.fire(undefined);
   }
 
   private startScanBroadcast() {
@@ -46,14 +47,14 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
       if (msg.toString() === 'robotmon') {
         this.addDevice(info.address);
       }
-    }); 
+    });
   }
 
   private stopScanBroadcast() {
     this.mReceiver.close();
   }
 
-  public addDevice(ip: string, port: string = "8080") {
+  public addDevice(ip: string, port: string = '8080') {
     let isExist = false;
     for (let device of this.mDevices) {
       if (ip === device.ip) {
@@ -63,7 +64,16 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
     if (!isExist) {
       let r = new RemoteDevice(ip, port);
       this.mDevices.push(r);
-      this._onDidChangeTreeData.fire();
+      this.mDevices.sort((a, b) => {
+        if (a.ip < b.ip) {
+          return -1;
+        }
+        if (a.ip > b.ip) {
+          return 1;
+        }
+        return 0;
+      });
+      this._onDidChangeTreeData.fire(undefined);
     }
   }
 
@@ -71,5 +81,4 @@ export class RemoteDeviceProvider implements vscode.TreeDataProvider<RemoteDevic
     this.stopScanBroadcast();
     vscode.Disposable.from(...this.mDevices).dispose();
   }
-
 }
