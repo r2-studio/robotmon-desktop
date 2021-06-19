@@ -26,7 +26,7 @@ export class AssetsProvider implements vscode.TreeDataProvider<vscode.TreeItem> 
   }
 
   public refresh() {
-    this._onDidChangeTreeData.fire();
+    // this._onDidChangeTreeData.fire();
   }
 
   public getAssetsFilenames(extFilters: Array<string> | undefined = undefined): Array<string> {
