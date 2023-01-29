@@ -56,7 +56,7 @@ func (a *AdbClient) Init() {
 		fmt.Println("Error adb not found... exit")
 		os.Exit(1)
 	}
-	fmt.Println("Found adb:", adbPath)
+	fmt.Println("=> Found adb:", adbPath)
 	a.adbPath = adbPath
 }
 
@@ -292,6 +292,9 @@ func (a *AdbClient) GetApkAbi(serial, packageName string) string {
 		if !strings.Contains(line, "primaryCpuAbi") {
 			continue
 		}
+		if strings.Contains(line, "x86_64") {
+			return "x86_64"
+		}
 		if strings.Contains(line, "x86") {
 			return "x86"
 		} else if strings.Contains(line, "arm64-v8a") {
@@ -320,7 +323,7 @@ func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, er
 	classPath := "CLASSPATH=" + apk
 	ldPath := "LD_LIBRARY_PATH="
 	appProcess := ""
-	if abi == "arm64-v8a" || abi == "x86_64" || abi == "x8664" {
+	if abi == "arm64-v8a" || abi == "x86_64" {
 		ldPath += "/system/lib64:/system/lib:"
 		ldPath += apkDir + "/lib:" + apkDir + "/lib/arm64:" + apkDir + "/lib/x86_64:" + apkDir + "/lib/x64"
 		if app64 {
@@ -349,6 +352,7 @@ func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, er
 	}
 	baseCommand := fmt.Sprintf("%s %s %s /system/bin com.r2studio.robotmon.Main $@", ldPath, classPath, appProcess)
 	command := fmt.Sprintf("%s sh -c \"%s\" > /dev/null 2> /dev/null && sleep 1 &", nohup, baseCommand)
+	fmt.Println("============================\n", abi)
 	fmt.Println("============================\n", ldPath)
 	fmt.Println("============================\n", classPath)
 	fmt.Println("============================\n", appProcess)

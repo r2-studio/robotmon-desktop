@@ -2,6 +2,8 @@ module main
 
 go 1.16
 
+replace github.com/r2-studio/robotmon-desktop => ../../..
+
 require (
 	github.com/gobuffalo/envy v1.9.0 // indirect
 	github.com/gobuffalo/packd v1.0.0 // indirect
