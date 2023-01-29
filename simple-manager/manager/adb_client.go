@@ -320,9 +320,9 @@ func (a *AdbClient) GetRobotmonStartCommand(serial string) (string, []string, er
 	classPath := "CLASSPATH=" + apk
 	ldPath := "LD_LIBRARY_PATH="
 	appProcess := ""
-	if abi == "arm64-v8a" {
+	if abi == "arm64-v8a" || abi == "x86_64" || abi == "x8664" {
 		ldPath += "/system/lib64:/system/lib:"
-		ldPath += apkDir + "/lib:" + apkDir + "/lib/arm64"
+		ldPath += apkDir + "/lib:" + apkDir + "/lib/arm64:" + apkDir + "/lib/x86_64:" + apkDir + "/lib/x64"
 		if app64 {
 			appProcess = "app_process64"
 		} else if app {
