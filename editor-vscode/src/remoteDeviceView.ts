@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { spawn } from 'child_process';
 
 import { Config } from './config';
 import { RemoteDeviceProvider } from './remoteDeviceProvider';
@@ -8,6 +9,7 @@ import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
 import { ScreenUtilsPanel } from './screenUtilsPanel';
 import { VSCodeUtils } from './vscodeUtils';
+import { OutputLogger } from './logger';
 
 export class RemoteDeviceView {
 
@@ -15,13 +17,14 @@ export class RemoteDeviceView {
   private mRemoteDeviceProvider: RemoteDeviceProvider;
   private mRemoteDeviceView: vscode.TreeView<RemoteDevice>;
   private mSelections: Array<RemoteDevice> = [];
-  
+
   private mStatusBarItems: Array<vscode.StatusBarItem> = [];
   private mRunItem: vscode.StatusBarItem;
+  private mRunBuildItem: vscode.StatusBarItem;
   private mStopItem: vscode.StatusBarItem;
   private mScreenshotItem: vscode.StatusBarItem;
   private mControlItem: vscode.StatusBarItem;
-  private mPauseItem: vscode.StatusBarItem;
+  // private mPauseItem: vscode.StatusBarItem;
   private mResumeItem: vscode.StatusBarItem;
   private mSettingItem: vscode.StatusBarItem;
 
@@ -29,15 +32,16 @@ export class RemoteDeviceView {
     this.mRemoteDeviceProvider = new RemoteDeviceProvider();
     this.mRemoteDeviceView = vscode.window.createTreeView<RemoteDevice>("remoteDeviceView", { treeDataProvider: this.mRemoteDeviceProvider });
     this.mRemoteDeviceView.onDidChangeSelection(selected => this.onDidChangeSelection(selected));
-    
+
     this.mRunItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.mRunBuildItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mStopItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mScreenshotItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mControlItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-    this.mPauseItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    // this.mPauseItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mResumeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.mSettingItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-    
+
     this.registVSCodeCommand();
     this.initStatusBarItems();
     this.displayStatusBarItems(false);
@@ -88,13 +92,13 @@ export class RemoteDeviceView {
   public runScript() {
     const editor = vscode.window.activeTextEditor;
     if (editor === undefined) {
-        vscode.window.showWarningMessage(Message.notifyNoEditor);
-        return;
+      vscode.window.showWarningMessage(Message.notifyNoEditor);
+      return;
     }
     const script = editor.document.getText();
     if (script === "" || editor.document.languageId === "Log") {
-        vscode.window.showWarningMessage(Message.notifyScriptEmpty);
-        return;
+      vscode.window.showWarningMessage(Message.notifyScriptEmpty);
+      return;
     }
     for (let device of this.mSelections) {
       RemoteDeviceView.runScriptFromEditor(device, script).then(() => {
@@ -135,6 +139,49 @@ export class RemoteDeviceView {
     }
   }
 
+  public async runBuildScript() {
+    const shell = process.env.SHELL || 'bash';
+    const workPath = VSCodeUtils.getFirstWorkspaceFolder() || '';
+
+    for (let device of this.mSelections) {
+      const outputLogger = device.getLogger();
+      outputLogger.debug(`current path: ${workPath}`);
+      outputLogger.debug(`npm run build`);
+
+      await new Promise<void>((resolve) => {
+        const p = spawn(shell, ['-i', '-c', 'npm run build'], { cwd: workPath, env: process.env });
+        p.on('error', (e) => {
+          outputLogger.error(`${e}`);
+        })
+        p.stdout.on('data', function (data) {
+          outputLogger.rLog(data);
+        });
+
+        p.stderr.on('data', function (data) {
+          outputLogger.error(data);
+        });
+        p.on('close', () => {
+          outputLogger.debug('run command finished');
+          resolve();
+        });
+      });
+      const indexPath = `${workPath}/dist/index.js`;
+
+      if (!fs.existsSync(indexPath)) {
+        outputLogger.error(`build index.js path: ${indexPath} not found`);
+        continue;
+      };
+      outputLogger.debug(`build index.js path: ${indexPath}, run script ...`);
+      try {
+        const script = fs.readFileSync(indexPath).toString();
+        await device.runScriptAsync(script);
+        outputLogger.debug(`run script done`);
+      } catch (e) {
+        outputLogger.error((e as Error).message);
+      }
+    }
+  }
+
   public screenshot() {
     for (let device of this.mSelections) {
       RemoteDeviceView.screenshot(device).then(() => {
@@ -161,18 +208,18 @@ export class RemoteDeviceView {
       const inputBox = vscode.window.createInputBox();
       inputBox.placeholder = "Input device IP. 10.0.1.10 or 127.0.0.1:8080";
       inputBox.onDidAccept(() => {
-          let rx1 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]{1,5}$/;
-          let rx2 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/;
-          if (rx1.test(inputBox.value)) {
-            const tmp = inputBox.value.split(":");
-            this.mRemoteDeviceProvider.addDevice(tmp[0], tmp[1]);
-            inputBox.dispose();
-          } else if (rx2.test(inputBox.value)) {
-            this.mRemoteDeviceProvider.addDevice(inputBox.value);
-            inputBox.dispose();
-          } else {
-            vscode.window.showWarningMessage(`IP is not available: ${inputBox.value}`);
-          }        
+        let rx1 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]{1,5}$/;
+        let rx2 = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/;
+        if (rx1.test(inputBox.value)) {
+          const tmp = inputBox.value.split(":");
+          this.mRemoteDeviceProvider.addDevice(tmp[0], tmp[1]);
+          inputBox.dispose();
+        } else if (rx2.test(inputBox.value)) {
+          this.mRemoteDeviceProvider.addDevice(inputBox.value);
+          inputBox.dispose();
+        } else {
+          vscode.window.showWarningMessage(`IP is not available: ${inputBox.value}`);
+        }
       });
       inputBox.onDidHide(() => {
         inputBox.dispose();
@@ -196,7 +243,7 @@ export class RemoteDeviceView {
     // Remote Device Item - connect
     disposable = vscode.commands.registerCommand('remoteDeviceViewItem.connect', (element: RemoteDevice) => {
       element.connect().then(() => {
-          vscode.window.showInformationMessage(`Successfully connect. ${element.ip}`);
+        vscode.window.showInformationMessage(`Successfully connect. ${element.ip}`);
       });
     });
     this.mDisposables.push(disposable);
@@ -227,15 +274,22 @@ export class RemoteDeviceView {
     this.mRunItem.command = "remoteDevice.runScript";
     this.mStatusBarItems.push(this.mRunItem);
     this.mDisposables.push(vscode.commands.registerCommand(this.mRunItem.command, () => {
-        this.runScript();
+      this.runScript();
     }));
 
-    this.mPauseItem.text = `$(clock) Pause`;
-    this.mPauseItem.command = "remoteDevice.pauseScript";
-    this.mStatusBarItems.push(this.mPauseItem);
-    this.mDisposables.push(vscode.commands.registerCommand(this.mPauseItem.command, () => {
-      this.pauseScript();
+    this.mRunBuildItem.text = `$(zap) RunBuild`;
+    this.mRunBuildItem.command = "remoteDevice.runBuildScript";
+    this.mStatusBarItems.push(this.mRunBuildItem);
+    this.mDisposables.push(vscode.commands.registerCommand(this.mRunBuildItem.command, () => {
+      this.runBuildScript();
     }));
+
+    // this.mPauseItem.text = `$(clock) Pause`;
+    // this.mPauseItem.command = "remoteDevice.pauseScript";
+    // this.mStatusBarItems.push(this.mPauseItem);
+    // this.mDisposables.push(vscode.commands.registerCommand(this.mPauseItem.command, () => {
+    //   this.pauseScript();
+    // }));
 
     this.mResumeItem.text = `$(history) Resume`;
     this.mResumeItem.command = "remoteDevice.resumeScript";
@@ -311,18 +365,18 @@ export class RemoteDeviceView {
       const resizeHeight = Math.floor(device.height * Config.getConfig().screenshotSizeRatio);
       const quality = Config.getConfig().screenshotQuality;
       device.getScreenshot(0, 0, device.width, device.height, resizeWidth, resizeHeight, quality, false)
-      .then((bs) => {
-        const filename = Date.now().toString() + '.jpg'; 
-        const fullpath = path.join(screenshotPath, filename);
-        console.log(fullpath);
-        fs.writeFileSync(fullpath, Buffer.from(bs));
-        // const webviewPanel = vscode.window.createWebviewPanel("", filename, vscode.ViewColumn.Active);
-        // webviewPanel.webview.html = "Hello";
-        return resolve(Message.screenshotSuccess);
-      })
-      .catch((e: string) => {
-        return reject(e);
-      });
+        .then((bs) => {
+          const filename = Date.now().toString() + '.jpg';
+          const fullpath = path.join(screenshotPath, filename);
+          console.log(fullpath);
+          fs.writeFileSync(fullpath, Buffer.from(bs));
+          // const webviewPanel = vscode.window.createWebviewPanel("", filename, vscode.ViewColumn.Active);
+          // webviewPanel.webview.html = "Hello";
+          return resolve(Message.screenshotSuccess);
+        })
+        .catch((e: string) => {
+          return reject(e);
+        });
     });
   }
 
