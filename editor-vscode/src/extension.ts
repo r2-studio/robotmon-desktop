@@ -10,6 +10,7 @@ import { AssetsView } from './assetsView';
 import { SnippetView } from './snippetView';
 import { NodeHttpTransport } from 'grpc-web-node-http-transport';
 import { Config } from './config';
+import { RunView } from './runView';
 // import { RemoteDeviceFunc } from './remoteDeviceController';
 
 // this method is called when your extension is activated
@@ -26,6 +27,11 @@ export function activate(context: vscode.ExtensionContext) {
   const remoteDeviceView = new RemoteDeviceView();
   disposable = vscode.Disposable.from(remoteDeviceView);
   context.subscriptions.push(disposable);
+
+  // New Run View
+  const runView = new RunView(remoteDeviceView);
+  disposable = vscode.Disposable.from(runView);
+  context.subscriptions.push(runView);
 
   // New Assets View
   const asstesView = new AssetsView();

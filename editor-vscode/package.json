@@ -14,6 +14,7 @@
   "activationEvents": [
     "onView:localDeviceView",
     "onView:remoteDeviceView",
+    "onView:runView",
     "onView:assetsView",
     "onView:snippetView",
     "onView:functionHints"
@@ -114,6 +115,14 @@
         }
       },
       {
+        "command": "runViewItem.run",
+        "title": "run script",
+        "icon": {
+          "light": "res/light_play.svg",
+          "dark": "res/dark_play.svg"
+        }
+      },
+      {
         "command": "assetsView.refresh",
         "title": "refresh assets",
         "icon": {
@@ -206,6 +215,10 @@
           "name": "Remote Devices"
         },
         {
+          "id": "runView",
+          "name": "Run"
+        },
+        {
           "id": "assetsView",
           "name": "Assets"
         },
@@ -283,6 +296,11 @@
         {
           "command": "remoteDeviceViewItem.install",
           "when": "view == remoteDeviceView",
+          "group": "inline"
+        },
+        {
+          "command": "runViewItem.run",
+          "when": "view == runView && viewItem == runViewItemScript",
           "group": "inline"
         },
         {
