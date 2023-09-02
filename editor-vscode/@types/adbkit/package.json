@@ -1,0 +1,5 @@
+{
+  "name": "@types/adbkit",
+  "version": "2.11.1",
+  "types": "index.d.ts"
+}
