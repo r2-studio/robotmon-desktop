@@ -6,7 +6,7 @@ import * as fs from 'fs';
 export class VSCodeUtils {
   
   static findTextEditor(): vscode.TextEditor | undefined {
-    const editors: vscode.TextEditor[] = vscode.window.visibleTextEditors;
+    const editors: vscode.TextEditor[] = [...vscode.window.visibleTextEditors];
     let matchEditor: vscode.TextEditor | undefined = undefined;
     for (let editor of editors) {
       if (editor.document.languageId === "Log") {

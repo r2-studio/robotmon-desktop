@@ -70,8 +70,8 @@ export class LocalDeviceView {
     });
 
     // Local Device Item - tcpip
-    disposable = vscode.commands.registerCommand('localDeviceViewItem.tcpip', (element: LocalDevice) => {
-      if (element.tcpip()) {
+    disposable = vscode.commands.registerCommand('localDeviceViewItem.tcpip', async (element: LocalDevice) => {
+      if (await element.tcpip()) {
         vscode.window.showInformationMessage(`${element.id} "adb tcpip 5555" success`);
       } else {
         vscode.window.showErrorMessage(`${element.id} "adb tcpip 5555" Failed`);

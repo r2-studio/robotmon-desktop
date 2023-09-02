@@ -311,8 +311,8 @@ export class ADB {
       this.shell(serial, command);
       console.log(`[StartService][Starting]`);
     } catch (e) {
-      console.log(`[StartService][Failed] ${e.message}`);
-      throw new Error(`StartServiceFailed: ${e.message}`);
+      console.log(`[StartService][Failed] ${(e as Error).message}`);
+      throw new Error(`StartServiceFailed: ${(e as Error).message}`);
     }
     await Utils.sleep(5000);
     [ppid, pid] = await this.getRobotmonProcessPids(serial);

@@ -108,7 +108,7 @@ export class AssetsPanel {
         assetItem.base64 = fs.readFileSync(assetItem.filePath, {encoding: 'base64'}) as string;
         this.mWebviewPanel.webview.postMessage({command: 'addNewAsset', asset: assetItem});
       } catch(e) {
-        OutputLogger.default.error(e.message);
+        OutputLogger.default.error((e as Error).message);
       }
     }
   }

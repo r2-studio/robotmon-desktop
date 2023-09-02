@@ -50,7 +50,7 @@ export class RemoteDeviceView {
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<RemoteDevice> | null) {
     if (selected !== null) {
-      this.mSelections = selected.selection;
+      this.mSelections.push(...selected.selection);
     }
     // TODO allow multi-selestions
     let statusBarTitle = '';
