@@ -150,7 +150,7 @@ export class ADB {
 
   public async getAppProcess(serial: string, packageName: string): Promise<string> {
     const abi = await this.getPackageABI(serial, packageName);
-    if (abi === 'arm64-v8a' || abi === 'x86_64') {
+    if (abi === 'arm64-v8a' || abi === 'x86_64' || abi === 'x8664') {
       if (await this.isFileExist(serial, '/system/bin/app_process64')) {
         return '/system/bin/app_process64';
       } else if (await this.isFileExist(serial, '/system/bin/app_process')) {
