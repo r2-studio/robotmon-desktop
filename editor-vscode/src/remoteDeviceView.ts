@@ -308,7 +308,7 @@ export class RemoteDeviceView {
       })
     );
 
-    this.mRunBuildItem.text = `$(zap) RunBuild`;
+    this.mRunBuildItem.text = `$(zap) BuildRun`;
     this.mRunBuildItem.command = 'remoteDevice.runBuildScript';
     this.mStatusBarItems.push(this.mRunBuildItem);
     this.mDisposables.push(
