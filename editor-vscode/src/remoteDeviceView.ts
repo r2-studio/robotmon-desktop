@@ -324,14 +324,14 @@ export class RemoteDeviceView {
     //   this.pauseScript();
     // }));
 
-    this.mResumeItem.text = `$(history) Resume`;
-    this.mResumeItem.command = 'remoteDevice.resumeScript';
-    this.mStatusBarItems.push(this.mResumeItem);
-    this.mDisposables.push(
-      vscode.commands.registerCommand(this.mResumeItem.command, () => {
-        this.resumeScript();
-      })
-    );
+    // this.mResumeItem.text = `$(history) Resume`;
+    // this.mResumeItem.command = 'remoteDevice.resumeScript';
+    // this.mStatusBarItems.push(this.mResumeItem);
+    // this.mDisposables.push(
+    //   vscode.commands.registerCommand(this.mResumeItem.command, () => {
+    //     this.resumeScript();
+    //   })
+    // );
 
     this.mStopItem.text = `$(circle-slash) Stop`;
     this.mStopItem.command = 'remoteDevice.stopScript';
