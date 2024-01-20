@@ -9,7 +9,6 @@ import { RemoteDevice } from './remoteDevice';
 import { Message } from './constVariables';
 import { ScreenUtilsPanel } from './screenUtilsPanel';
 import { VSCodeUtils } from './vscodeUtils';
-import { OutputLogger } from './logger';
 
 export class RemoteDeviceView {
   private mDisposables: Array<vscode.Disposable> = [];
@@ -49,6 +48,7 @@ export class RemoteDeviceView {
   }
 
   public onDidChangeSelection(selected: vscode.TreeViewSelectionChangeEvent<RemoteDevice> | null) {
+    this.mSelections = [];
     if (selected !== null) {
       this.mSelections.push(...selected.selection);
     }
@@ -396,6 +396,30 @@ export class RemoteDeviceView {
   }
 
   static screenshot(device: RemoteDevice): Thenable<string> {
+    return new Promise<string>(async (resolve, reject) => {
+      const localPath = VSCodeUtils.getFirstWorkspaceFolder();
+      if (localPath === undefined) {
+        return reject(Message.notifyOpenFolder);
+      }
+      const screenshotPath = path.join(localPath, 'screenshot');
+      if (!fs.existsSync(screenshotPath)) {
+        fs.mkdirSync(screenshotPath);
+      }
+
+      const base64 = await device.runScript(`
+      var tmpImg = getScreenshot();
+      saveImage(tmpImg, "/sdcard/Robotmon/tmpImg.png");
+      releaseImage(tmpImg);
+      readFileBase64("/sdcard/Robotmon/tmpImg.png");`);
+
+      const filename = Date.now().toString() + '.png';
+      const fullpath = path.join(screenshotPath, filename);
+      fs.writeFileSync(fullpath, Buffer.from(base64, 'base64'));
+      return resolve(Message.screenshotSuccess);
+    });
+  }
+
+  static screenshotOld(device: RemoteDevice): Thenable<string> {
     return new Promise<string>((resolve, reject) => {
       const localPath = VSCodeUtils.getFirstWorkspaceFolder();
       if (localPath === undefined) {
