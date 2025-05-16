@@ -63,9 +63,9 @@ export class LocalDeviceView {
       const rPort = await element.forwardPort(8080);
       if (rPort !== 0) {
         vscode.commands.executeCommand('remoteDeviceView.addDevice', rPort);
-        vscode.window.showInformationMessage(`${element.id} forward port: ${rPort} success`);
+        vscode.window.showInformationMessage(`${element.id} forward port from local ${rPort} to remote 8080 succeeded`);
       } else {
-        vscode.window.showErrorMessage(`${element.id} forward port: ${rPort} failed`);
+        vscode.window.showErrorMessage(`${element.id} try to forward port from local 8080~8089 to remote 8080 failed`);
       }
     });
 
