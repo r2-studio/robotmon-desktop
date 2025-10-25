@@ -3,7 +3,7 @@ import path from 'path';
 import adb from 'adbkit';
 import { Utils } from './utils';
 
-type Client = ReturnType<typeof adb['createClient']>;
+type Client = ReturnType<(typeof adb)['createClient']>;
 
 export interface Process {
   user: string;
@@ -133,6 +133,33 @@ export class ADB {
     return '';
   }
 
+  public async hasSu(serial: string): Promise<boolean> {
+    const suPaths = ['/system/bin/su', '/system/xbin/su', '/su/bin/su'];
+    for (const suPath of suPaths) {
+      if (await this.isFileExist(serial, suPath)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public async testSuAccess(serial: string): Promise<boolean> {
+    try {
+      // Test if su works without interaction by running a simple command with timeout
+      const testCommand = 'su -c "id" 2>/dev/null';
+      const result = await Promise.race([
+        this.shell(serial, testCommand),
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+      ]);
+
+      // If su works, the result should contain "uid=0" (root user)
+      return result.includes('uid=0');
+    } catch (e) {
+      console.log(`[TestSuAccess] Failed: ${(e as Error).message}`);
+      return false;
+    }
+  }
+
   // getPackageABI may return armeabi, armeabi-v7a, arm64-v8a, x86, x86_64, mips
   public async getPackageABI(serial: string, packageName: string): Promise<string> {
     const result = await this.shell(serial, `pm dump ${packageName}`);
@@ -183,10 +210,16 @@ export class ADB {
     const appProcess = await this.getAppProcess(serial, ADB.RobotmonPackage);
     const apkDirPath = path.dirname(apkPath);
 
+    // First check if su exists, then test if it actually works
+    const hasSuBinary = await this.hasSu(serial);
+    const hasWorkingSu = hasSuBinary ? await this.testSuAccess(serial) : false;
+
     console.log(`[StartCommand][nohupPath]: ${nohupPath}`);
     console.log(`[StartCommand][apkPath]: ${apkPath}`);
     console.log(`[StartCommand][appProcess]: ${appProcess}`);
     console.log(`[StartCommand][apkDirPath]: ${apkDirPath}`);
+    console.log(`[StartCommand][hasSuBinary]: ${hasSuBinary}`);
+    console.log(`[StartCommand][hasWorkingSu]: ${hasWorkingSu}`);
 
     const possibleLibraryPaths: string[] = [
       '/data/data/com.r2studio.robotmon/lib',
@@ -214,7 +247,16 @@ export class ADB {
     console.log(`[StartCommand][cmdClassPath]: ${cmdClassPath}`);
     console.log(`[StartCommand][cmdLibraryPath]: ${cmdLibraryPath}`);
     const baseCommand = `${cmdLibraryPath} ${cmdClassPath} ${appProcess} /system/bin com.r2studio.robotmon.Main`;
-    const fullCommand = `${nohupPath} sh -c "${baseCommand} ${args.join(' ')}" > /dev/null 2> /dev/null && sleep 2 &`;
+
+    // Use su if available and working for root privileges
+    let fullCommand: string;
+    if (hasWorkingSu) {
+      fullCommand = `${nohupPath} su -c "${baseCommand} ${args.join(' ')}" > /dev/null 2> /dev/null && sleep 2 &`;
+      console.log(`[StartCommand] Using root privileges with su`);
+    } else {
+      fullCommand = `${nohupPath} sh -c "${baseCommand} ${args.join(' ')}" > /dev/null 2> /dev/null && sleep 2 &`;
+      console.log(`[StartCommand] Using normal privileges with sh`);
+    }
 
     console.log(`[StartCommand][baseCommand]: ${baseCommand}`);
     console.log(`[StartCommand][fullCommand]: ${fullCommand}`);
